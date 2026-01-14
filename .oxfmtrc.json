@@ -10,5 +10,5 @@
     "useTabs": false,
     "tabWidth": 4,
     "experimentalSortPackageJson": true,
-    "ignorePatterns": ["src/components/ui/**", "vendor", "node_modules", ".automaker/**", "dist/"]
+    "ignorePatterns": ["resources/js/components/ui/", "vendor", "node_modules", ".automaker/**", "dist/"]
 }

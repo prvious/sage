@@ -15,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton('server.driver', function ($app) {
+            return new \App\Drivers\Server\ServerDriverManager($app);
+        });
     }
 
     /**

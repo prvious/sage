@@ -93,7 +93,7 @@
         "CSSStyleProperties": "readonly",
         "Temporal": "readonly"
     },
-    "ignorePatterns": ["vendor", "node_modules", "public", "bootstrap/ssr", "tailwind.config.js", "src/components/ui/**"],
+    "ignorePatterns": ["vendor", "node_modules", "public", "bootstrap/ssr", "tailwind.config.js", "resources/js/components/ui/"],
     "overrides": [
         {
             "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
