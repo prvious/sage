@@ -1,0 +1,42 @@
+# Shadcn UI Components
+
+This application uses Shadcn UI components for consistent, accessible, and customizable UI elements.
+
+## Component Usage
+
+**Always use Shadcn UI components when building UI features.**
+
+## Installation Workflow
+
+If a required Shadcn component is not yet installed in the project:
+
+1. Install the component using the Shadcn CLI
+2. Continue with the implementation work using the newly installed component
+
+## Examples
+
+### Installing Components
+
+- `pnpm dlx shadcn@latest add button`
+- `pnpm dlx shadcn@latest add card`
+- `pnpm dlx shadcn@latest add dialog`
+
+### Common Components
+
+Some frequently used Shadcn components include:
+
+- **button** - For clickable actions
+- **card** - For content containers
+- **dialog** - For modals and dialogs
+- **input** - For text input fields
+- **select** - For dropdown selections
+- **form** - For form elements
+- **toast** - For notifications
+
+## Important Notes
+
+- Components are installed to the `resources/js/components/ui/` directory
+- Shadcn components are fully customizable and use Tailwind CSS
+- Always check if a component exists before installing to avoid duplicates
+- Components are designed to be accessible and follow best practices
+- You must NOT manually edit or create components in the `resources/js/components/ui/`
