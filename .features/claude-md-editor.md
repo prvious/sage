@@ -9,6 +9,7 @@ depends_on: git-worktree-management
 This feature provides a dedicated editor for managing `CLAUDE.md` files, which contain custom instructions for AI agents. Users can maintain a project-level CLAUDE.md and override it per worktree for specific instructions.
 
 ### Key Capabilities
+
 - Edit project-level CLAUDE.md (applies to all worktrees by default)
 - Edit worktree-specific CLAUDE.md (overrides project-level)
 - Markdown preview with syntax highlighting
@@ -20,6 +21,7 @@ This feature provides a dedicated editor for managing `CLAUDE.md` files, which c
 - Search and replace within file
 
 ### User Stories
+
 1. As a developer, I want to set project-wide agent instructions
 2. As a developer, I want to override instructions for a specific feature branch
 3. As a developer, I want to preview how my markdown will render
@@ -27,6 +29,7 @@ This feature provides a dedicated editor for managing `CLAUDE.md` files, which c
 5. As a developer, I want to use templates for common instruction patterns
 
 ### File Structure
+
 - Project: `{project_path}/CLAUDE.md`
 - Worktree: `{worktree_path}/CLAUDE.md`
 
@@ -35,11 +38,13 @@ If worktree-specific file exists, it takes precedence.
 ## Detailed Implementation Plan
 
 ### Step 1: Create Editor Controller
+
 ```bash
 php artisan make:controller ClaudeEditorController --no-interaction
 ```
 
 **Methods:**
+
 - `show()` - Display editor for project or worktree
 - `update()` - Save changes to CLAUDE.md
 - `preview()` - Return rendered markdown
@@ -47,11 +52,13 @@ php artisan make:controller ClaudeEditorController --no-interaction
 - `restore()` - Restore previous version
 
 ### Step 2: Create Editor Service
+
 ```bash
 php artisan make:class Services/ClaudeEditorService --no-interaction
 ```
 
 **Methods:**
+
 ```php
 public function read(Project $project, ?Worktree $worktree = null): string
 {
@@ -83,11 +90,13 @@ public function fileExists(Project $project, ?Worktree $worktree = null): bool
 ```
 
 ### Step 3: Create Version History Model
+
 ```bash
 php artisan make:model ClaudeVersion -m --no-interaction
 ```
 
 **Fields:**
+
 - `id`
 - `project_id` (foreign key)
 - `worktree_id` (nullable, foreign key)
@@ -100,21 +109,25 @@ Store each save as a version for rollback capability.
 ### Step 4: Install Markdown Libraries
 
 Frontend:
+
 ```bash
-npm install react-markdown rehype-highlight remark-gfm
+pnpm install react-markdown rehype-highlight remark-gfm
 ```
 
 For syntax highlighting:
+
 ```bash
-npm install highlight.js
+pnpm install highlight.js
 ```
 
 ### Step 5: Create Editor Page Component
+
 ```typescript
-// resources/js/Pages/ClaudeEditor/Index.tsx
+// resources/js/pages/claude-editor/index.tsx
 ```
 
 **Layout:**
+
 - Split view: Editor (left) | Preview (right)
 - Toggle button to switch between split/full editor/full preview
 - Toolbar with actions: Save, History, Templates, Export, Import
@@ -124,11 +137,13 @@ npm install highlight.js
 ### Step 6: Implement Monaco Editor
 
 Use Monaco Editor (VS Code's editor):
+
 ```bash
-npm install @monaco-editor/react
+pnpm install @monaco-editor/react
 ```
 
 **Features:**
+
 - Markdown syntax highlighting
 - Auto-save draft to localStorage
 - Keyboard shortcuts (Cmd+S to save)
@@ -153,11 +168,13 @@ import Editor from '@monaco-editor/react'
 ```
 
 ### Step 7: Implement Markdown Preview
+
 ```typescript
-// resources/js/Components/MarkdownPreview.tsx
+// resources/js/components/markdown-preview.tsx
 ```
 
 Use react-markdown:
+
 ```typescript
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -176,11 +193,13 @@ Style with Tailwind and GitHub markdown CSS.
 ### Step 8: Create Template Library
 
 Create predefined templates:
+
 ```bash
 php artisan make:class Support/ClaudeTemplates --no-interaction
 ```
 
 **Templates:**
+
 1. **Testing Focus** - Instructions emphasizing test coverage
 2. **Minimal Changes** - Instructions for small, focused changes
 3. **Documentation** - Instructions for adding docs
@@ -203,11 +222,13 @@ public static function all(): array
 ```
 
 ### Step 9: Create Template Modal Component
+
 ```typescript
-// resources/js/Components/TemplateModal.tsx
+// resources/js/components/template-modal.tsx
 ```
 
 **UI:**
+
 - Grid of template cards
 - Preview template content
 - Insert or replace current content
@@ -216,11 +237,13 @@ public static function all(): array
 ### Step 10: Implement Version History
 
 Create history sidebar:
+
 ```typescript
-// resources/js/Components/VersionHistory.tsx
+// resources/js/components/version-history.tsx
 ```
 
 **Display:**
+
 - List of previous versions with timestamps
 - Click to preview diff
 - Restore button
@@ -229,11 +252,13 @@ Create history sidebar:
 ### Step 11: Implement Diff Viewer
 
 Use react-diff-viewer:
+
 ```bash
-npm install react-diff-viewer-continued
+pnpm install react-diff-viewer-continued
 ```
 
 Show side-by-side comparison of versions:
+
 ```typescript
 import DiffViewer from 'react-diff-viewer-continued'
 
@@ -247,49 +272,56 @@ import DiffViewer from 'react-diff-viewer-continued'
 ### Step 12: Add Auto-save
 
 Implement auto-save to localStorage:
+
 ```typescript
 useEffect(() => {
     const timer = setTimeout(() => {
-        localStorage.setItem(`claude-draft-${id}`, content)
-    }, 1000)
+        localStorage.setItem(`claude-draft-${id}`, content);
+    }, 1000);
 
-    return () => clearTimeout(timer)
-}, [content])
+    return () => clearTimeout(timer);
+}, [content]);
 ```
 
 Recover draft on page load:
+
 ```typescript
 useEffect(() => {
-    const draft = localStorage.getItem(`claude-draft-${id}`)
+    const draft = localStorage.getItem(`claude-draft-${id}`);
     if (draft && draft !== savedContent) {
         // Show "Recover unsaved changes?" dialog
     }
-}, [])
+}, []);
 ```
 
 ### Step 13: Add Export/Import
 
 **Export:**
+
 - Download CLAUDE.md file
 - Button: "Download as .md"
 
 **Import:**
+
 - Upload .md file
 - Replace or append to current content
 - Confirm before replacing
 
 ### Step 14: Create Form Request Validation
+
 ```bash
 php artisan make:request UpdateClaudeFileRequest --no-interaction
 ```
 
 **Validation Rules:**
+
 - `content` - required, string, max:1000000 (1MB)
 - `worktree_id` - nullable, exists:worktrees,id
 
 ### Step 15: Add Routes
 
 Define routes:
+
 - `GET /projects/{project}/claude-editor` - Editor page for project
 - `GET /worktrees/{worktree}/claude-editor` - Editor page for worktree
 - `POST /claude-editor/save` - Save changes
@@ -299,6 +331,7 @@ Define routes:
 ### Step 16: Implement Observer for CLAUDE.md Changes
 
 Create observer to track when file changes:
+
 ```bash
 php artisan make:observer ClaudeVersionObserver --model=ClaudeVersion --no-interaction
 ```
@@ -308,6 +341,7 @@ Create version snapshot on save.
 ### Step 17: Add Keyboard Shortcuts
 
 Implement shortcuts:
+
 - `Cmd/Ctrl + S` - Save
 - `Cmd/Ctrl + P` - Toggle preview
 - `Cmd/Ctrl + H` - Show history
@@ -316,6 +350,7 @@ Implement shortcuts:
 ### Step 18: Create Feature Tests
 
 Test coverage:
+
 - `it('can read project CLAUDE.md file')`
 - `it('can read worktree CLAUDE.md file')`
 - `it('worktree file takes precedence over project file')`
@@ -327,6 +362,7 @@ Test coverage:
 ### Step 19: Create Browser Tests
 
 E2E test coverage:
+
 - `it('can open editor')`
 - `it('can edit and save CLAUDE.md')`
 - `it('shows preview correctly')`
@@ -335,7 +371,8 @@ E2E test coverage:
 - `it('can restore previous version')`
 
 ### Step 20: Format Code
+
 ```bash
 vendor/bin/pint --dirty
-npm run format
+pnpm run format
 ```

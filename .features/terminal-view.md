@@ -9,6 +9,7 @@ depends_on: git-worktree-management
 This feature provides an interactive web-based terminal that allows developers to run shell commands in the main repository or any worktree directly from the Sage dashboard. It's useful for running ad-hoc commands without switching to a real terminal.
 
 ### Key Capabilities
+
 - Web-based terminal emulator with command input
 - Execute commands in main repo or selected worktree
 - Command history (up/down arrow navigation)
@@ -21,12 +22,14 @@ This feature provides an interactive web-based terminal that allows developers t
 - Persist terminal state per worktree
 
 ### User Stories
+
 1. As a developer, I want to run artisan commands on a worktree without leaving the dashboard
 2. As a developer, I want to see command output in real-time
 3. As a developer, I want to access my command history
 4. As a developer, I want to switch between different worktrees easily
 
 ### Security Considerations
+
 - Terminal has full shell access - must be local only
 - Sanitize output to prevent XSS
 - Consider command whitelist/blacklist
@@ -38,16 +41,19 @@ This feature provides an interactive web-based terminal that allows developers t
 ### Step 1: Install Terminal Library
 
 Use xterm.js for terminal emulation:
+
 ```bash
-npm install xterm @xterm/addon-fit @xterm/addon-web-links
+pnpm install xterm @xterm/addon-fit @xterm/addon-web-links
 ```
 
 ### Step 2: Create Terminal Component
+
 ```typescript
 // resources/js/Components/Terminal.tsx
 ```
 
 **Features:**
+
 - Initialize xterm.js instance
 - Connect to WebSocket for I/O
 - Handle keyboard input
@@ -56,20 +62,24 @@ npm install xterm @xterm/addon-fit @xterm/addon-web-links
 - Clickable URLs in output
 
 ### Step 3: Create Terminal Controller
+
 ```bash
 php artisan make:controller TerminalController --no-interaction
 ```
 
 **Methods:**
+
 - `execute()` - Execute command and return output
 - `stream()` - Stream command output via WebSocket
 
 ### Step 4: Create Command Execution Service
+
 ```bash
 php artisan make:class Services/TerminalService --no-interaction
 ```
 
 **Methods:**
+
 ```php
 public function execute(string $command, string $workingDirectory): Process
 {
@@ -90,11 +100,13 @@ public function streamOutput(Process $process, string $sessionId): void
 ```
 
 ### Step 5: Create WebSocket Event for Output
+
 ```bash
 php artisan make:event TerminalOutputReceived --no-interaction
 ```
 
 **Properties:**
+
 - `sessionId` - Unique terminal session ID
 - `output` - Command output line
 - `type` - stdout or stderr
@@ -102,11 +114,13 @@ php artisan make:event TerminalOutputReceived --no-interaction
 Broadcast on channel: `terminal.{sessionId}`
 
 ### Step 6: Create Terminal Page Component
+
 ```typescript
 // resources/js/Pages/Terminal/Index.tsx
 ```
 
 **Layout:**
+
 - Worktree selector dropdown (main + all worktrees)
 - Terminal container (full width, resizable height)
 - Control buttons: Clear, Copy Output, Kill Process
@@ -115,49 +129,55 @@ Broadcast on channel: `terminal.{sessionId}`
 ### Step 7: Implement WebSocket Integration
 
 In React component:
-```typescript
-const terminal = new Terminal()
-const sessionId = generateSessionId()
 
-Echo.channel(`terminal.${sessionId}`)
-    .listen('TerminalOutputReceived', (e) => {
-        terminal.write(e.output)
-    })
+```typescript
+const terminal = new Terminal();
+const sessionId = generateSessionId();
+
+Echo.channel(`terminal.${sessionId}`).listen('TerminalOutputReceived', (e) => {
+    terminal.write(e.output);
+});
 
 // Send command input
 terminal.onData((data) => {
-    if (data === '\r') { // Enter key
-        executeCommand(currentCommand)
+    if (data === '\r') {
+        // Enter key
+        executeCommand(currentCommand);
     } else {
-        currentCommand += data
-        terminal.write(data)
+        currentCommand += data;
+        terminal.write(data);
     }
-})
+});
 ```
 
 ### Step 8: Add Command History
 
 Store in localStorage:
+
 ```typescript
-const history = useCommandHistory('terminal-history', 100) // max 100 commands
+const history = useCommandHistory('terminal-history', 100); // max 100 commands
 
 terminal.onData((data) => {
-    if (data === '\x1B[A') { // Up arrow
-        const previous = history.previous()
-        if (previous) showCommand(previous)
-    } else if (data === '\x1B[B') { // Down arrow
-        const next = history.next()
-        showCommand(next)
+    if (data === '\x1B[A') {
+        // Up arrow
+        const previous = history.previous();
+        if (previous) showCommand(previous);
+    } else if (data === '\x1B[B') {
+        // Down arrow
+        const next = history.next();
+        showCommand(next);
     }
-})
+});
 ```
 
 ### Step 9: Create Terminal Session Model
+
 ```bash
 php artisan make:model TerminalSession -m --no-interaction
 ```
 
 **Fields:**
+
 - `id`
 - `session_id` (unique)
 - `worktree_id` (nullable, foreign key)
@@ -171,6 +191,7 @@ Track active terminal sessions.
 ### Step 10: Implement Process Management
 
 Add to TerminalService:
+
 ```php
 private array $processes = [];
 
@@ -199,17 +220,20 @@ public function killProcess(string $sessionId): bool
 ### Step 11: Add Routes
 
 Define routes:
+
 - `GET /terminal` - Terminal page
 - `POST /terminal/execute` - Execute command
 - `POST /terminal/kill/{sessionId}` - Kill running process
 - `GET /terminal/history` - Get command history
 
 ### Step 12: Create Form Request Validation
+
 ```bash
 php artisan make:request ExecuteCommandRequest --no-interaction
 ```
 
 **Validation Rules:**
+
 - `command` - required, string, max:1000
 - `worktree_id` - nullable, exists:worktrees,id
 - `session_id` - required, string
@@ -217,11 +241,13 @@ php artisan make:request ExecuteCommandRequest --no-interaction
 ### Step 13: Add Security Features
 
 **Command Sanitization:**
+
 - Strip dangerous commands (optional, based on user preference)
 - Prevent command injection
 - Validate session IDs
 
 **Rate Limiting:**
+
 ```php
 Route::post('/terminal/execute')
     ->middleware('throttle:60,1'); // 60 requests per minute
@@ -230,6 +256,7 @@ Route::post('/terminal/execute')
 ### Step 14: Implement Terminal Themes
 
 Add theme switcher:
+
 - Light theme
 - Dark theme
 - Custom themes (Dracula, Monokai, etc.)
@@ -239,16 +266,18 @@ Store preference in localStorage.
 ### Step 15: Add Copy Output Feature
 
 Add button to copy terminal output:
+
 ```typescript
 const copyOutput = () => {
-    const selection = terminal.getSelection()
-    navigator.clipboard.writeText(selection || terminal.getAllOutput())
-}
+    const selection = terminal.getSelection();
+    navigator.clipboard.writeText(selection || terminal.getAllOutput());
+};
 ```
 
 ### Step 16: Handle Long-running Commands
 
 Show spinner when command is running:
+
 - Update status indicator
 - Enable "Kill Process" button
 - Disable new command input until complete
@@ -256,6 +285,7 @@ Show spinner when command is running:
 ### Step 17: Create Feature Tests
 
 Test coverage:
+
 - `it('can execute command in main repo')`
 - `it('can execute command in worktree')`
 - `it('streams output correctly')`
@@ -267,6 +297,7 @@ Test coverage:
 ### Step 18: Create Browser Tests
 
 E2E test coverage:
+
 - `it('can open terminal')`
 - `it('can type and execute command')`
 - `it('displays command output')`
@@ -277,13 +308,15 @@ E2E test coverage:
 ### Step 19: Add Documentation
 
 Create guide for common commands:
+
 - Laravel artisan commands
 - Git commands
 - Composer commands
 - NPM commands
 
 ### Step 20: Format Code
+
 ```bash
 vendor/bin/pint --dirty
-npm run format
+pnpm run format
 ```

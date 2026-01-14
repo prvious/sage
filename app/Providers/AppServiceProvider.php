@@ -24,6 +24,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureObservers();
+    }
+
+    protected function configureObservers(): void
+    {
+        \App\Models\Worktree::observe(\App\Observers\WorktreeObserver::class);
     }
 
     protected function configureDefaults(): void

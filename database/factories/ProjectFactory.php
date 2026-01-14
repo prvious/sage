@@ -22,7 +22,7 @@ class ProjectFactory extends Factory
             'name' => $name,
             'path' => '/var/www/'.str_replace(' ', '-', strtolower($name)),
             'server_driver' => fake()->randomElement(['caddy', 'nginx']),
-            'base_url' => strtolower(str_replace(' ', '', $name)).'.local',
+            'base_url' => 'http://'.strtolower(str_replace(' ', '', $name)).'.local',
         ];
     }
 

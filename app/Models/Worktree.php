@@ -23,6 +23,8 @@ class Worktree extends Model
         'path',
         'preview_url',
         'status',
+        'database_isolation',
+        'error_message',
         'env_overrides',
     ];
 

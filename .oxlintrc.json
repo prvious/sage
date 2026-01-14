@@ -1,13 +1,6 @@
 {
     "$schema": "./node_modules/oxlint/configuration_schema.json",
-    "plugins": [
-        "react",
-        "typescript",
-        "unicorn",
-        "oxc",
-        "import",
-        "vitest"
-    ],
+    "plugins": ["react", "typescript", "unicorn", "oxc", "import", "vitest"],
     "categories": {
         "correctness": "off"
     },
@@ -100,22 +93,10 @@
         "CSSStyleProperties": "readonly",
         "Temporal": "readonly"
     },
-    "ignorePatterns": [
-        "vendor",
-        "node_modules",
-        "public",
-        "bootstrap/ssr",
-        "tailwind.config.js",
-        "src/components/ui/**"
-    ],
+    "ignorePatterns": ["vendor", "node_modules", "public", "bootstrap/ssr", "tailwind.config.js", "src/components/ui/**"],
     "overrides": [
         {
-            "files": [
-                "**/*.ts",
-                "**/*.tsx",
-                "**/*.mts",
-                "**/*.cts"
-            ],
+            "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
             "rules": {
                 "constructor-super": "off",
                 "getter-return": "off",

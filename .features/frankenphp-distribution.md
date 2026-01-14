@@ -9,6 +9,7 @@ depends_on: real-time-updates
 This feature implements the build process for distributing Sage as a single static binary using FrankenPHP. The binary will include the entire Laravel application, Caddy web server, and all necessary dependencies, requiring zero external setup from users.
 
 ### Key Capabilities
+
 - Single binary distribution for macOS, Linux, and Windows
 - No PHP installation required
 - Embedded Caddy web server
@@ -19,6 +20,7 @@ This feature implements the build process for distributing Sage as a single stat
 - Development and production modes
 
 ### Binary Commands
+
 ```bash
 ./sage serve              # Start all services (web, queue, reverb)
 ./sage version            # Show version info
@@ -28,6 +30,7 @@ This feature implements the build process for distributing Sage as a single stat
 ```
 
 ### User Stories
+
 1. As a user, I want to download and run Sage without installing PHP
 2. As a user, I want Sage to just work with zero configuration
 3. As a user, I want to easily update to the latest version
@@ -38,6 +41,7 @@ This feature implements the build process for distributing Sage as a single stat
 ### Step 1: Install FrankenPHP
 
 Add FrankenPHP to project:
+
 ```bash
 composer require dunglas/frankenphp
 ```
@@ -45,6 +49,7 @@ composer require dunglas/frankenphp
 ### Step 2: Create FrankenPHP Configuration
 
 Create `frankenphp-config.php`:
+
 ```php
 <?php
 
@@ -60,6 +65,7 @@ run($app);
 ### Step 3: Create Build Script
 
 Create `build/build.sh`:
+
 ```bash
 #!/bin/bash
 
@@ -76,8 +82,8 @@ mkdir -p dist/
 
 # Install dependencies
 composer install --no-dev --optimize-autoloader
-npm install
-npm run build
+pnpm install
+pnpm run build
 
 # Optimize Laravel
 php artisan config:cache
@@ -111,6 +117,7 @@ echo "Build complete! Binaries in dist/"
 ```
 
 Make executable:
+
 ```bash
 chmod +x build/build.sh
 ```
@@ -118,11 +125,13 @@ chmod +x build/build.sh
 ### Step 4: Create Artisan Commands for Binary
 
 Create startup command:
+
 ```bash
 php artisan make:command ServeCommand --no-interaction
 ```
 
 **ServeCommand:**
+
 ```php
 namespace App\Console\Commands;
 
@@ -254,6 +263,7 @@ php artisan make:command UpdateCommand --no-interaction
 ```
 
 **UpdateCommand:**
+
 ```php
 class UpdateCommand extends Command
 {
@@ -322,6 +332,7 @@ class UpdateCommand extends Command
 ### Step 6: Configure Build Files
 
 Create `.dockerignore` (if using Docker for builds):
+
 ```
 node_modules/
 vendor/
@@ -333,122 +344,125 @@ dist/
 ```
 
 Create `build/frankenphp.yaml`:
+
 ```yaml
 name: sage
 version: 1.0.0
 description: AI Agent Orchestrator for Laravel
 
 binary:
-  name: sage
-  entry: public/index.php
+    name: sage
+    entry: public/index.php
 
 embed:
-  - public/
-  - app/
-  - bootstrap/
-  - config/
-  - database/
-  - resources/
-  - routes/
-  - storage/
-  - vendor/
-  - artisan
-  - composer.json
+    - public/
+    - app/
+    - bootstrap/
+    - config/
+    - database/
+    - resources/
+    - routes/
+    - storage/
+    - vendor/
+    - artisan
+    - composer.json
 
 exclude:
-  - storage/logs/*
-  - storage/framework/cache/*
-  - node_modules/
-  - .git/
+    - storage/logs/*
+    - storage/framework/cache/*
+    - node_modules/
+    - .git/
 
 environment:
-  APP_ENV: production
-  APP_DEBUG: false
+    APP_ENV: production
+    APP_DEBUG: false
 ```
 
 ### Step 7: Setup GitHub Actions for Builds
 
 Create `.github/workflows/build.yml`:
+
 ```yaml
 name: Build Binaries
 
 on:
-  push:
-    tags:
-      - 'v*'
+    push:
+        tags:
+            - 'v*'
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            platform: linux
-          - os: macos-latest
-            platform: darwin
-          - os: windows-latest
-            platform: windows
+    build:
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest, windows-latest]
+                include:
+                    - os: ubuntu-latest
+                      platform: linux
+                    - os: macos-latest
+                      platform: darwin
+                    - os: windows-latest
+                      platform: windows
 
-    runs-on: ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
 
-    steps:
-      - uses: actions/checkout@v3
+        steps:
+            - uses: actions/checkout@v3
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-          extensions: sqlite, pdo, mbstring
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.4
+                  extensions: sqlite, pdo, mbstring
 
-      - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader
+            - name: Install Composer dependencies
+              run: composer install --no-dev --optimize-autoloader
 
-      - name: Install NPM dependencies
-        run: npm install
+            - name: Install NPM dependencies
+              run: npm install
 
-      - name: Build frontend
-        run: npm run build
+            - name: Build frontend
+              run: npm run build
 
-      - name: Optimize Laravel
-        run: |
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+            - name: Optimize Laravel
+              run: |
+                  php artisan config:cache
+                  php artisan route:cache
+                  php artisan view:cache
 
-      - name: Build binary
-        run: ./build/build.sh
+            - name: Build binary
+              run: ./build/build.sh
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: sage-${{ matrix.platform }}
-          path: dist/
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                  name: sage-${{ matrix.platform }}
+                  path: dist/
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
+    release:
+        needs: build
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+        steps:
+            - uses: actions/checkout@v3
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
+            - name: Download artifacts
+              uses: actions/download-artifact@v3
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            sage-linux/*
-            sage-darwin/*
-            sage-windows/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: |
+                      sage-linux/*
+                      sage-darwin/*
+                      sage-windows/*
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Step 8: Create Installation Script
 
 Create `install.sh` for easy installation:
+
 ```bash
 #!/bin/bash
 
@@ -500,6 +514,7 @@ echo "  sage serve"
 ### Step 9: Create README for Binary Distribution
 
 Create `build/README-binary.md`:
+
 ```markdown
 # Sage - AI Agent Orchestrator
 
@@ -531,6 +546,7 @@ https://github.com/prvious/sage
 ### Step 10: Configure Default Environment
 
 Create `config/sage.php` with sensible defaults:
+
 ```php
 return [
     'data_path' => env('SAGE_DATA_PATH', storage_path('sage')),
@@ -551,6 +567,7 @@ return [
 ### Step 11: Initialize Data Directory on First Run
 
 Create initialization logic:
+
 ```php
 // In service provider
 public function boot(): void
@@ -607,6 +624,7 @@ class VersionCommand extends Command
 ### Step 13: Test Binary Build Locally
 
 Build and test:
+
 ```bash
 ./build/build.sh
 ./dist/sage-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m) serve
@@ -617,6 +635,7 @@ Verify all services start correctly.
 ### Step 14: Create Distribution Package
 
 Package binary with README:
+
 ```bash
 tar -czf sage-linux-amd64.tar.gz \
     dist/sage-linux-amd64 \
@@ -626,6 +645,7 @@ tar -czf sage-linux-amd64.tar.gz \
 ### Step 15: Setup Auto-update Mechanism
 
 Add version check on startup:
+
 ```php
 // Check for updates on startup (non-blocking)
 dispatch(function () {
@@ -640,6 +660,7 @@ dispatch(function () {
 ### Step 16: Add Telemetry (Optional, Opt-in)
 
 Track usage for improvements:
+
 - Binary version
 - OS/platform
 - PHP version
@@ -650,6 +671,7 @@ Completely opt-in with clear privacy policy.
 ### Step 17: Create Feature Tests
 
 Test coverage:
+
 - `it('serve command starts all services')`
 - `it('version command shows correct info')`
 - `it('update command checks for updates')`
@@ -658,6 +680,7 @@ Test coverage:
 ### Step 18: Create Distribution Documentation
 
 Document:
+
 - Build process
 - Release workflow
 - Platform-specific considerations
@@ -666,11 +689,13 @@ Document:
 ### Step 19: Setup Code Signing (macOS/Windows)
 
 For macOS:
+
 ```bash
 codesign --sign "Developer ID" dist/sage-darwin-amd64
 ```
 
 For Windows:
+
 ```bash
 signtool sign /f certificate.pfx dist/sage-windows-amd64.exe
 ```
@@ -685,6 +710,7 @@ git push origin v1.0.0
 GitHub Actions will build and publish binaries automatically.
 
 ### Step 21: Format Code
+
 ```bash
 vendor/bin/pint --dirty
 ```

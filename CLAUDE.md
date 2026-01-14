@@ -108,7 +108,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - php - 8.4.16
 - inertiajs/inertia-laravel (INERTIA) - v2
-- laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
 - laravel/wayfinder (WAYFINDER) - v0

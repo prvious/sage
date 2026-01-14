@@ -9,6 +9,7 @@ depends_on: database-and-models
 This feature implements real-time communication across the Sage dashboard using Laravel Reverb (WebSockets). It enables instant updates for task status changes, agent output streaming, worktree creation progress, and more without page refreshes.
 
 ### Key Capabilities
+
 - Real-time agent terminal output streaming
 - Task status updates across all clients
 - Worktree creation progress updates
@@ -21,6 +22,7 @@ This feature implements real-time communication across the Sage dashboard using 
 - Fallback to polling if WebSockets unavailable
 
 ### Events to Broadcast
+
 1. **TaskUpdated** - Task status/details changed
 2. **AgentOutputReceived** - New line of agent output
 3. **AgentStatusChanged** - Agent started/stopped/failed
@@ -30,6 +32,7 @@ This feature implements real-time communication across the Sage dashboard using 
 7. **SpecUpdated** - Spec file changed
 
 ### User Stories
+
 1. As a developer, I want to see agent output in real-time as it works
 2. As a developer, I want to see when other changes are made to tasks
 3. As a developer, I want connection status visible
@@ -46,6 +49,7 @@ php artisan reverb:install
 ```
 
 Configure in `.env`:
+
 ```env
 BROADCAST_DRIVER=reverb
 REVERB_APP_ID=sage-app
@@ -59,6 +63,7 @@ REVERB_SCHEME=http
 ### Step 2: Configure Broadcasting
 
 Update `config/broadcasting.php`:
+
 ```php
 'reverb' => [
     'driver' => 'reverb',
@@ -76,6 +81,7 @@ Update `config/broadcasting.php`:
 ### Step 3: Create Broadcast Events
 
 Create all broadcast events:
+
 ```bash
 php artisan make:event TaskUpdated --no-interaction
 php artisan make:event AgentOutputReceived --no-interaction
@@ -89,6 +95,7 @@ php artisan make:event SpecUpdated --no-interaction
 ### Step 4: Implement Broadcast Events
 
 Example: **TaskUpdated Event**
+
 ```php
 namespace App\Events;
 
@@ -132,6 +139,7 @@ class TaskUpdated implements ShouldBroadcast
 ```
 
 Example: **AgentOutputReceived Event**
+
 ```php
 class AgentOutputReceived implements ShouldBroadcast
 {
@@ -156,16 +164,18 @@ class AgentOutputReceived implements ShouldBroadcast
 ### Step 5: Set Up Frontend Echo Configuration
 
 Install Laravel Echo and Pusher JS:
+
 ```bash
-npm install laravel-echo pusher-js
+pnpm install laravel-echo pusher-js
 ```
 
 Configure in `resources/js/bootstrap.ts`:
-```typescript
-import Echo from 'laravel-echo'
-import Pusher from 'pusher-js'
 
-window.Pusher = Pusher
+```typescript
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
 
 window.Echo = new Echo({
     broadcaster: 'reverb',
@@ -175,10 +185,11 @@ window.Echo = new Echo({
     wssPort: import.meta.env.VITE_REVERB_PORT,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
-})
+});
 ```
 
 Add to `.env`:
+
 ```env
 VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
 VITE_REVERB_HOST="${REVERB_HOST}"
@@ -189,31 +200,29 @@ VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 ### Step 6: Create Echo Hook for React
 
 Create reusable hook:
+
 ```typescript
 // resources/js/hooks/useEcho.ts
 
-import { useEffect } from 'react'
-import Echo from 'laravel-echo'
+import { useEffect } from 'react';
+import Echo from 'laravel-echo';
 
-export const useEcho = (
-    channel: string,
-    event: string,
-    callback: (data: any) => void
-) => {
+export const useEcho = (channel: string, event: string, callback: (data: any) => void) => {
     useEffect(() => {
-        const echo = window.Echo.channel(channel)
+        const echo = window.Echo.channel(channel);
 
-        echo.listen(event, callback)
+        echo.listen(event, callback);
 
         return () => {
-            echo.stopListening(event)
-            window.Echo.leaveChannel(channel)
-        }
-    }, [channel, event, callback])
-}
+            echo.stopListening(event);
+            window.Echo.leaveChannel(channel);
+        };
+    }, [channel, event, callback]);
+};
 ```
 
 Usage in components:
+
 ```typescript
 import { useEcho } from '@/hooks/useEcho'
 
@@ -266,6 +275,7 @@ Display in header or footer.
 ### Step 8: Implement Automatic Reconnection
 
 Configure Pusher with auto-reconnect:
+
 ```typescript
 window.Echo = new Echo({
     // ... other config
@@ -273,29 +283,32 @@ window.Echo = new Echo({
     disableStats: true,
     activityTimeout: 30000,
     pongTimeout: 10000,
-})
+});
 ```
 
 Handle reconnection in app:
+
 ```typescript
 window.Echo.connector.pusher.connection.bind('disconnected', () => {
     // Show notification
-    toast.error('Connection lost. Reconnecting...')
-})
+    toast.error('Connection lost. Reconnecting...');
+});
 
 window.Echo.connector.pusher.connection.bind('connected', () => {
-    toast.success('Connected')
-})
+    toast.success('Connected');
+});
 ```
 
 ### Step 9: Implement Private Channels (Future)
 
 For authenticated users:
+
 ```bash
 php artisan make:channel ProjectChannel --no-interaction
 ```
 
 Define authorization logic:
+
 ```php
 // routes/channels.php
 Broadcast::channel('project.{projectId}', function ($user, $projectId) {
@@ -304,6 +317,7 @@ Broadcast::channel('project.{projectId}', function ($user, $projectId) {
 ```
 
 Use private channel:
+
 ```php
 public function broadcastOn(): PrivateChannel
 {
@@ -314,6 +328,7 @@ public function broadcastOn(): PrivateChannel
 ### Step 10: Implement Presence Channels (Optional)
 
 Show who's viewing the same project:
+
 ```php
 Broadcast::channel('project.{projectId}.presence', function ($user, $projectId) {
     if ($user->canAccessProject($projectId)) {
@@ -323,27 +338,30 @@ Broadcast::channel('project.{projectId}.presence', function ($user, $projectId) 
 ```
 
 Listen for presence events:
+
 ```typescript
 window.Echo.join(`project.${projectId}.presence`)
     .here((users) => {
-        console.log('Users here:', users)
+        console.log('Users here:', users);
     })
     .joining((user) => {
-        console.log('User joined:', user)
+        console.log('User joined:', user);
     })
     .leaving((user) => {
-        console.log('User left:', user)
-    })
+        console.log('User left:', user);
+    });
 ```
 
 ### Step 11: Implement Toast Notifications
 
 Install sonner for toast notifications:
+
 ```bash
-npm install sonner
+pnpm install sonner
 ```
 
 Create notification system:
+
 ```typescript
 // resources/js/Components/Notifications.tsx
 
@@ -362,6 +380,7 @@ useEcho('project.1', 'task.updated', (data) => {
 ### Step 12: Optimize Event Broadcasting
 
 Use `ShouldBroadcastNow` for critical events:
+
 ```php
 class AgentOutputReceived implements ShouldBroadcastNow
 {
@@ -374,30 +393,31 @@ For non-critical events, use regular `ShouldBroadcast` (queued).
 ### Step 13: Implement Polling Fallback
 
 For environments where WebSockets aren't available:
+
 ```typescript
-const [isWebSocketAvailable, setIsWebSocketAvailable] = useState(true)
+const [isWebSocketAvailable, setIsWebSocketAvailable] = useState(true);
 
 useEffect(() => {
     const checkConnection = () => {
         if (window.Echo.connector.pusher.connection.state === 'unavailable') {
-            setIsWebSocketAvailable(false)
+            setIsWebSocketAvailable(false);
             // Start polling
-            startPolling()
+            startPolling();
         }
-    }
+    };
 
-    const timer = setTimeout(checkConnection, 5000)
-    return () => clearTimeout(timer)
-}, [])
+    const timer = setTimeout(checkConnection, 5000);
+    return () => clearTimeout(timer);
+}, []);
 
 const startPolling = () => {
     const interval = setInterval(() => {
         // Fetch updates via HTTP
-        fetchUpdates()
-    }, 5000)
+        fetchUpdates();
+    }, 5000);
 
-    return () => clearInterval(interval)
-}
+    return () => clearInterval(interval);
+};
 ```
 
 ### Step 14: Create Broadcasting Test Command
@@ -407,6 +427,7 @@ php artisan make:command TestBroadcastingCommand --no-interaction
 ```
 
 Command: `php artisan sage:test-broadcast`
+
 - Send test events
 - Verify they're received
 - Check connection status
@@ -414,6 +435,7 @@ Command: `php artisan sage:test-broadcast`
 ### Step 15: Monitor Broadcasting Performance
 
 Add logging for broadcast events:
+
 ```php
 public function handle()
 {
@@ -428,6 +450,7 @@ public function handle()
 ### Step 16: Create Feature Tests
 
 Test coverage:
+
 - `it('broadcasts task updated event')`
 - `it('broadcasts agent output event')`
 - `it('broadcasts worktree status event')`
@@ -438,6 +461,7 @@ Use `Event::fake()` and `Event::assertDispatched()`.
 ### Step 17: Create Browser Tests
 
 E2E test coverage:
+
 - `it('receives real-time task updates')`
 - `it('displays agent output in real-time')`
 - `it('shows connection status correctly')`
@@ -446,6 +470,7 @@ E2E test coverage:
 ### Step 18: Document WebSocket Setup
 
 Create `docs/websockets.md`:
+
 - How to start Reverb server
 - Firewall configuration
 - Troubleshooting connection issues
@@ -454,6 +479,7 @@ Create `docs/websockets.md`:
 ### Step 19: Start Reverb in Production
 
 Add to process management (Supervisor, systemd):
+
 ```bash
 php artisan reverb:start --host=0.0.0.0 --port=8080
 ```
@@ -461,7 +487,8 @@ php artisan reverb:start --host=0.0.0.0 --port=8080
 For FrankenPHP distribution, include Reverb start in binary.
 
 ### Step 20: Format Code
+
 ```bash
 vendor/bin/pint --dirty
-npm run format
+pnpm run format
 ```

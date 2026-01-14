@@ -78,10 +78,7 @@ export function useAppearance() {
         () => 'system',
     );
 
-    const resolvedAppearance: ResolvedAppearance = useMemo(
-        () => (isDarkMode(appearance) ? 'dark' : 'light'),
-        [appearance],
-    );
+    const resolvedAppearance: ResolvedAppearance = useMemo(() => (isDarkMode(appearance) ? 'dark' : 'light'), [appearance]);
 
     const updateAppearance = useCallback((mode: Appearance): void => {
         currentAppearance = mode;

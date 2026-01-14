@@ -22,22 +22,26 @@ Sage is a local development dashboard that orchestrates AI coding agents across 
 ## Key Features
 
 ### Git Worktree Management
+
 - Create/delete worktrees from the dashboard
 - Each worktree gets an instant preview URL (e.g., `feature-auth.myapp.local`)
 - Visual status of all active worktrees
 
 ### Server Driver System
+
 - **Caddy driver** — Dynamic vhost generation, automatic TLS
 - **Nginx driver** — Config file management with safe append/delete
 - Drivers handle config injection without touching user's existing setup
 
 ### AI Agent Orchestration
+
 - Spawn agents (Claude Code, etc.) on specific worktrees
 - Real-time terminal output streaming
 - Model selection (claude-sonnet-4-20250514, opus, etc.)
 - Agent switching (future: Cursor, Aider, etc.)
 
 ### Dashboard Views
+
 - **Kanban** — Drag tasks through stages (idea → in-progress → review → done)
 - **Terminal** — Interact with main repo or any worktree
 - **CLAUDE.md Editor** — Manage agent instructions per project/worktree
@@ -48,15 +52,15 @@ Sage is a local development dashboard that orchestrates AI coding agents across 
 
 ## Tech Stack
 
-| Layer | Tech |
-|-------|------|
-| Backend | Laravel 11, Octane, Reverb |
-| Frontend | React 19, shadcn/ui, Tailwind v4, Inertia.js |
-| Database | SQLite (single file for data + queues) |
-| Runtime | FrankenPHP (static binary) |
-| Process | Laravel Queues (database driver), Symfony Process |
-| Testing | Pest + Pest Browser | Full coverage: unit, feature, and E2E browser tests |
-| Agents | Claude Code, OpenCode |
+| Layer    | Tech                                              |
+| -------- | ------------------------------------------------- | --------------------------------------------------- |
+| Backend  | Laravel 11, Octane, Reverb                        |
+| Frontend | React 19, shadcn/ui, Tailwind v4, Inertia.js      |
+| Database | SQLite (single file for data + queues)            |
+| Runtime  | FrankenPHP (static binary)                        |
+| Process  | Laravel Queues (database driver), Symfony Process |
+| Testing  | Pest + Pest Browser                               | Full coverage: unit, feature, and E2E browser tests |
+| Agents   | Claude Code, OpenCode                             |
 
 ---
 
@@ -71,28 +75,28 @@ Sage is a local development dashboard that orchestrates AI coding agents across 
 
 ### Must Address
 
-| Issue | Solution |
-|-------|----------|
-| **APP_URL per worktree** | Each worktree needs its own `.env` with correct `APP_URL`. Sage should auto-generate/patch this on worktree creation |
-| **Database isolation** | Worktrees sharing a DB will collide. Options: separate SQLite per worktree, or DB prefix, or user chooses |
-| **Port conflicts** | If user runs Sage + their app both via Octane, ports clash. Sage should use a dedicated port (e.g., 1984) |
-| **File permissions** | Sage modifying Nginx configs needs appropriate permissions. May need sudo or user to add Sage to www-data group |
-| **Caddy API vs file** | Caddy supports hot reload via admin API — prefer this over file writes for zero-downtime |
-| **Windows path hell** | WSL2 file access from Windows is slow. Recommend keeping projects inside WSL filesystem |
-| **Reverb + Octane** | Both need to run. Sage binary needs to boot both (Reverb on separate port) |
-| **Pest Browser + FrankenPHP** | Need to verify Dusk/Pest Browser works when app runs via Octane. May need `php artisan serve` fallback for tests |
-| **Agent PATH** | Binary might not find `claude` or `opencode` if not in PATH. Allow explicit binary path config |
+| Issue                         | Solution                                                                                                             |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **APP_URL per worktree**      | Each worktree needs its own `.env` with correct `APP_URL`. Sage should auto-generate/patch this on worktree creation |
+| **Database isolation**        | Worktrees sharing a DB will collide. Options: separate SQLite per worktree, or DB prefix, or user chooses            |
+| **Port conflicts**            | If user runs Sage + their app both via Octane, ports clash. Sage should use a dedicated port (e.g., 1984)            |
+| **File permissions**          | Sage modifying Nginx configs needs appropriate permissions. May need sudo or user to add Sage to www-data group      |
+| **Caddy API vs file**         | Caddy supports hot reload via admin API — prefer this over file writes for zero-downtime                             |
+| **Windows path hell**         | WSL2 file access from Windows is slow. Recommend keeping projects inside WSL filesystem                              |
+| **Reverb + Octane**           | Both need to run. Sage binary needs to boot both (Reverb on separate port)                                           |
+| **Pest Browser + FrankenPHP** | Need to verify Dusk/Pest Browser works when app runs via Octane. May need `php artisan serve` fallback for tests     |
+| **Agent PATH**                | Binary might not find `claude` or `opencode` if not in PATH. Allow explicit binary path config                       |
 
 ### Nice to Have
 
-| Feature | Notes |
-|---------|-------|
-| **Tunnel support** | Expose preview URLs publicly via Cloudflare Tunnel or ngrok for mobile testing |
-| **Webhook on merge** | Auto-cleanup worktree when branch is merged on GitHub |
-| **Cost tracking** | Track API token usage per task/agent |
-| **Diff viewer** | Show what agent changed before merge |
-| **Snapshot/restore** | Save worktree state before risky agent operations |
-| **Multi-project** | Manage multiple Laravel apps from one Sage instance |
+| Feature              | Notes                                                                          |
+| -------------------- | ------------------------------------------------------------------------------ |
+| **Tunnel support**   | Expose preview URLs publicly via Cloudflare Tunnel or ngrok for mobile testing |
+| **Webhook on merge** | Auto-cleanup worktree when branch is merged on GitHub                          |
+| **Cost tracking**    | Track API token usage per task/agent                                           |
+| **Diff viewer**      | Show what agent changed before merge                                           |
+| **Snapshot/restore** | Save worktree state before risky agent operations                              |
+| **Multi-project**    | Manage multiple Laravel apps from one Sage instance                            |
 
 ### Security Considerations
 
@@ -153,7 +157,7 @@ class Agent extends Manager
     {
         return $this->container->make(ClaudeDriver::class);
     }
-    
+
     public function getDefaultDriver(){
         return config('sage.agents.default', default: 'claude');
     }
@@ -202,14 +206,14 @@ it('generates correct preview url from branch name', function () {
 // Feature: full Laravel stack
 it('creates a worktree and updates server config', function () {
     $project = Project::factory()->create(['server_driver' => 'caddy']);
-    
+
     post('/api/worktrees', [
         'branch' => 'feature-payments',
         'project_id' => $project->id,
     ])->assertCreated();
-    
+
     expect(Worktree::where('branch_name', 'feature-payments')->exists())->toBeTrue();
-    
+
     // Assert Caddy config was updated
     Caddy::assertConfigContains('feature-payments.myapp.local');
 });
@@ -243,9 +247,9 @@ it('streams agent output in real-time', function () {
 
 ### Test Isolation Challenges
 
-| Challenge | Solution |
-|-----------|----------|
-| Agent processes | Mock `Process` facade or use a `FakeAgentDriver` |
+| Challenge         | Solution                                              |
+| ----------------- | ----------------------------------------------------- |
+| Agent processes   | Mock `Process` facade or use a `FakeAgentDriver`      |
 | Reverb websockets | Pest Browser can wait for DOM changes triggered by WS |
 
 ---
