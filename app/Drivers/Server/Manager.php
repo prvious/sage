@@ -29,4 +29,12 @@ class Manager extends BaseManager
     {
         return new NginxDriver;
     }
+
+    /**
+     * Create an instance of the Artisan driver.
+     */
+    public function createArtisanDriver(): ArtisanDriver
+    {
+        return new ArtisanDriver;
+    }
 }

@@ -25,7 +25,7 @@ class UpdateProjectRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'path' => ['required', 'string', Rule::unique('projects', 'path')->ignore($this->route('project'))],
-            'server_driver' => ['required', 'in:caddy,nginx'],
+            'server_driver' => ['required', 'in:caddy,nginx,artisan'],
             'base_url' => ['required', 'string', 'max:255'],
         ];
     }

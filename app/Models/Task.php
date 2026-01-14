@@ -66,4 +66,22 @@ class Task extends Model
     {
         return $this->hasMany(Commit::class);
     }
+
+    /**
+     * Check if the task is currently running.
+     */
+    public function isRunning(): bool
+    {
+        return $this->status === 'in_progress' &&
+               $this->started_at !== null &&
+               $this->completed_at === null;
+    }
+
+    /**
+     * Scope a query to only include tasks with a given status.
+     */
+    public function scopeByStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
 }

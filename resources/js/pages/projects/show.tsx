@@ -1,4 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { CenteredCardLayout } from '@/components/layouts/centered-card-layout';
 
 interface Project {
     id: number;
@@ -38,85 +44,124 @@ export default function Show({ project }: Props) {
         <>
             <Head title={project.name} />
 
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
-                <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
-                    <div className='mb-8 flex items-center justify-between'>
+            <CenteredCardLayout cardClassName='max-w-4xl'>
+                <CardHeader>
+                    <div className='flex items-center justify-between'>
                         <div>
-                            <Link href='/projects' className='mb-2 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400'>
-                                ← Back to Projects
-                            </Link>
-                            <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100'>{project.name}</h1>
+                            <CardTitle>{project.name}</CardTitle>
+                            <CardDescription className='font-mono text-xs mt-1'>{project.path}</CardDescription>
                         </div>
                         <div className='flex gap-2'>
-                            <Link
-                                href={`/projects/${project.id}/edit`}
-                                className='rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700'
-                            >
-                                Edit
-                            </Link>
-                            <button onClick={handleDelete} className='rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700'>
+                            <Button variant='outline' size='sm' asChild>
+                                <Link href={`/projects/${project.id}/edit`}>Edit</Link>
+                            </Button>
+                            <Button variant='destructive' size='sm' onClick={handleDelete}>
                                 Delete
-                            </button>
+                            </Button>
                         </div>
                     </div>
+                </CardHeader>
+                <CardContent>
+                    <ScrollArea className='h-[500px] pr-4'>
+                        <div className='space-y-6'>
+                            {/* Project Details */}
+                            <div className='space-y-4'>
+                                <h3 className='text-lg font-semibold'>Project Details</h3>
+                                <dl className='grid gap-3'>
+                                    <div className='flex items-center justify-between'>
+                                        <dt className='text-sm font-medium text-muted-foreground'>Server Driver</dt>
+                                        <dd>
+                                            <Badge variant='secondary' className='capitalize'>
+                                                {project.server_driver}
+                                            </Badge>
+                                        </dd>
+                                    </div>
+                                    <div className='flex items-center justify-between'>
+                                        <dt className='text-sm font-medium text-muted-foreground'>Base URL</dt>
+                                        <dd className='text-sm font-mono'>{project.base_url}</dd>
+                                    </div>
+                                    <div className='flex items-center justify-between'>
+                                        <dt className='text-sm font-medium text-muted-foreground'>Created</dt>
+                                        <dd className='text-sm'>{new Date(project.created_at).toLocaleDateString()}</dd>
+                                    </div>
+                                </dl>
+                            </div>
 
-                    <div className='grid gap-6'>
-                        <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-                            <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100'>Project Details</h2>
-                            <dl className='grid gap-4'>
-                                <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Path</dt>
-                                    <dd className='mt-1 text-sm text-gray-900 dark:text-gray-100'>{project.path}</dd>
-                                </div>
-                                <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Server Driver</dt>
-                                    <dd className='mt-1 text-sm text-gray-900 dark:text-gray-100'>{project.server_driver}</dd>
-                                </div>
-                                <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Base URL</dt>
-                                    <dd className='mt-1 text-sm text-gray-900 dark:text-gray-100'>{project.base_url}</dd>
-                                </div>
-                            </dl>
-                        </div>
+                            <Separator />
 
-                        <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-                            <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100'>Worktrees ({project.worktrees.length})</h2>
-                            {project.worktrees.length === 0 ? (
-                                <p className='text-sm text-gray-600 dark:text-gray-400'>No worktrees yet.</p>
-                            ) : (
-                                <ul className='divide-y divide-gray-200 dark:divide-gray-700'>
-                                    {project.worktrees.map((worktree) => (
-                                        <li key={worktree.id} className='py-3'>
-                                            <div className='flex items-center justify-between'>
-                                                <span className='text-sm text-gray-900 dark:text-gray-100'>{worktree.branch_name}</span>
-                                                <span className='text-xs text-gray-500 dark:text-gray-400'>{worktree.status}</span>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                            {/* Worktrees */}
+                            <div className='space-y-4'>
+                                <div className='flex items-center justify-between'>
+                                    <h3 className='text-lg font-semibold'>Worktrees</h3>
+                                    <span className='text-sm text-muted-foreground'>{project.worktrees.length} total</span>
+                                </div>
+                                {project.worktrees.length === 0 ? (
+                                    <div className='text-center py-8 text-muted-foreground'>
+                                        <p className='text-sm'>No worktrees yet. Create one to get started.</p>
+                                    </div>
+                                ) : (
+                                    <ul className='space-y-2'>
+                                        {project.worktrees.map((worktree) => (
+                                            <li key={worktree.id} className='flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted'>
+                                                <span className='text-sm font-medium'>{worktree.branch_name}</span>
+                                                <Badge variant='outline' className='text-xs'>
+                                                    {worktree.status}
+                                                </Badge>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+
+                            <Separator />
+
+                            {/* Tasks */}
+                            <div className='space-y-4'>
+                                <div className='flex items-center justify-between'>
+                                    <h3 className='text-lg font-semibold'>Tasks</h3>
+                                    <span className='text-sm text-muted-foreground'>{project.tasks.length} total</span>
+                                </div>
+                                {project.tasks.length === 0 ? (
+                                    <div className='text-center py-8 text-muted-foreground'>
+                                        <p className='text-sm'>No tasks yet. Create one to get started.</p>
+                                    </div>
+                                ) : (
+                                    <ul className='space-y-2'>
+                                        {project.tasks.map((task) => (
+                                            <li key={task.id} className='flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted'>
+                                                <span className='text-sm font-medium'>{task.title}</span>
+                                                <Badge variant='outline' className='text-xs'>
+                                                    {task.status}
+                                                </Badge>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+
+                            {/* Specs */}
+                            {project.specs && project.specs.length > 0 && (
+                                <>
+                                    <Separator />
+                                    <div className='space-y-4'>
+                                        <div className='flex items-center justify-between'>
+                                            <h3 className='text-lg font-semibold'>Specs</h3>
+                                            <span className='text-sm text-muted-foreground'>{project.specs.length} total</span>
+                                        </div>
+                                        <ul className='space-y-2'>
+                                            {project.specs.map((spec) => (
+                                                <li key={spec.id} className='p-3 rounded-lg bg-muted/50 hover:bg-muted'>
+                                                    <span className='text-sm font-medium'>{spec.title}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </>
                             )}
                         </div>
-
-                        <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-                            <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100'>Tasks ({project.tasks.length})</h2>
-                            {project.tasks.length === 0 ? (
-                                <p className='text-sm text-gray-600 dark:text-gray-400'>No tasks yet.</p>
-                            ) : (
-                                <ul className='divide-y divide-gray-200 dark:divide-gray-700'>
-                                    {project.tasks.map((task) => (
-                                        <li key={task.id} className='py-3'>
-                                            <div className='flex items-center justify-between'>
-                                                <span className='text-sm text-gray-900 dark:text-gray-100'>{task.title}</span>
-                                                <span className='text-xs text-gray-500 dark:text-gray-400'>{task.status}</span>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    </ScrollArea>
+                </CardContent>
+            </CenteredCardLayout>
         </>
     );
 }

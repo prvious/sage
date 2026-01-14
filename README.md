@@ -1,7 +1,3 @@
-This is sick. Let me clean this up into a proper project spec and add some gotchas I'm thinking of:
-
----
-
 # Sage
 
 **AI Agent Orchestrator for Laravel Applications**

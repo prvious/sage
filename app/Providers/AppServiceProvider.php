@@ -18,6 +18,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('server.driver', function ($app) {
             return new \App\Drivers\Server\ServerDriverManager($app);
         });
+
+        $this->app->singleton('agent.driver', function ($app) {
+            return new \App\Drivers\Agent\AgentManager($app);
+        });
     }
 
     /**

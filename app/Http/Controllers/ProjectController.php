@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\ListDirectory;
 use App\Actions\ValidateProject;
 use App\Drivers\Server\Manager as ServerManager;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Env;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,9 +34,29 @@ class ProjectController extends Controller
     /**
      * Show the form for creating a new project.
      */
-    public function create(): Response
+    public function create(Request $request, ListDirectory $listDirectory): Response
     {
-        return Inertia::render('projects/create');
+        $path = $request->query('path');
+
+        // Get home directory if no path specified
+        if (! $path) {
+            $path = Env::get('HOME') ?? Env::get('USERPROFILE') ?? '/';
+        }
+
+        // Security: Prevent directory traversal
+        if (str_contains($path, '..')) {
+            $path = '/';
+        }
+
+        // List directory contents
+        $directoryData = $listDirectory->handle($path);
+
+        return Inertia::render('projects/create', [
+            'directories' => $directoryData['directories'],
+            'breadcrumbs' => $directoryData['breadcrumbs'],
+            'currentPath' => $path,
+            'homePath' => Env::get('HOME') ?? Env::get('USERPROFILE') ?? '/',
+        ]);
     }
 
     /**
