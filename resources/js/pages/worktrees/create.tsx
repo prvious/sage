@@ -1,5 +1,12 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Form, Head } from '@inertiajs/react';
+import { AppLayout } from '@/components/layout/app-layout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldSet, FieldTitle } from '@/components/ui/field';
+import { Badge } from '@/components/ui/badge';
+import { store } from '@/actions/App/Http/Controllers/WorktreeController';
 
 interface Project {
     id: number;
@@ -11,98 +18,97 @@ interface Props {
 }
 
 export default function Create({ project }: Props) {
-    const { data, setData, post, processing, errors } = useForm({
-        branch_name: '',
-        create_branch: false,
-        database_isolation: 'separate',
-    });
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post(`/projects/${project.id}/worktrees`);
-    };
-
     return (
         <>
             <Head title={`Create Worktree - ${project.name}`} />
 
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
-                <div className='mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8'>
-                    <div className='mb-8'>
-                        <Link href={`/projects/${project.id}/worktrees`} className='mb-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400'>
-                            ← Back to Worktrees
-                        </Link>
-                        <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100'>Create Worktree</h1>
+            <AppLayout>
+                <div className='p-6 space-y-6'>
+                    <div>
+                        <h1 className='text-3xl font-bold'>Create Worktree</h1>
+                        <p className='text-muted-foreground mt-2'>Set up a new Git worktree with an isolated environment for your feature branch.</p>
                     </div>
 
-                    <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-                        <form onSubmit={submit} className='space-y-6'>
-                            <div>
-                                <label htmlFor='branch_name' className='block text-sm font-medium text-gray-900 dark:text-gray-100'>
-                                    Branch Name
-                                </label>
-                                <input
-                                    id='branch_name'
-                                    type='text'
-                                    value={data.branch_name}
-                                    onChange={(e) => setData('branch_name', e.target.value)}
-                                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100'
-                                    placeholder='feature/new-feature'
-                                    required
-                                />
-                                {errors.branch_name && <p className='mt-1 text-sm text-red-600 dark:text-red-400'>{errors.branch_name}</p>}
-                            </div>
+                    <div className='max-w-2xl'>
+                        <Form {...store.form(project.id)}>
+                            {({ errors, processing }) => (
+                                <FieldSet className='space-y-6'>
+                                    <FieldGroup>
+                                        <Field>
+                                            <FieldLabel htmlFor='branch_name'>Branch Name</FieldLabel>
+                                            <Input id='branch_name' name='branch_name' placeholder='feature/new-feature' required />
+                                            <FieldDescription>Enter the branch name for this worktree</FieldDescription>
+                                            {errors.branch_name && <p className='text-sm text-destructive'>{errors.branch_name}</p>}
+                                        </Field>
 
-                            <div className='flex items-center'>
-                                <input
-                                    id='create_branch'
-                                    type='checkbox'
-                                    checked={data.create_branch}
-                                    onChange={(e) => setData('create_branch', e.target.checked)}
-                                    className='h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700'
-                                />
-                                <label htmlFor='create_branch' className='ml-2 block text-sm text-gray-900 dark:text-gray-100'>
-                                    Create branch if it doesn't exist
-                                </label>
-                            </div>
+                                        <Field>
+                                            <div className='flex items-center gap-2'>
+                                                <Checkbox id='create_branch' name='create_branch' value='true' />
+                                                <FieldLabel htmlFor='create_branch' className='!mt-0'>
+                                                    Create branch if it doesn't exist
+                                                </FieldLabel>
+                                            </div>
+                                            <FieldDescription>
+                                                Check this to automatically create the branch if it doesn't already exist in your repository
+                                            </FieldDescription>
+                                        </Field>
 
-                            <div>
-                                <label htmlFor='database_isolation' className='block text-sm font-medium text-gray-900 dark:text-gray-100'>
-                                    Database Isolation
-                                </label>
-                                <select
-                                    id='database_isolation'
-                                    value={data.database_isolation}
-                                    onChange={(e) => setData('database_isolation', e.target.value)}
-                                    className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100'
-                                >
-                                    <option value='separate'>Separate Database (SQLite)</option>
-                                    <option value='prefix'>Table Prefix</option>
-                                    <option value='shared'>Shared Database</option>
-                                </select>
-                                {errors.database_isolation && <p className='mt-1 text-sm text-red-600 dark:text-red-400'>{errors.database_isolation}</p>}
-                                <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>Choose how the worktree database should be isolated</p>
-                            </div>
+                                        <Field>
+                                            <FieldLabel>Database Isolation</FieldLabel>
+                                            <RadioGroup defaultValue='separate' name='database_isolation' className='grid grid-rows-3 gap-4'>
+                                                <FieldLabel htmlFor='separate'>
+                                                    <Field orientation='horizontal'>
+                                                        <FieldContent>
+                                                            <FieldTitle>Separate Database (SQLite)</FieldTitle>
+                                                            <FieldDescription>
+                                                                Each worktree gets its own SQLite database file
+                                                                <Badge variant='secondary' className='ml-2 text-xs'>
+                                                                    Recommended
+                                                                </Badge>
+                                                            </FieldDescription>
+                                                        </FieldContent>
+                                                        <RadioGroupItem value='separate' id='separate' />
+                                                    </Field>
+                                                </FieldLabel>
 
-                            <div className='flex gap-4'>
-                                <button
-                                    type='submit'
-                                    disabled={processing}
-                                    className='rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50'
-                                >
-                                    {processing ? 'Creating...' : 'Create Worktree'}
-                                </button>
-                                <Link
-                                    href={`/projects/${project.id}/worktrees`}
-                                    className='rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
-                                >
-                                    Cancel
-                                </Link>
-                            </div>
-                        </form>
+                                                <FieldLabel htmlFor='prefix'>
+                                                    <Field orientation='horizontal'>
+                                                        <FieldContent>
+                                                            <FieldTitle>Table Prefix</FieldTitle>
+                                                            <FieldDescription>Share database but prefix all tables with branch name</FieldDescription>
+                                                        </FieldContent>
+                                                        <RadioGroupItem value='prefix' id='prefix' />
+                                                    </Field>
+                                                </FieldLabel>
+
+                                                <FieldLabel htmlFor='shared'>
+                                                    <Field orientation='horizontal'>
+                                                        <FieldContent>
+                                                            <FieldTitle>Shared Database</FieldTitle>
+                                                            <FieldDescription>Use the same database as main project (not recommended)</FieldDescription>
+                                                        </FieldContent>
+                                                        <RadioGroupItem value='shared' id='shared' />
+                                                    </Field>
+                                                </FieldLabel>
+                                            </RadioGroup>
+                                            {errors.database_isolation && <p className='text-sm text-destructive'>{errors.database_isolation}</p>}
+                                        </Field>
+
+                                        <div className='flex justify-end gap-3 pt-4'>
+                                            <Button type='button' variant='ghost' onClick={() => window.history.back()}>
+                                                Cancel
+                                            </Button>
+                                            <Button type='submit' disabled={processing}>
+                                                {processing ? 'Creating...' : 'Create Worktree'}
+                                            </Button>
+                                        </div>
+                                    </FieldGroup>
+                                </FieldSet>
+                            )}
+                        </Form>
                     </div>
                 </div>
-            </div>
+            </AppLayout>
         </>
     );
 }

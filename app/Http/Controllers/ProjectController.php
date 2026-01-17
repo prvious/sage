@@ -19,15 +19,25 @@ class ProjectController extends Controller
     /**
      * Display a listing of projects.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $projects = Project::query()
-            ->withCount(['worktrees', 'tasks'])
-            ->latest()
-            ->get();
+        $query = Project::query()
+            ->withCount(['worktrees', 'tasks']);
+
+        // Apply search filter if present
+        if ($search = $request->query('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('path', 'like', "%{$search}%")
+                    ->orWhere('base_url', 'like', "%{$search}%");
+            });
+        }
+
+        $projects = $query->latest()->get();
 
         return Inertia::render('projects/index', [
             'projects' => $projects,
+            'search' => $search ?? '',
         ]);
     }
 
@@ -75,20 +85,8 @@ class ProjectController extends Controller
 
         $project = Project::create($request->validated());
 
-        return redirect()->route('projects.show', $project)
+        return redirect()->route('projects.dashboard', $project)
             ->with('success', 'Project created successfully.');
-    }
-
-    /**
-     * Display the specified project.
-     */
-    public function show(Project $project): Response
-    {
-        $project->load(['worktrees', 'tasks', 'specs']);
-
-        return Inertia::render('projects/show', [
-            'project' => $project,
-        ]);
     }
 
     /**

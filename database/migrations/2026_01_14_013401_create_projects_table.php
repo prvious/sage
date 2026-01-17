@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('path')->unique();
-            $table->enum('server_driver', ['caddy', 'nginx', 'artisan'])->default('caddy');
+            $table->string('server_driver', 20)->default('caddy');
             $table->string('base_url');
             $table->timestamps();
 

@@ -23,7 +23,7 @@ class WorktreeController extends Controller
             ->latest()
             ->get();
 
-        return Inertia::render('Worktrees/Index', [
+        return Inertia::render('worktrees/index', [
             'project' => $project,
             'worktrees' => $worktrees,
         ]);
@@ -31,7 +31,7 @@ class WorktreeController extends Controller
 
     public function create(Project $project): Response
     {
-        return Inertia::render('Worktrees/Create', [
+        return Inertia::render('worktrees/create', [
             'project' => $project,
         ]);
     }
@@ -62,7 +62,7 @@ class WorktreeController extends Controller
 
     public function show(Project $project, Worktree $worktree): Response
     {
-        return Inertia::render('Worktrees/Show', [
+        return Inertia::render('worktrees/show', [
             'project' => $project,
             'worktree' => $worktree,
         ]);

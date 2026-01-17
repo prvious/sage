@@ -23,12 +23,9 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'project_id' => ['required', 'exists:projects,id'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'status' => ['required', 'in:idea,in_progress,review,done,failed'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:5000'],
             'worktree_id' => ['nullable', 'exists:worktrees,id'],
-            'agent_type' => ['nullable', 'in:claude,opencode'],
-            'model' => ['nullable', 'string'],
         ];
     }
 }

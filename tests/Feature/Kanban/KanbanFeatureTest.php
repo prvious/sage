@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TaskStatus;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Worktree;
@@ -7,62 +8,60 @@ use App\Models\Worktree;
 it('displays tasks grouped by status', function () {
     $project = Project::factory()->create();
 
-    $ideaTask = Task::factory()->idea()->create(['project_id' => $project->id]);
+    $queuedTask = Task::factory()->queued()->create(['project_id' => $project->id]);
     $inProgressTask = Task::factory()->inProgress()->create(['project_id' => $project->id]);
-    $reviewTask = Task::factory()->review()->create(['project_id' => $project->id]);
+    $waitingReviewTask = Task::factory()->waitingReview()->create(['project_id' => $project->id]);
     $doneTask = Task::factory()->done()->create(['project_id' => $project->id]);
 
-    $response = $this->get(route('tasks.index'));
+    $response = $this->get(route('projects.dashboard', $project));
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('Kanban/Index')
-        ->has('tasks.idea', 1)
-        ->has('tasks.in_progress', 1)
-        ->has('tasks.review', 1)
-        ->has('tasks.done', 1)
+        ->component('projects/dashboard')
+        ->has('tasks.queued.data', 1)
+        ->has('tasks.in_progress.data', 1)
+        ->has('tasks.waiting_review.data', 1)
+        ->has('tasks.done.data', 1)
     );
 });
 
 it('can create new task from kanban', function () {
     $project = Project::factory()->create();
 
-    $response = $this->postJson(route('tasks.store'), [
+    $response = $this->post(route('tasks.store'), [
         'project_id' => $project->id,
-        'title' => 'New Feature',
         'description' => 'Build a new feature',
-        'status' => 'idea',
     ]);
 
-    $response->assertRedirect(route('tasks.index'));
+    $response->assertRedirect();
 
     $this->assertDatabaseHas('tasks', [
         'project_id' => $project->id,
-        'title' => 'New Feature',
-        'status' => 'idea',
+        'description' => 'Build a new feature',
+        'status' => TaskStatus::Queued->value,
     ]);
 });
 
 it('can update task status via API', function () {
-    $task = Task::factory()->idea()->create();
+    $task = Task::factory()->queued()->create();
 
-    $response = $this->putJson(route('tasks.update', $task), [
-        'status' => 'in_progress',
+    $response = $this->patch(route('tasks.update', $task), [
+        'status' => TaskStatus::InProgress->value,
     ]);
 
-    $response->assertRedirect(route('tasks.index'));
+    $response->assertRedirect();
 
     $task->refresh();
 
-    expect($task->status)->toBe('in_progress');
+    expect($task->status)->toBe(TaskStatus::InProgress);
 });
 
 it('can delete task from kanban', function () {
     $task = Task::factory()->create();
 
-    $response = $this->deleteJson(route('tasks.destroy', $task));
+    $response = $this->delete(route('tasks.destroy', $task));
 
-    $response->assertRedirect(route('tasks.index'));
+    $response->assertRedirect();
 
     $this->assertDatabaseMissing('tasks', [
         'id' => $task->id,
@@ -70,7 +69,7 @@ it('can delete task from kanban', function () {
 });
 
 it('task isRunning method works correctly', function () {
-    $notRunningTask = Task::factory()->idea()->create();
+    $notRunningTask = Task::factory()->queued()->create();
     $runningTask = Task::factory()->inProgress()->create([
         'started_at' => now(),
         'completed_at' => null,
@@ -86,15 +85,15 @@ it('task isRunning method works correctly', function () {
 });
 
 it('can scope tasks by status', function () {
-    Task::factory()->idea()->count(3)->create();
+    Task::factory()->queued()->count(3)->create();
     Task::factory()->inProgress()->count(2)->create();
     Task::factory()->done()->count(1)->create();
 
-    $ideaTasks = Task::byStatus('idea')->get();
-    $inProgressTasks = Task::byStatus('in_progress')->get();
-    $doneTasks = Task::byStatus('done')->get();
+    $queuedTasks = Task::byStatus(TaskStatus::Queued)->get();
+    $inProgressTasks = Task::byStatus(TaskStatus::InProgress)->get();
+    $doneTasks = Task::byStatus(TaskStatus::Done)->get();
 
-    expect($ideaTasks)->toHaveCount(3);
+    expect($queuedTasks)->toHaveCount(3);
     expect($inProgressTasks)->toHaveCount(2);
     expect($doneTasks)->toHaveCount(1);
 });
@@ -103,40 +102,24 @@ it('can assign task to worktree', function () {
     $worktree = Worktree::factory()->create();
     $project = $worktree->project;
 
-    $response = $this->postJson(route('tasks.store'), [
+    $response = $this->post(route('tasks.store'), [
         'project_id' => $project->id,
-        'title' => 'Task with worktree',
-        'description' => 'Description',
-        'status' => 'idea',
+        'description' => 'Task with worktree',
         'worktree_id' => $worktree->id,
     ]);
 
-    $response->assertRedirect(route('tasks.index'));
+    $response->assertRedirect();
 
     $this->assertDatabaseHas('tasks', [
-        'title' => 'Task with worktree',
+        'description' => 'Task with worktree',
         'worktree_id' => $worktree->id,
     ]);
 });
 
 it('validates required fields when creating task', function () {
-    $response = $this->postJson(route('tasks.store'), [
-        'description' => 'Missing required fields',
+    $response = $this->post(route('tasks.store'), [
+        'title' => 'Missing description',
     ]);
 
-    $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['project_id', 'title', 'status']);
-});
-
-it('validates status enum values', function () {
-    $project = Project::factory()->create();
-
-    $response = $this->postJson(route('tasks.store'), [
-        'project_id' => $project->id,
-        'title' => 'Test',
-        'status' => 'invalid_status',
-    ]);
-
-    $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['status']);
+    $response->assertSessionHasErrors(['project_id', 'description']);
 });

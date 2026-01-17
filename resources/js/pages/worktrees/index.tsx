@@ -1,4 +1,10 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { AppLayout } from '@/components/layout/app-layout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, FolderIcon, GitBranch } from 'lucide-react';
+import { create } from '@/actions/App/Http/Controllers/WorktreeController';
 
 interface Project {
     id: number;
@@ -22,11 +28,11 @@ interface Props {
     worktrees: Worktree[];
 }
 
-const statusColors = {
-    creating: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    error: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    cleaning_up: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+const statusVariant = {
+    creating: 'secondary' as const,
+    active: 'default' as const,
+    error: 'destructive' as const,
+    cleaning_up: 'secondary' as const,
 };
 
 export default function Index({ project, worktrees }: Props) {
@@ -34,54 +40,75 @@ export default function Index({ project, worktrees }: Props) {
         <>
             <Head title={`Worktrees - ${project.name}`} />
 
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
-                <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
-                    <div className='mb-8 flex items-center justify-between'>
-                        <div>
-                            <Link href={`/projects/${project.id}`} className='mb-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400'>
-                                ← Back to {project.name}
-                            </Link>
-                            <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100'>Worktrees</h1>
-                        </div>
-                        <Link
-                            href={`/projects/${project.id}/worktrees/create`}
-                            className='rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700'
-                        >
-                            Create Worktree
-                        </Link>
+            <AppLayout>
+                <div className='p-6 space-y-6'>
+                    <div className='flex items-center justify-between'>
+                        <h1 className='text-3xl font-bold'>Worktrees</h1>
+                        <Button onClick={() => router.visit(create(project.id).url)}>Create Worktree</Button>
                     </div>
 
                     {worktrees.length === 0 ? (
-                        <div className='rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-800'>
-                            <p className='text-gray-600 dark:text-gray-400'>
-                                No worktrees yet. Create your first worktree to work on a feature branch with its own preview URL.
+                        <div className='flex min-h-96 flex-col items-center justify-center text-center'>
+                            <div className='rounded-full bg-muted p-6'>
+                                <GitBranch className='h-12 w-12 text-muted-foreground' />
+                            </div>
+                            <h3 className='mt-6 text-xl font-semibold'>No worktrees yet</h3>
+                            <p className='text-muted-foreground mt-2 max-w-sm'>
+                                Create your first worktree to work on a feature branch with its own preview URL.
                             </p>
+                            <Button className='mt-4' onClick={() => router.visit(create(project.id).url)}>
+                                Create Your First Worktree
+                            </Button>
                         </div>
                     ) : (
                         <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
                             {worktrees.map((worktree) => (
-                                <Link
-                                    key={worktree.id}
-                                    href={`/projects/${project.id}/worktrees/${worktree.id}`}
-                                    className='block rounded-lg border border-gray-200 bg-white p-6 transition hover:border-blue-500 dark:border-gray-700 dark:bg-gray-800'
-                                >
-                                    <div className='mb-3 flex items-center justify-between'>
-                                        <span className={`inline-flex rounded px-2 py-1 text-xs font-medium ${statusColors[worktree.status]}`}>
-                                            {worktree.status}
-                                        </span>
-                                    </div>
-                                    <h3 className='mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>{worktree.branch_name}</h3>
-                                    <p className='mb-2 text-sm text-gray-600 dark:text-gray-400'>{worktree.preview_url}</p>
-                                    {worktree.error_message && <p className='mt-2 text-sm text-red-600 dark:text-red-400'>{worktree.error_message}</p>}
-                                    <div className='mt-4 inline-flex rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300'>
-                                        {worktree.database_isolation} DB
-                                    </div>
+                                <Link key={worktree.id} href={`/projects/${project.id}/worktrees/${worktree.id}`}>
+                                    <Card className='transition-all hover:shadow-lg hover:border-primary h-full'>
+                                        <CardHeader>
+                                            <div className='flex items-center justify-between gap-2'>
+                                                <CardTitle className='text-lg truncate'>{worktree.branch_name}</CardTitle>
+                                                <Badge variant={statusVariant[worktree.status]} className='shrink-0'>
+                                                    {worktree.status}
+                                                </Badge>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className='space-y-3'>
+                                            <div className='flex items-center gap-2 text-sm text-muted-foreground font-mono'>
+                                                <FolderIcon className='h-4 w-4 shrink-0' />
+                                                <span className='truncate' title={worktree.path}>
+                                                    {worktree.path}
+                                                </span>
+                                            </div>
+                                            <div className='flex items-center gap-2'>
+                                                <a
+                                                    href={worktree.preview_url}
+                                                    target='_blank'
+                                                    rel='noopener noreferrer'
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className='text-sm text-primary hover:underline flex items-center gap-1 truncate'
+                                                    title={worktree.preview_url}
+                                                >
+                                                    <span className='truncate'>{worktree.preview_url}</span>
+                                                    <ExternalLink className='h-3 w-3 shrink-0' />
+                                                </a>
+                                            </div>
+                                            <Badge variant='secondary' className='text-xs'>
+                                                {worktree.database_isolation} DB
+                                            </Badge>
+                                            {worktree.error_message && (
+                                                <p className='text-sm text-destructive line-clamp-2' title={worktree.error_message}>
+                                                    {worktree.error_message}
+                                                </p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
                                 </Link>
                             ))}
                         </div>
                     )}
                 </div>
-            </div>
+            </AppLayout>
         </>
     );
 }

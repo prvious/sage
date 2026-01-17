@@ -11,20 +11,24 @@ beforeEach(function () {
 it('displays specs index page', function () {
     Spec::factory()->count(3)->create(['project_id' => $this->project->id]);
 
-    $response = $this->get(route('specs.index'));
+    $response = $this->get(route('projects.specs.index', $this->project));
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('Specs/Index')
+        ->component('projects/specs/index')
+        ->has('project')
         ->has('specs.data', 3)
     );
 });
 
 it('displays create spec page', function () {
-    $response = $this->get(route('specs.create'));
+    $response = $this->get(route('projects.specs.create', $this->project));
 
     $response->assertSuccessful();
-    $response->assertInertia(fn ($page) => $page->component('Specs/Create'));
+    $response->assertInertia(fn ($page) => $page
+        ->component('projects/specs/create')
+        ->has('project')
+    );
 });
 
 it('generates spec from idea using AI', function () {
@@ -36,7 +40,7 @@ it('generates spec from idea using AI', function () {
         ]),
     ]);
 
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'Add user authentication to the app',
         'type' => 'feature',
     ]);
@@ -64,7 +68,7 @@ it('generates API spec type', function () {
         ]),
     ]);
 
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'Create REST API for user management',
         'type' => 'api',
     ]);
@@ -85,7 +89,7 @@ it('generates refactor spec type', function () {
         ]),
     ]);
 
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'Refactor authentication system for better performance',
         'type' => 'refactor',
     ]);
@@ -106,7 +110,7 @@ it('generates bug spec type', function () {
         ]),
     ]);
 
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'Users cannot login with valid credentials',
         'type' => 'bug',
     ]);
@@ -119,7 +123,7 @@ it('generates bug spec type', function () {
 });
 
 it('requires idea for spec generation', function () {
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'type' => 'feature',
     ]);
 
@@ -128,7 +132,7 @@ it('requires idea for spec generation', function () {
 });
 
 it('requires type for spec generation', function () {
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'Add user authentication',
     ]);
 
@@ -137,7 +141,7 @@ it('requires type for spec generation', function () {
 });
 
 it('validates idea minimum length', function () {
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'short',
         'type' => 'feature',
     ]);
@@ -147,7 +151,7 @@ it('validates idea minimum length', function () {
 });
 
 it('validates type is one of allowed values', function () {
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'Add user authentication to the app',
         'type' => 'invalid',
     ]);
@@ -161,7 +165,7 @@ it('handles AI service errors gracefully', function () {
         'api.anthropic.com/*' => Http::response('API Error', 500),
     ]);
 
-    $response = $this->postJson(route('specs.generate'), [
+    $response = $this->postJson(route('projects.specs.generate', $this->project), [
         'idea' => 'Add user authentication',
         'type' => 'feature',
     ]);
@@ -173,8 +177,7 @@ it('handles AI service errors gracefully', function () {
 });
 
 it('stores a new spec', function () {
-    $response = $this->post(route('specs.store'), [
-        'project_id' => $this->project->id,
+    $response = $this->post(route('projects.specs.store', $this->project), [
         'title' => 'User Authentication Feature',
         'content' => '# Feature Spec',
     ]);
@@ -187,19 +190,8 @@ it('stores a new spec', function () {
     ]);
 });
 
-it('requires project_id when storing spec', function () {
-    $response = $this->post(route('specs.store'), [
-        'title' => 'User Authentication Feature',
-        'content' => '# Feature Spec',
-    ]);
-
-    $response->assertRedirect();
-    $response->assertSessionHasErrors(['project_id']);
-});
-
 it('requires title when storing spec', function () {
-    $response = $this->post(route('specs.store'), [
-        'project_id' => $this->project->id,
+    $response = $this->post(route('projects.specs.store', $this->project), [
         'content' => '# Feature Spec',
     ]);
 
@@ -208,8 +200,7 @@ it('requires title when storing spec', function () {
 });
 
 it('requires content when storing spec', function () {
-    $response = $this->post(route('specs.store'), [
-        'project_id' => $this->project->id,
+    $response = $this->post(route('projects.specs.store', $this->project), [
         'title' => 'User Authentication Feature',
     ]);
 
@@ -220,11 +211,12 @@ it('requires content when storing spec', function () {
 it('displays spec details', function () {
     $spec = Spec::factory()->create(['project_id' => $this->project->id]);
 
-    $response = $this->get(route('specs.show', $spec));
+    $response = $this->get(route('projects.specs.show', [$this->project, $spec]));
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('Specs/Show')
+        ->component('projects/specs/show')
+        ->has('project')
         ->has('spec')
     );
 });
@@ -232,16 +224,19 @@ it('displays spec details', function () {
 it('displays edit spec page', function () {
     $spec = Spec::factory()->create(['project_id' => $this->project->id]);
 
-    $response = $this->get(route('specs.edit', $spec));
+    $response = $this->get(route('projects.specs.edit', [$this->project, $spec]));
 
     $response->assertSuccessful();
-    $response->assertInertia(fn ($page) => $page->component('Specs/Edit'));
+    $response->assertInertia(fn ($page) => $page
+        ->component('projects/specs/edit')
+        ->has('project')
+    );
 });
 
 it('updates a spec', function () {
     $spec = Spec::factory()->create(['project_id' => $this->project->id]);
 
-    $response = $this->put(route('specs.update', $spec), [
+    $response = $this->put(route('projects.specs.update', [$this->project, $spec]), [
         'title' => 'Updated Title',
         'content' => '# Updated Content',
     ]);
@@ -257,7 +252,7 @@ it('updates a spec', function () {
 it('deletes a spec', function () {
     $spec = Spec::factory()->create(['project_id' => $this->project->id]);
 
-    $response = $this->delete(route('specs.destroy', $spec));
+    $response = $this->delete(route('projects.specs.destroy', [$this->project, $spec]));
 
     $response->assertRedirect();
     $this->assertDatabaseMissing('specs', ['id' => $spec->id]);
@@ -277,7 +272,7 @@ it('refines existing spec with feedback', function () {
         ]),
     ]);
 
-    $response = $this->postJson(route('specs.refine', $spec), [
+    $response = $this->postJson(route('projects.specs.refine', [$this->project, $spec]), [
         'feedback' => 'Add more details about edge cases',
     ]);
 
@@ -296,7 +291,7 @@ it('refines existing spec with feedback', function () {
 it('requires feedback for spec refinement', function () {
     $spec = Spec::factory()->create(['project_id' => $this->project->id]);
 
-    $response = $this->postJson(route('specs.refine', $spec), []);
+    $response = $this->postJson(route('projects.specs.refine', [$this->project, $spec]), []);
 
     $response->assertUnprocessable();
     $response->assertJsonValidationErrors(['feedback']);
@@ -305,7 +300,7 @@ it('requires feedback for spec refinement', function () {
 it('validates feedback minimum length for refinement', function () {
     $spec = Spec::factory()->create(['project_id' => $this->project->id]);
 
-    $response = $this->postJson(route('specs.refine', $spec), [
+    $response = $this->postJson(route('projects.specs.refine', [$this->project, $spec]), [
         'feedback' => 'short',
     ]);
 
@@ -320,7 +315,7 @@ it('handles refinement AI service errors gracefully', function () {
         'api.anthropic.com/*' => Http::response('API Error', 500),
     ]);
 
-    $response = $this->postJson(route('specs.refine', $spec), [
+    $response = $this->postJson(route('projects.specs.refine', [$this->project, $spec]), [
         'feedback' => 'Add more details about edge cases',
     ]);
 
@@ -328,4 +323,13 @@ it('handles refinement AI service errors gracefully', function () {
     $response->assertJson([
         'success' => false,
     ]);
+});
+
+it('prevents accessing specs from other projects', function () {
+    $otherProject = Project::factory()->create();
+    $spec = Spec::factory()->create(['project_id' => $otherProject->id]);
+
+    $response = $this->get(route('projects.specs.show', [$this->project, $spec]));
+
+    $response->assertNotFound();
 });

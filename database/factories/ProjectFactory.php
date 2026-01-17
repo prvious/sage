@@ -21,8 +21,12 @@ class ProjectFactory extends Factory
         return [
             'name' => $name,
             'path' => '/var/www/'.str_replace(' ', '-', strtolower($name)),
-            'server_driver' => fake()->randomElement(['caddy', 'nginx']),
+            'server_driver' => fake()->randomElement(['caddy', 'nginx', 'artisan']),
             'base_url' => 'http://'.strtolower(str_replace(' ', '', $name)).'.local',
+            'server_port' => null,
+            'tls_enabled' => false,
+            'custom_domain' => null,
+            'custom_directives' => null,
         ];
     }
 

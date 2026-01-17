@@ -17,10 +17,11 @@ interface EnvVariable {
 interface Props {
     grouped: Record<string, Record<string, EnvVariable>>;
     envPath: string;
+    projectId: number;
     onSuccess?: () => void;
 }
 
-export default function EnvVariableForm({ grouped, envPath, onSuccess }: Props) {
+export default function EnvVariableForm({ grouped, envPath, projectId, onSuccess }: Props) {
     const [variables, setVariables] = useState(() => {
         const flattened: Record<string, EnvVariable> = {};
         Object.values(grouped).forEach((section) => {
@@ -78,7 +79,7 @@ export default function EnvVariableForm({ grouped, envPath, onSuccess }: Props) 
     };
 
     return (
-        <Form action='/environment/update' method='post' data={{ env_path: envPath, variables }} onSuccess={() => onSuccess?.()}>
+        <Form action={`/projects/${projectId}/environment`} method='put' data={{ variables }} onSuccess={() => onSuccess?.()}>
             {({ processing }) => (
                 <div className='space-y-6'>
                     {Object.entries(grouped).map(([section, sectionVars]) => (

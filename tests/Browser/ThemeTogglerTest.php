@@ -27,10 +27,10 @@ it('displays theme toggler on project edit page', function () {
         ->assertNoJavascriptErrors();
 });
 
-it('displays theme toggler on project show page', function () {
+it('displays theme toggler on project dashboard page', function () {
     $project = Project::factory()->create();
 
-    $page = visit("/projects/{$project->id}");
+    $page = visit("/projects/{$project->id}/dashboard");
 
     $page->assertSee('System')
         ->assertNoJavascriptErrors();
@@ -42,8 +42,10 @@ it('theme toggler button is interactive and opens dropdown', function () {
     // Click theme toggler to open dropdown
     $page->click('button:has-text("System")');
 
-    // Should see all theme options
-    $page->wait(300);
+    // Wait longer for dropdown animation to complete
+    $page->wait(1000);
+
+    // Verify dropdown options are visible
     $page->assertSee('Light');
     $page->assertSee('Dark');
 
@@ -55,11 +57,11 @@ it('can select light theme from dropdown', function () {
 
     // Click theme toggler
     $page->click('button:has-text("System")');
-    $page->wait(300);
+    $page->wait(500);
 
     // Click Light option
     $page->click('span:has-text("Light")');
-    $page->wait(300);
+    $page->wait(500);
 
     // Button should update to show Light
     $page->assertSee('Light');
@@ -72,11 +74,11 @@ it('can select dark theme from dropdown', function () {
 
     // Click theme toggler
     $page->click('button:has-text("System")');
-    $page->wait(300);
+    $page->wait(500);
 
     // Click Dark option
     $page->click('span:has-text("Dark")');
-    $page->wait(300);
+    $page->wait(500);
 
     // Button should update to show Dark
     $page->assertSee('Dark');
@@ -89,7 +91,7 @@ it('shows checkmark indicator on selected theme', function () {
 
     // Click theme toggler to open dropdown
     $page->click('button:has-text("System")');
-    $page->wait(300);
+    $page->wait(500);
 
     // System should be selected by default, look for checkmark
     $page->assertSee('✓');
@@ -102,9 +104,9 @@ it('theme preference persists in localStorage', function () {
 
     // Select dark theme
     $page->click('button:has-text("System")');
-    $page->wait(300);
+    $page->wait(500);
     $page->click('span:has-text("Dark")');
-    $page->wait(300);
+    $page->wait(500);
 
     // Verify localStorage was updated
     $page->assertScript('localStorage.getItem("appearance")', 'dark');
@@ -117,12 +119,12 @@ it('theme preference persists after page reload', function () {
 
     // Select dark theme
     $page->click('button:has-text("System")');
-    $page->wait(300);
+    $page->wait(500);
     $page->click('span:has-text("Dark")');
-    $page->wait(300);
+    $page->wait(500);
 
     // Reload page
-    $page->visit('/projects/create');
+    $page->navigate('/projects/create');
     $page->wait(500);
 
     // Button should still show Dark

@@ -38,6 +38,7 @@ class Task extends Model
     protected function casts(): array
     {
         return [
+            'status' => \App\Enums\TaskStatus::class,
             'started_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
@@ -72,7 +73,7 @@ class Task extends Model
      */
     public function isRunning(): bool
     {
-        return $this->status === 'in_progress' &&
+        return $this->status === \App\Enums\TaskStatus::InProgress &&
                $this->started_at !== null &&
                $this->completed_at === null;
     }
@@ -80,8 +81,16 @@ class Task extends Model
     /**
      * Scope a query to only include tasks with a given status.
      */
-    public function scopeByStatus($query, string $status)
+    public function scopeByStatus($query, \App\Enums\TaskStatus $status)
     {
         return $query->where('status', $status);
+    }
+
+    /**
+     * Scope a query to only include tasks for a specific project.
+     */
+    public function scopeForProject($query, int $projectId)
+    {
+        return $query->where('project_id', $projectId);
     }
 }

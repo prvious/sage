@@ -14,10 +14,22 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request): RedirectResponse
     {
-        $task = Task::create($request->validated());
+        $data = $request->validated();
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Task created successfully.');
+        // Auto-generate title from first line of description if not provided
+        if (empty($data['title'])) {
+            $firstLine = explode("\n", $data['description'])[0];
+            $data['title'] = trim(substr($firstLine, 0, 100));
+        }
+
+        // Set default status to queued
+        $data['status'] = \App\Enums\TaskStatus::Queued;
+
+        $task = Task::create($data);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Task created successfully');
     }
 
     /**
@@ -27,7 +39,8 @@ class TaskController extends Controller
     {
         $task->update($request->validated());
 
-        return redirect()->route('dashboard')
+        return redirect()
+            ->back()
             ->with('success', 'Task updated successfully.');
     }
 
@@ -38,7 +51,8 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return redirect()->route('dashboard')
+        return redirect()
+            ->back()
             ->with('success', 'Task deleted successfully.');
     }
 }

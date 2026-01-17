@@ -1,50 +1,92 @@
-import { ArchiveX, CheckSquare, Command, File, FileText, GitBranch, Inbox, LayoutDashboard, Send, Settings, Trash2 } from 'lucide-react';
+import { Bot, FileEdit, FileText, GitBranch, LayoutDashboard, Settings, Sparkles, Terminal } from 'lucide-react';
 
-import { Label } from '@/components/ui/label';
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
-    SidebarGroupContent,
     SidebarGroupLabel,
     SidebarHeader,
-    SidebarInput,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    useSidebar,
 } from '@/components/ui/sidebar';
-import { Switch } from '@/components/ui/switch';
-import { Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { Link, usePage } from '@inertiajs/react';
+import { SharedData } from '@/types';
+import BrainstormController from '@/actions/App/Http/Controllers/BrainstormController';
+import ContextController from '@/actions/App/Http/Controllers/ContextController';
+import DashboardController from '@/actions/App/Http/Controllers/DashboardController';
 import EnvironmentController from '@/actions/App/Http/Controllers/EnvironmentController';
-import SpecController from '@/actions/App/Http/Controllers/SpecController';
+import ProjectAgentController from '@/actions/App/Http/Controllers/ProjectAgentController';
+import SettingsController from '@/actions/App/Http/Controllers/SettingsController';
 import WorktreeController from '@/actions/App/Http/Controllers/WorktreeController';
-import TaskController from '@/actions/App/Http/Controllers/TaskController';
 import { ProjectSidebar } from './project-sidebar';
-import { SageLogo } from '../branding/sage-logo';
 
-// This is sample data
-const navMain = [
-    {
-        title: 'Inbox',
-        url: '#',
-        icon: Inbox,
-        isActive: true,
-    },
-];
-
-const navigationItems = [
-    { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-    { label: 'Tasks', icon: CheckSquare, href: TaskController.index() },
-    { label: 'Worktrees', icon: GitBranch, href: '' },
-    { label: 'Specs', icon: FileText, href: SpecController.index() },
-    { label: 'Environment', icon: Settings, href: EnvironmentController.index() },
-];
+interface NavigationItem {
+    label: string;
+    icon: typeof GitBranch;
+    href: string | { url: string; method: string };
+    badge?: string | number;
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const [activeItem, setActiveItem] = useState(navMain[0]);
-    const { setOpen } = useSidebar();
+    const { projects, selectedProject, url } = usePage<SharedData>().props;
+
+    const navigationItems: NavigationItem[] = selectedProject
+        ? [
+              {
+                  label: 'Dashboard',
+                  icon: LayoutDashboard,
+                  href: DashboardController.show(selectedProject.id),
+              },
+              {
+                  label: 'Brainstorm',
+                  icon: Sparkles,
+                  href: BrainstormController.index(selectedProject.id),
+              },
+              {
+                  label: 'Worktrees',
+                  icon: GitBranch,
+                  href: WorktreeController.index(selectedProject.id),
+              },
+              {
+                  label: 'Specs',
+                  icon: FileText,
+                  href: `/projects/${selectedProject.id}/specs`,
+              },
+              {
+                  label: 'Environment',
+                  icon: Settings,
+                  href: `/projects/${selectedProject.id}/environment`,
+              },
+              {
+                  label: 'Terminal',
+                  icon: Terminal,
+                  href: '#',
+              },
+              {
+                  label: 'Context',
+                  icon: FileEdit,
+                  href: ContextController.index(selectedProject.id),
+              },
+              {
+                  label: 'Agent',
+                  icon: Bot,
+                  href: ProjectAgentController.index(selectedProject.id),
+              },
+              {
+                  label: 'Settings',
+                  icon: Settings,
+                  href: SettingsController.index(selectedProject.id),
+              },
+          ]
+        : [];
+
+    const isActiveLink = (href: string | { url: string; method: string }) => {
+        const linkUrl = typeof href === 'string' ? href : href.url;
+        const currentUrl = typeof url === 'string' ? url : '';
+        return currentUrl === linkUrl || (currentUrl.length > 0 && currentUrl.startsWith(linkUrl));
+    };
 
     return (
         <Sidebar collapsible='icon' className='overflow-hidden *:data-[sidebar=sidebar]:flex-row' {...props}>
@@ -59,45 +101,87 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 size='lg'
                                 className='md:h-8 md:p-0'
                                 render={
-                                    <Link href='#'>
-                                        <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
-                                            <SageLogo />
-                                        </div>
-                                        <div className='grid flex-1 text-left text-sm leading-tight'>
+                                    <div>
+                                        <Link
+                                            href='/'
+                                            className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg hover:opacity-80 transition-opacity'
+                                            aria-label='Sage - Go to home page'
+                                        >
+                                            <span className='text-xl font-bold'>S</span>
+                                        </Link>
+                                        <Link href='/' className='grid flex-1 text-left text-sm leading-tight'>
                                             <span className='truncate font-medium'>Acme Inc</span>
                                             <span className='truncate text-xs'>Enterprise</span>
-                                        </div>
-                                    </Link>
+                                        </Link>
+                                    </div>
                                 }
                             ></SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarHeader>
                 <SidebarContent>
-                    <ProjectSidebar projects={[]} />
+                    <ProjectSidebar projects={projects} />
                 </SidebarContent>
             </Sidebar>
 
             {/* This is the second sidebar */}
             {/* We disable collapsible and let it fill remaining space */}
             <Sidebar collapsible='none' className='hidden flex-1 md:flex'>
-                <SidebarHeader className='gap-3.5 border-b p-4'>
+                <SidebarHeader className='border-b p-4'>
                     <div className='flex w-full items-center justify-between'>
-                        <div className='text-foreground text-base font-medium'>{activeItem?.title}</div>
+                        <div className='text-foreground text-base font-medium'>{selectedProject?.name || 'Select a project'}</div>
                     </div>
-                    <SidebarInput placeholder='Type to search...' />
                 </SidebarHeader>
 
                 <SidebarContent>
-                    <SidebarGroup>
-                        <SidebarGroupLabel>Favorites</SidebarGroupLabel>
-                        <SidebarMenu>
-                            {navigationItems.map((link, key) => (
-                                <SidebarMenuItem>{link.label}</SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroup>
+                    {selectedProject ? (
+                        <SidebarGroup>
+                            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                            <SidebarMenu className='gap-2'>
+                                {navigationItems.map((item) => {
+                                    const href = typeof item.href === 'string' ? item.href : item.href.url;
+                                    const isActive = isActiveLink(item.href);
+
+                                    return (
+                                        <SidebarMenuItem key={item.label}>
+                                            <SidebarMenuButton
+                                                render={
+                                                    <Link href={href}>
+                                                        <item.icon />
+                                                        <span>{item.label}</span>
+                                                    </Link>
+                                                }
+                                                isActive={isActive}
+                                            />
+                                        </SidebarMenuItem>
+                                    );
+                                })}
+                            </SidebarMenu>
+                        </SidebarGroup>
+                    ) : (
+                        <div className='flex h-full items-center justify-center p-4 text-center'>
+                            <div className='text-muted-foreground text-sm'>
+                                <p className='mb-2 font-medium'>No project selected</p>
+                                <p>Select a project from the left sidebar to view navigation</p>
+                            </div>
+                        </div>
+                    )}
                 </SidebarContent>
+                <SidebarFooter>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
+                                render={
+                                    <Link href='/agents'>
+                                        <Bot />
+                                        <span>Running Agents</span>
+                                    </Link>
+                                }
+                                isActive={url === '/agents'}
+                            />
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarFooter>
             </Sidebar>
         </Sidebar>
     );

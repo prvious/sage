@@ -30,7 +30,7 @@ it('can list all worktrees for a project', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('Worktrees/Index')
+        ->component('worktrees/index')
         ->has('worktrees', 3));
 });
 
@@ -158,6 +158,6 @@ it('can show worktree details', function () {
 
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
-        ->component('Worktrees/Show')
+        ->component('worktrees/show')
         ->has('worktree'));
 });

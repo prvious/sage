@@ -2,8 +2,6 @@
 
 namespace App\Drivers\Server;
 
-use App\Drivers\CaddyDriver;
-use App\Drivers\NginxDriver;
 use Illuminate\Support\Manager;
 
 class ServerDriverManager extends Manager
@@ -22,6 +20,14 @@ class ServerDriverManager extends Manager
     public function createNginxDriver(): NginxDriver
     {
         return $this->container->make(NginxDriver::class);
+    }
+
+    /**
+     * Create an instance of the Artisan driver
+     */
+    public function createArtisanDriver(): ArtisanDriver
+    {
+        return $this->container->make(ArtisanDriver::class);
     }
 
     /**

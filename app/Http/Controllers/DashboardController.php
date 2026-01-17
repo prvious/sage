@@ -14,25 +14,21 @@ use Inertia\Response;
 final class DashboardController extends Controller
 {
     /**
-     * Display the dashboard with projects and tasks.
+     * Display the project-specific dashboard with tasks.
      */
-    public function __invoke(): Response
+    public function show(Project $project): Response
     {
-        $projects = Project::select('id', 'name', 'path')
-            ->orderBy('name')
-            ->get();
-
-        $tasks = Task::with(['worktree.project', 'commits'])
+        $tasks = Task::where('project_id', $project->id)
             ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy('status');
 
-        return Inertia::render('dashboard/index', [
-            'projects' => ProjectResource::collection($projects),
+        return Inertia::render('projects/dashboard', [
+            'project' => new ProjectResource($project),
             'tasks' => [
-                'idea' => TaskResource::collection($tasks->get('idea', collect())),
+                'queued' => TaskResource::collection($tasks->get('queued', collect())),
                 'in_progress' => TaskResource::collection($tasks->get('in_progress', collect())),
-                'review' => TaskResource::collection($tasks->get('review', collect())),
+                'waiting_review' => TaskResource::collection($tasks->get('waiting_review', collect())),
                 'done' => TaskResource::collection($tasks->get('done', collect())),
             ],
         ]);

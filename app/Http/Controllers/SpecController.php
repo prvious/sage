@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SpecResource;
+use App\Models\Project;
 use App\Models\Spec;
 use App\Services\SpecGeneratorService;
 use Illuminate\Http\JsonResponse;
@@ -15,15 +16,16 @@ class SpecController extends Controller
     public function __construct(protected SpecGeneratorService $specGenerator) {}
 
     /**
-     * Display a listing of specs.
+     * Display a listing of specs for a project.
      */
-    public function index(): Response
+    public function index(Project $project): Response
     {
-        $specs = Spec::with('project')
+        $specs = $project->specs()
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return Inertia::render('Specs/Index', [
+        return Inertia::render('projects/specs/index', [
+            'project' => $project->only(['id', 'name', 'path']),
             'specs' => SpecResource::collection($specs),
         ]);
     }
@@ -31,15 +33,17 @@ class SpecController extends Controller
     /**
      * Show the form for creating a new spec.
      */
-    public function create(): Response
+    public function create(Project $project): Response
     {
-        return Inertia::render('Specs/Create');
+        return Inertia::render('projects/specs/create', [
+            'project' => $project->only(['id', 'name', 'path']),
+        ]);
     }
 
     /**
      * Generate a spec from an idea using AI.
      */
-    public function generate(Request $request): JsonResponse
+    public function generate(Request $request, Project $project): JsonResponse
     {
         $validated = $request->validate([
             'idea' => 'required|string|min:10|max:5000',
@@ -67,27 +71,27 @@ class SpecController extends Controller
     /**
      * Store a newly created spec.
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request, Project $project): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
-            'project_id' => 'required|exists:projects,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
         ]);
 
-        $spec = Spec::create($validated);
+        $spec = $project->specs()->create($validated);
 
-        return redirect()->route('specs.show', $spec)->with('success', 'Spec created successfully.');
+        return redirect()->route('projects.specs.show', [$project, $spec])->with('success', 'Spec created successfully.');
     }
 
     /**
      * Display the specified spec.
      */
-    public function show(Spec $spec): Response
+    public function show(Project $project, Spec $spec): Response
     {
-        $spec->load('project');
+        abort_if($spec->project_id !== $project->id, 404);
 
-        return Inertia::render('Specs/Show', [
+        return Inertia::render('projects/specs/show', [
+            'project' => $project->only(['id', 'name', 'path']),
             'spec' => new SpecResource($spec),
         ]);
     }
@@ -95,9 +99,12 @@ class SpecController extends Controller
     /**
      * Show the form for editing the specified spec.
      */
-    public function edit(Spec $spec): Response
+    public function edit(Project $project, Spec $spec): Response
     {
-        return Inertia::render('Specs/Edit', [
+        abort_if($spec->project_id !== $project->id, 404);
+
+        return Inertia::render('projects/specs/edit', [
+            'project' => $project->only(['id', 'name', 'path']),
             'spec' => new SpecResource($spec),
         ]);
     }
@@ -105,8 +112,10 @@ class SpecController extends Controller
     /**
      * Update the specified spec.
      */
-    public function update(Request $request, Spec $spec): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, Project $project, Spec $spec): \Illuminate\Http\RedirectResponse
     {
+        abort_if($spec->project_id !== $project->id, 404);
+
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'content' => 'sometimes|string',
@@ -114,24 +123,28 @@ class SpecController extends Controller
 
         $spec->update($validated);
 
-        return redirect()->route('specs.show', $spec)->with('success', 'Spec updated successfully.');
+        return redirect()->route('projects.specs.show', [$project, $spec])->with('success', 'Spec updated successfully.');
     }
 
     /**
      * Remove the specified spec.
      */
-    public function destroy(Spec $spec): \Illuminate\Http\RedirectResponse
+    public function destroy(Project $project, Spec $spec): \Illuminate\Http\RedirectResponse
     {
+        abort_if($spec->project_id !== $project->id, 404);
+
         $spec->delete();
 
-        return redirect()->route('specs.index')->with('success', 'Spec deleted successfully.');
+        return redirect()->route('projects.specs.index', $project)->with('success', 'Spec deleted successfully.');
     }
 
     /**
      * Refine an existing spec with feedback.
      */
-    public function refine(Request $request, Spec $spec): JsonResponse
+    public function refine(Request $request, Project $project, Spec $spec): JsonResponse
     {
+        abort_if($spec->project_id !== $project->id, 404);
+
         $validated = $request->validate([
             'feedback' => 'required|string|min:10|max:2000',
         ]);

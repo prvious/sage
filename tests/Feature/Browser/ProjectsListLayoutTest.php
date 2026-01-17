@@ -6,8 +6,8 @@ it('displays centered card layout with sage logo', function () {
     $page = visit('/projects');
 
     $page->assertSee('Sage')
-        ->assertSee('Projects')
-        ->assertSee('Select a project to continue')
+        ->assertScript('document.querySelector("input[type=\'search\']") !== null', true) // Search input should be visible
+        ->assertScript('document.querySelector("button[aria-label=\'Create new project\']") !== null', true) // Plus button should be visible
         ->assertNoJavascriptErrors();
 });
 
@@ -28,10 +28,10 @@ it('displays projects in scrollable list', function () {
     $page->assertNoJavascriptErrors();
 });
 
-it('shows new project button in card header', function () {
+it('shows plus button in card header', function () {
     $page = visit('/projects');
 
-    $page->assertSee('New Project')
+    $page->assertScript('document.querySelector("button[aria-label=\'Create new project\']") !== null', true)
         ->assertNoJavascriptErrors();
 });
 

@@ -128,3 +128,50 @@ it('validates base_url format correctly', function () {
 
     $response->assertSessionHasErrors('base_url');
 });
+
+it('redirects to project dashboard after creation', function () {
+    $user = User::factory()->create();
+
+    // Mock the ServerManager and driver
+    $driverMock = mock(ServerDriverInterface::class);
+    $driverMock->shouldReceive('validate')->andReturn(true);
+
+    $serverManager = mock(ServerManager::class);
+    $serverManager->shouldReceive('driver')->with('caddy')->andReturn($driverMock);
+
+    // Create a temporary directory for testing
+    $testPath = sys_get_temp_dir().'/test-laravel-project-'.uniqid();
+    mkdir($testPath);
+    file_put_contents($testPath.'/composer.json', json_encode([
+        'require' => [
+            'laravel/framework' => '^12.0',
+        ],
+    ]));
+    file_put_contents($testPath.'/.env', 'APP_NAME=TestApp');
+
+    $response = $this->actingAs($user)->post('/projects', [
+        'name' => 'Test Project',
+        'path' => $testPath,
+        'server_driver' => 'caddy',
+        'base_url' => 'test.local',
+    ]);
+
+    $project = Project::where('name', 'Test Project')->first();
+
+    $response->assertRedirect(route('projects.dashboard', $project));
+
+    // Cleanup
+    unlink($testPath.'/.env');
+    unlink($testPath.'/composer.json');
+    rmdir($testPath);
+});
+
+it('old projects show route is not available', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+
+    $response = $this->actingAs($user)->get("/projects/{$project->id}");
+
+    // Route exists but GET method is not allowed (405) or route not found (404)
+    expect($response->status())->toBeIn([404, 405]);
+});

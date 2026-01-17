@@ -23,7 +23,7 @@ class TaskFactory extends Factory
             'worktree_id' => null,
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
-            'status' => 'idea',
+            'status' => \App\Enums\TaskStatus::Queued,
             'agent_type' => null,
             'model' => null,
             'agent_output' => null,
@@ -33,12 +33,12 @@ class TaskFactory extends Factory
     }
 
     /**
-     * Indicate that the task is an idea.
+     * Indicate that the task is queued.
      */
-    public function idea(): static
+    public function queued(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'idea',
+            'status' => \App\Enums\TaskStatus::Queued,
         ]);
     }
 
@@ -48,7 +48,7 @@ class TaskFactory extends Factory
     public function inProgress(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'in_progress',
+            'status' => \App\Enums\TaskStatus::InProgress,
             'agent_type' => fake()->randomElement(['claude', 'opencode']),
             'model' => 'claude-sonnet-4-20250514',
             'started_at' => now()->subHours(fake()->numberBetween(1, 24)),
@@ -56,12 +56,12 @@ class TaskFactory extends Factory
     }
 
     /**
-     * Indicate that the task is in review.
+     * Indicate that the task is waiting review.
      */
-    public function review(): static
+    public function waitingReview(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'review',
+            'status' => \App\Enums\TaskStatus::WaitingReview,
             'agent_type' => fake()->randomElement(['claude', 'opencode']),
             'model' => 'claude-sonnet-4-20250514',
             'started_at' => now()->subHours(fake()->numberBetween(24, 72)),
@@ -75,25 +75,11 @@ class TaskFactory extends Factory
     public function done(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'done',
+            'status' => \App\Enums\TaskStatus::Done,
             'agent_type' => fake()->randomElement(['claude', 'opencode']),
             'model' => 'claude-sonnet-4-20250514',
             'started_at' => now()->subDays(fake()->numberBetween(1, 7)),
             'completed_at' => now()->subDays(fake()->numberBetween(1, 6)),
-        ]);
-    }
-
-    /**
-     * Indicate that the task failed.
-     */
-    public function failed(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'failed',
-            'agent_type' => fake()->randomElement(['claude', 'opencode']),
-            'model' => 'claude-sonnet-4-20250514',
-            'started_at' => now()->subHours(fake()->numberBetween(1, 24)),
-            'agent_output' => 'Error: '.fake()->sentence(),
         ]);
     }
 

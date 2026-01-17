@@ -16,7 +16,7 @@ class HomeController extends Controller
             $projectId = $this->getLastOpenedProject->handle();
 
             if ($projectId && Project::where('id', $projectId)->exists()) {
-                return redirect()->route('dashboard', ['project' => $projectId]);
+                return redirect()->route('projects.dashboard', $projectId);
             }
         } catch (\Exception $e) {
             // Gracefully handle cache failures

@@ -1,5 +1,10 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head, router } from '@inertiajs/react';
+import { AppLayout } from '@/components/layout/app-layout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ExternalLink, AlertCircle, Info } from 'lucide-react';
 
 interface Project {
     id: number;
@@ -22,17 +27,15 @@ interface Props {
     worktree: Worktree;
 }
 
-const statusColors = {
-    creating: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    error: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    cleaning_up: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+const statusVariant = {
+    creating: 'secondary' as const,
+    active: 'default' as const,
+    error: 'destructive' as const,
+    cleaning_up: 'secondary' as const,
 };
 
 export default function Show({ project, worktree }: Props) {
-    const handleDelete: FormEventHandler = (e) => {
-        e.preventDefault();
-
+    const handleDelete = () => {
         if (confirm('Are you sure you want to delete this worktree? This action cannot be undone.')) {
             router.delete(`/projects/${project.id}/worktrees/${worktree.id}`);
         }
@@ -46,93 +49,94 @@ export default function Show({ project, worktree }: Props) {
         <>
             <Head title={`${worktree.branch_name} - ${project.name}`} />
 
-            <div className='min-h-screen bg-gray-50 dark:bg-gray-900'>
-                <div className='mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8'>
-                    <div className='mb-8'>
-                        <Link href={`/projects/${project.id}/worktrees`} className='mb-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400'>
-                            ← Back to Worktrees
-                        </Link>
-                        <div className='mt-2 flex items-center justify-between'>
-                            <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100'>{worktree.branch_name}</h1>
-                            <span className={`inline-flex rounded px-3 py-1 text-sm font-medium ${statusColors[worktree.status]}`}>{worktree.status}</span>
+            <AppLayout>
+                <div className='p-6 space-y-6'>
+                    <div className='flex items-center justify-between'>
+                        <div className='flex items-center gap-3'>
+                            <h1 className='text-3xl font-bold'>{worktree.branch_name}</h1>
+                            <Badge variant={statusVariant[worktree.status]}>{worktree.status}</Badge>
+                        </div>
+                        <div className='flex gap-3'>
+                            {worktree.status === 'active' && (
+                                <Button onClick={handleOpenPreview}>
+                                    <ExternalLink className='h-4 w-4 mr-2' />
+                                    Open Preview
+                                </Button>
+                            )}
+                            <Button variant='destructive' onClick={handleDelete}>
+                                Delete Worktree
+                            </Button>
                         </div>
                     </div>
 
-                    <div className='space-y-6'>
-                        <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-                            <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100'>Worktree Details</h2>
+                    {worktree.status === 'creating' && (
+                        <Alert>
+                            <Info className='h-4 w-4' />
+                            <AlertDescription>This worktree is being set up. You'll be notified when it's ready.</AlertDescription>
+                        </Alert>
+                    )}
 
+                    {worktree.error_message && (
+                        <Alert variant='destructive'>
+                            <AlertCircle className='h-4 w-4' />
+                            <AlertDescription>{worktree.error_message}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Worktree Details</CardTitle>
+                        </CardHeader>
+                        <CardContent>
                             <dl className='space-y-4'>
                                 <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Branch Name</dt>
-                                    <dd className='mt-1 text-sm text-gray-900 dark:text-gray-100'>{worktree.branch_name}</dd>
+                                    <dt className='text-sm font-medium text-muted-foreground'>Branch Name</dt>
+                                    <dd className='mt-1 text-sm'>{worktree.branch_name}</dd>
                                 </div>
 
                                 <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Preview URL</dt>
+                                    <dt className='text-sm font-medium text-muted-foreground'>Preview URL</dt>
                                     <dd className='mt-1 flex items-center gap-2'>
                                         <a
                                             href={worktree.preview_url}
                                             target='_blank'
                                             rel='noopener noreferrer'
-                                            className='text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400'
+                                            className='text-sm text-primary hover:underline flex items-center gap-1'
                                         >
                                             {worktree.preview_url}
+                                            <ExternalLink className='h-3 w-3' />
                                         </a>
                                     </dd>
                                 </div>
 
                                 <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Path</dt>
-                                    <dd className='mt-1 font-mono text-sm text-gray-900 dark:text-gray-100'>{worktree.path}</dd>
+                                    <dt className='text-sm font-medium text-muted-foreground'>Path</dt>
+                                    <dd className='mt-1 font-mono text-sm'>{worktree.path}</dd>
                                 </div>
 
                                 <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Database Isolation</dt>
-                                    <dd className='mt-1 text-sm text-gray-900 dark:text-gray-100'>{worktree.database_isolation}</dd>
+                                    <dt className='text-sm font-medium text-muted-foreground'>Database Isolation</dt>
+                                    <dd className='mt-1 text-sm'>
+                                        <Badge variant='secondary'>{worktree.database_isolation}</Badge>
+                                    </dd>
                                 </div>
 
                                 <div>
-                                    <dt className='text-sm font-medium text-gray-500 dark:text-gray-400'>Created At</dt>
-                                    <dd className='mt-1 text-sm text-gray-900 dark:text-gray-100'>{new Date(worktree.created_at).toLocaleString()}</dd>
+                                    <dt className='text-sm font-medium text-muted-foreground'>Status</dt>
+                                    <dd className='mt-1 text-sm'>
+                                        <Badge variant={statusVariant[worktree.status]}>{worktree.status}</Badge>
+                                    </dd>
                                 </div>
 
-                                {worktree.error_message && (
-                                    <div>
-                                        <dt className='text-sm font-medium text-red-600 dark:text-red-400'>Error Message</dt>
-                                        <dd className='mt-1 text-sm text-red-600 dark:text-red-400'>{worktree.error_message}</dd>
-                                    </div>
-                                )}
+                                <div>
+                                    <dt className='text-sm font-medium text-muted-foreground'>Created At</dt>
+                                    <dd className='mt-1 text-sm'>{new Date(worktree.created_at).toLocaleString()}</dd>
+                                </div>
                             </dl>
-                        </div>
-
-                        <div className='flex gap-4'>
-                            {worktree.status === 'active' && (
-                                <button
-                                    onClick={handleOpenPreview}
-                                    className='rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700'
-                                >
-                                    Open in Browser
-                                </button>
-                            )}
-
-                            <form onSubmit={handleDelete}>
-                                <button type='submit' className='rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700'>
-                                    Delete Worktree
-                                </button>
-                            </form>
-                        </div>
-
-                        {worktree.status === 'creating' && (
-                            <div className='rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20'>
-                                <p className='text-sm text-yellow-800 dark:text-yellow-300'>
-                                    This worktree is being set up. You'll be notified when it's ready.
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                        </CardContent>
+                    </Card>
                 </div>
-            </div>
+            </AppLayout>
         </>
     );
 }
