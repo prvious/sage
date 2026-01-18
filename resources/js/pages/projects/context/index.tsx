@@ -1,22 +1,49 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { AppLayout } from '@/components/layout/app-layout';
-import { ContextIndexProps } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { FileText, Plus, Edit, Trash2, RefreshCw, AlertCircle } from 'lucide-react';
-import { useState } from 'react';
+import { Head, Link, router } from "@inertiajs/react";
+import { AppLayout } from "@/components/layout/app-layout";
+import { ContextIndexProps } from "@/types";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+    FileText,
+    Plus,
+    Edit,
+    Trash2,
+    RefreshCw,
+    AlertCircle,
+} from "lucide-react";
+import { useState } from "react";
 
 function formatFileSize(bytes: number): string {
     if (bytes < 1024) {
-        return bytes + ' B';
+        return bytes + " B";
     }
     if (bytes < 1024 * 1024) {
-        return (bytes / 1024).toFixed(2) + ' KB';
+        return (bytes / 1024).toFixed(2) + " KB";
     }
-    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -30,17 +57,17 @@ function formatRelativeTime(timestamp: number): string {
 
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     if (diffInMinutes < 60) {
-        return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
+        return `${diffInMinutes} minute${diffInMinutes !== 1 ? "s" : ""} ago`;
     }
 
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) {
-        return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
+        return `${diffInHours} hour${diffInHours !== 1 ? "s" : ""} ago`;
     }
 
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 7) {
-        return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+        return `${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
     }
 
     return date.toLocaleDateString();
@@ -83,40 +110,76 @@ export default function Index({ files, project }: ContextIndexProps) {
         <>
             <Head title={`Context Files - ${project.name}`} />
             <AppLayout>
-                <div className='p-6 space-y-6'>
-                    <div className='flex items-center justify-between'>
+                <div className="p-6 space-y-6">
+                    <div className="flex items-center justify-between">
                         <div>
-                            <h1 className='text-3xl font-bold'>Context Files</h1>
-                            <p className='text-muted-foreground mt-2'>Manage .ai/ directory markdown files for custom agent rules</p>
+                            <h1 className="text-3xl font-bold">
+                                Context Files
+                            </h1>
+                            <p className="text-muted-foreground mt-2">
+                                Manage .ai/ directory markdown files for custom
+                                agent rules
+                            </p>
                         </div>
-                        <div className='flex gap-2'>
-                            <Button variant='outline' onClick={handleAggregate} disabled={aggregating}>
-                                <RefreshCw className={`h-4 w-4 mr-2 ${aggregating ? 'animate-spin' : ''}`} />
-                                {aggregating ? 'Aggregating...' : 'Aggregate Files'}
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={handleAggregate}
+                                disabled={aggregating}
+                            >
+                                <RefreshCw
+                                    className={`h-4 w-4 mr-2 ${aggregating ? "animate-spin" : ""}`}
+                                />
+                                {aggregating
+                                    ? "Aggregating..."
+                                    : "Aggregate Files"}
                             </Button>
-                            <Button render={<Link href={`/projects/${project.id}/context/create`}>Create New File</Link>}>
-                                <Plus className='h-4 w-4 mr-2' />
+                            <Button
+                                render={
+                                    <Link
+                                        href={`/projects/${project.id}/context/create`}
+                                    >
+                                        Create New File
+                                    </Link>
+                                }
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
                                 Create New File
                             </Button>
                         </div>
                     </div>
 
                     <Alert>
-                        <AlertCircle className='h-4 w-4' />
+                        <AlertCircle className="h-4 w-4" />
                         <AlertDescription>
-                            Files in the .ai/ directory are aggregated into CLAUDE.md or AGENTS.md when you click "Aggregate Files". These files contain custom
-                            agent instructions organized by topic.
+                            Files in the .ai/ directory are aggregated into
+                            CLAUDE.md or AGENTS.md when you click "Aggregate
+                            Files". These files contain custom agent
+                            instructions organized by topic.
                         </AlertDescription>
                     </Alert>
 
                     {files.length === 0 ? (
                         <Card>
-                            <CardContent className='flex flex-col items-center justify-center py-12'>
-                                <FileText className='h-12 w-12 text-muted-foreground mb-4' />
-                                <p className='text-lg font-medium mb-2'>No Context Files</p>
-                                <p className='text-sm text-muted-foreground mb-4'>Create your first .ai/ file to start adding custom agent rules</p>
-                                <Button render={<Link href={`/projects/${project.id}/context/create`}>Create New File</Link>}>
-                                    <Plus className='h-4 w-4 mr-2' />
+                            <CardContent className="flex flex-col items-center justify-center py-12">
+                                <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                                <p className="text-lg font-medium mb-2">
+                                    No Context Files
+                                </p>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Create your first .ai/ file to start adding
+                                    custom agent rules
+                                </p>
+                                <Button
+                                    render={
+                                        <Link
+                                            href={`/projects/${project.id}/context/create`}
+                                        >
+                                            Create New File
+                                        </Link>
+                                    }
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
                                     Create New File
                                 </Button>
                             </CardContent>
@@ -124,8 +187,13 @@ export default function Index({ files, project }: ContextIndexProps) {
                     ) : (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Context Files ({files.length})</CardTitle>
-                                <CardDescription>Markdown files defining custom agent behaviors and rules</CardDescription>
+                                <CardTitle>
+                                    Context Files ({files.length})
+                                </CardTitle>
+                                <CardDescription>
+                                    Markdown files defining custom agent
+                                    behaviors and rules
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Table>
@@ -134,34 +202,54 @@ export default function Index({ files, project }: ContextIndexProps) {
                                             <TableHead>Filename</TableHead>
                                             <TableHead>Size</TableHead>
                                             <TableHead>Last Modified</TableHead>
-                                            <TableHead className='text-right'>Actions</TableHead>
+                                            <TableHead className="text-right">
+                                                Actions
+                                            </TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {files.map((file) => (
                                             <TableRow key={file.name}>
-                                                <TableCell className='font-medium'>{file.name}</TableCell>
-                                                <TableCell>{formatFileSize(file.size)}</TableCell>
-                                                <TableCell>{formatRelativeTime(file.modified_at)}</TableCell>
-                                                <TableCell className='text-right'>
-                                                    <div className='flex justify-end gap-2'>
+                                                <TableCell className="font-medium">
+                                                    {file.name}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {formatFileSize(file.size)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {formatRelativeTime(
+                                                        file.modified_at,
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex justify-end gap-2">
                                                         <Button
-                                                            variant='outline'
-                                                            size='sm'
-                                                            render={<Link href={`/projects/${project.id}/context/${file.name}/edit`}>Edit</Link>}
+                                                            variant="outline"
+                                                            size="sm"
+                                                            render={
+                                                                <Link
+                                                                    href={`/projects/${project.id}/context/${file.name}/edit`}
+                                                                >
+                                                                    Edit
+                                                                </Link>
+                                                            }
                                                         >
-                                                            <Edit className='h-4 w-4 mr-2' />
+                                                            <Edit className="h-4 w-4 mr-2" />
                                                             Edit
                                                         </Button>
                                                         <Button
-                                                            variant='destructive'
-                                                            size='sm'
+                                                            variant="destructive"
+                                                            size="sm"
                                                             onClick={() => {
-                                                                setFileToDelete(file.name);
-                                                                setDeleteDialogOpen(true);
+                                                                setFileToDelete(
+                                                                    file.name,
+                                                                );
+                                                                setDeleteDialogOpen(
+                                                                    true,
+                                                                );
                                                             }}
                                                         >
-                                                            <Trash2 className='h-4 w-4 mr-2' />
+                                                            <Trash2 className="h-4 w-4 mr-2" />
                                                             Delete
                                                         </Button>
                                                     </div>
@@ -175,19 +263,30 @@ export default function Index({ files, project }: ContextIndexProps) {
                     )}
                 </div>
 
-                <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <Dialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                >
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Delete Context File</DialogTitle>
                             <DialogDescription>
-                                Are you sure you want to delete <strong>{fileToDelete}</strong>? This action cannot be undone.
+                                Are you sure you want to delete{" "}
+                                <strong>{fileToDelete}</strong>? This action
+                                cannot be undone.
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
+                            <Button
+                                variant="outline"
+                                onClick={() => setDeleteDialogOpen(false)}
+                            >
                                 Cancel
                             </Button>
-                            <Button variant='destructive' onClick={handleDelete}>
+                            <Button
+                                variant="destructive"
+                                onClick={handleDelete}
+                            >
                                 Delete
                             </Button>
                         </DialogFooter>

@@ -1,13 +1,19 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import { AppLayout } from '@/components/layout/app-layout';
-import { ContextEditProps } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Save, X } from 'lucide-react';
-import MDEditor from '@uiw/react-md-editor';
-import { useState } from 'react';
+import { Head, Link, useForm } from "@inertiajs/react";
+import { AppLayout } from "@/components/layout/app-layout";
+import { ContextEditProps } from "@/types";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Save, X } from "lucide-react";
+import MDEditor from "@uiw/react-md-editor";
+import { useState } from "react";
 
 export default function Edit({ project, filename, content }: ContextEditProps) {
     const { data, setData, put, processing, errors } = useForm({
@@ -26,14 +32,25 @@ export default function Edit({ project, filename, content }: ContextEditProps) {
         <>
             <Head title={`Edit ${filename} - ${project.name}`} />
             <AppLayout>
-                <div className='p-6 space-y-6'>
-                    <div className='flex items-center justify-between'>
+                <div className="p-6 space-y-6">
+                    <div className="flex items-center justify-between">
                         <div>
-                            <h1 className='text-3xl font-bold'>Edit Context File</h1>
-                            <p className='text-muted-foreground mt-2'>Editing: {filename}</p>
+                            <h1 className="text-3xl font-bold">
+                                Edit Context File
+                            </h1>
+                            <p className="text-muted-foreground mt-2">
+                                Editing: {filename}
+                            </p>
                         </div>
-                        <Button variant='outline' render={<Link href={`/projects/${project.id}/context`}>Cancel</Link>}>
-                            <X className='h-4 w-4 mr-2' />
+                        <Button
+                            variant="outline"
+                            render={
+                                <Link href={`/projects/${project.id}/context`}>
+                                    Cancel
+                                </Link>
+                            }
+                        >
+                            <X className="h-4 w-4 mr-2" />
                             Cancel
                         </Button>
                     </div>
@@ -42,39 +59,60 @@ export default function Edit({ project, filename, content }: ContextEditProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle>File Content</CardTitle>
-                                <CardDescription>Edit the markdown content for this context file</CardDescription>
+                                <CardDescription>
+                                    Edit the markdown content for this context
+                                    file
+                                </CardDescription>
                             </CardHeader>
-                            <CardContent className='space-y-4'>
-                                <div className='space-y-2'>
-                                    <Label htmlFor='content'>Content</Label>
-                                    <div data-color-mode='light'>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="content">Content</Label>
+                                    <div data-color-mode="light">
                                         <MDEditor
                                             value={editorValue}
                                             onChange={(value) => {
-                                                setEditorValue(value || '');
-                                                setData('content', value || '');
+                                                setEditorValue(value || "");
+                                                setData("content", value || "");
                                             }}
                                             height={500}
-                                            preview='edit'
+                                            preview="edit"
                                         />
                                     </div>
-                                    {errors.content && <p className='text-sm text-destructive mt-2'>{errors.content}</p>}
+                                    {errors.content && (
+                                        <p className="text-sm text-destructive mt-2">
+                                            {errors.content}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {errors.error && (
-                                    <Alert variant='destructive'>
-                                        <AlertCircle className='h-4 w-4' />
-                                        <AlertDescription>{errors.error}</AlertDescription>
+                                    <Alert variant="destructive">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertDescription>
+                                            {errors.error}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
 
-                                <div className='flex justify-end gap-2 pt-4'>
-                                    <Button type='button' variant='outline' render={<Link href={`/projects/${project.id}/context`}>Cancel</Link>}>
+                                <div className="flex justify-end gap-2 pt-4">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        render={
+                                            <Link
+                                                href={`/projects/${project.id}/context`}
+                                            >
+                                                Cancel
+                                            </Link>
+                                        }
+                                    >
                                         Cancel
                                     </Button>
-                                    <Button type='submit' disabled={processing}>
-                                        <Save className='h-4 w-4 mr-2' />
-                                        {processing ? 'Saving...' : 'Save Changes'}
+                                    <Button type="submit" disabled={processing}>
+                                        <Save className="h-4 w-4 mr-2" />
+                                        {processing
+                                            ? "Saving..."
+                                            : "Save Changes"}
                                     </Button>
                                 </div>
                             </CardContent>

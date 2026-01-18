@@ -24,7 +24,6 @@ class UpdateProjectSettingsRequest extends FormRequest
         return [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'base_url' => ['sometimes', 'required', 'string', 'url', 'max:255'],
-            'server_driver' => ['sometimes', 'required', 'in:caddy,nginx,artisan'],
             'server_port' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:65535'],
             'tls_enabled' => ['sometimes', 'boolean'],
             'custom_domain' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -41,7 +40,6 @@ class UpdateProjectSettingsRequest extends FormRequest
     {
         return [
             'base_url.url' => 'The base URL must be a valid URL.',
-            'server_driver.in' => 'The server driver must be either caddy, nginx, or artisan.',
             'server_port.min' => 'The server port must be at least 1.',
             'server_port.max' => 'The server port cannot exceed 65535.',
         ];

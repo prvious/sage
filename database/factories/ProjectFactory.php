@@ -21,32 +21,12 @@ class ProjectFactory extends Factory
         return [
             'name' => $name,
             'path' => '/var/www/'.str_replace(' ', '-', strtolower($name)),
-            'server_driver' => fake()->randomElement(['caddy', 'nginx', 'artisan']),
+            'server_driver' => 'artisan',
             'base_url' => 'http://'.strtolower(str_replace(' ', '', $name)).'.local',
             'server_port' => null,
             'tls_enabled' => false,
             'custom_domain' => null,
             'custom_directives' => null,
         ];
-    }
-
-    /**
-     * Indicate that the project uses Caddy as the server driver.
-     */
-    public function caddy(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'server_driver' => 'caddy',
-        ]);
-    }
-
-    /**
-     * Indicate that the project uses Nginx as the server driver.
-     */
-    public function nginx(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'server_driver' => 'nginx',
-        ]);
     }
 }

@@ -21,4 +21,14 @@ interface ServerDriverInterface
      * Validate if the server driver is available on the system.
      */
     public function validate(): bool;
+
+    /**
+     * Start the server for a specific worktree.
+     */
+    public function start(Worktree $worktree): void;
+
+    /**
+     * Stop the server for a specific worktree.
+     */
+    public function stop(Worktree $worktree): void;
 }

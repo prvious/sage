@@ -24,7 +24,6 @@ class StoreProjectRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'path' => ['required', 'string', 'unique:projects,path'],
-            'server_driver' => ['required', 'in:caddy,nginx,artisan'],
             'base_url' => ['required', 'string', 'max:255'],
         ];
     }

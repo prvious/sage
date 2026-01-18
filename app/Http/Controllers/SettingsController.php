@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Server\GetServerStatus;
-use App\Actions\Server\RegenerateServerConfig;
-use App\Actions\Server\SwitchServerDriver;
 use App\Actions\Server\TestServerConnection;
 use App\Actions\Settings\UpdateProjectSettings;
 use App\Http\Requests\UpdateProjectSettingsRequest;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -42,23 +39,6 @@ class SettingsController extends Controller
     }
 
     /**
-     * Update server driver.
-     */
-    public function updateServerDriver(
-        Request $request,
-        Project $project,
-        SwitchServerDriver $switchServerDriver
-    ): RedirectResponse {
-        $request->validate([
-            'server_driver' => ['required', 'in:caddy,nginx,artisan'],
-        ]);
-
-        $switchServerDriver->handle($project, $request->input('server_driver'));
-
-        return redirect()->back()->with('success', 'Server driver switched successfully.');
-    }
-
-    /**
      * Test server connection.
      */
     public function testServer(
@@ -68,17 +48,5 @@ class SettingsController extends Controller
         $result = $testServerConnection->handle($project);
 
         return response()->json($result);
-    }
-
-    /**
-     * Regenerate server configuration.
-     */
-    public function regenerateConfig(
-        Project $project,
-        RegenerateServerConfig $regenerateServerConfig
-    ): RedirectResponse {
-        $regenerateServerConfig->handle($project);
-
-        return redirect()->back()->with('success', 'Server configuration regenerated successfully.');
     }
 }

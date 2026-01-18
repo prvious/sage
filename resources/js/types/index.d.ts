@@ -1,5 +1,5 @@
-import { InertiaLinkProps } from '@inertiajs/react';
-import { LucideIcon } from 'lucide-react';
+import { InertiaLinkProps } from "@inertiajs/react";
+import { LucideIcon } from "lucide-react";
 
 export interface Auth {
     user: User;
@@ -98,7 +98,7 @@ export interface Task {
     worktree_id: number | null;
     title: string;
     description: string | null;
-    status: 'queued' | 'in_progress' | 'waiting_review' | 'done';
+    status: "queued" | "in_progress" | "waiting_review" | "done";
     agent_type: string | null;
     model: string | null;
     agent_output: string | null;

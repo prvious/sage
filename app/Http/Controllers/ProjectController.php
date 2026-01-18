@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\ListDirectory;
 use App\Actions\ValidateProject;
-use App\Drivers\Server\Manager as ServerManager;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
@@ -72,18 +71,14 @@ class ProjectController extends Controller
     /**
      * Store a newly created project.
      */
-    public function store(StoreProjectRequest $request, ValidateProject $validateProject, ServerManager $serverManager): RedirectResponse
+    public function store(StoreProjectRequest $request, ValidateProject $validateProject): RedirectResponse
     {
         $validateProject->handle($request->validated('path'));
 
-        $driver = $serverManager->driver($request->validated('server_driver'));
-        if (! $driver->validate()) {
-            return back()->withErrors([
-                'server_driver' => "The {$request->validated('server_driver')} server is not available on this system.",
-            ]);
-        }
+        $data = $request->validated();
+        $data['server_driver'] = 'artisan';
 
-        $project = Project::create($request->validated());
+        $project = Project::create($data);
 
         return redirect()->route('projects.dashboard', $project)
             ->with('success', 'Project created successfully.');

@@ -27,6 +27,10 @@ it('displays projects index page with projects list', function () {
             ->has('path')
             ->has('server_driver')
             ->has('base_url')
+            ->has('server_port')
+            ->has('tls_enabled')
+            ->has('custom_domain')
+            ->has('custom_directives')
             ->has('worktrees_count')
             ->has('tasks_count')
             ->has('created_at')
@@ -39,7 +43,7 @@ it('includes all required project data for display', function () {
     $project = Project::factory()->create([
         'name' => 'Test Project',
         'path' => '/var/www/test',
-        'server_driver' => 'caddy',
+        'server_driver' => 'artisan',
         'base_url' => 'https://test.local',
     ]);
 
@@ -51,7 +55,7 @@ it('includes all required project data for display', function () {
         ->where('projects.0.id', $project->id)
         ->where('projects.0.name', 'Test Project')
         ->where('projects.0.path', '/var/www/test')
-        ->where('projects.0.server_driver', 'caddy')
+        ->where('projects.0.server_driver', 'artisan')
         ->where('projects.0.base_url', 'https://test.local')
     );
 });

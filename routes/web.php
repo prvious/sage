@@ -29,9 +29,7 @@ Route::resource('projects.worktrees', WorktreeController::class)
 Route::prefix('projects/{project}')->name('projects.')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
-    Route::post('/settings/server-driver', [SettingsController::class, 'updateServerDriver'])->name('settings.server-driver');
     Route::post('/settings/test-server', [SettingsController::class, 'testServer'])->name('settings.test-server');
-    Route::post('/settings/regenerate-config', [SettingsController::class, 'regenerateConfig'])->name('settings.regenerate-config');
 
     // Environment Routes (project-scoped)
     Route::get('/environment', [EnvironmentController::class, 'index'])->name('environment.index');

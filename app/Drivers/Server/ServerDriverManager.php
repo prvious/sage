@@ -7,22 +7,6 @@ use Illuminate\Support\Manager;
 class ServerDriverManager extends Manager
 {
     /**
-     * Create an instance of the Caddy driver
-     */
-    public function createCaddyDriver(): CaddyDriver
-    {
-        return $this->container->make(CaddyDriver::class);
-    }
-
-    /**
-     * Create an instance of the Nginx driver
-     */
-    public function createNginxDriver(): NginxDriver
-    {
-        return $this->container->make(NginxDriver::class);
-    }
-
-    /**
      * Create an instance of the Artisan driver
      */
     public function createArtisanDriver(): ArtisanDriver
@@ -35,6 +19,6 @@ class ServerDriverManager extends Manager
      */
     public function getDefaultDriver(): string
     {
-        return config('sage.server.default', 'caddy');
+        return 'artisan';
     }
 }

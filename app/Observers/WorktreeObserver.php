@@ -12,31 +12,15 @@ class WorktreeObserver
 {
     public function created(Worktree $worktree): void
     {
-        // Add virtual host configuration via server driver
-        if ($worktree->preview_url && $worktree->project) {
+        // Start artisan serve for the worktree
+        if ($worktree->project) {
             try {
                 $driver = app('server.driver')->driver($worktree->project->server_driver);
 
-                // Extract port from preview URL or use default
-                $port = 8000; // Default Laravel Octane port
-
-                $added = $driver->addVirtualHost(
-                    $worktree->preview_url,
-                    $worktree->path.'/public',
-                    $port
-                );
-
-                if (! $added) {
-                    Log::warning('Failed to add virtual host', [
-                        'worktree_id' => $worktree->id,
-                        'preview_url' => $worktree->preview_url,
-                        'driver' => $worktree->project->server_driver,
-                    ]);
-                }
+                $driver->start($worktree);
             } catch (\Exception $e) {
-                Log::error('Error adding virtual host', [
+                Log::error('Error starting server for worktree', [
                     'worktree_id' => $worktree->id,
-                    'preview_url' => $worktree->preview_url,
                     'error' => $e->getMessage(),
                 ]);
             }
@@ -45,24 +29,15 @@ class WorktreeObserver
 
     public function deleted(Worktree $worktree): void
     {
-        // Remove virtual host configuration via server driver
-        if ($worktree->preview_url && $worktree->project) {
+        // Stop artisan serve for the worktree
+        if ($worktree->project) {
             try {
                 $driver = app('server.driver')->driver($worktree->project->server_driver);
 
-                $removed = $driver->removeVirtualHost($worktree->preview_url);
-
-                if (! $removed) {
-                    Log::warning('Failed to remove virtual host', [
-                        'worktree_id' => $worktree->id,
-                        'preview_url' => $worktree->preview_url,
-                        'driver' => $worktree->project->server_driver,
-                    ]);
-                }
+                $driver->stop($worktree);
             } catch (\Exception $e) {
-                Log::error('Error removing virtual host', [
+                Log::error('Error stopping server for worktree', [
                     'worktree_id' => $worktree->id,
-                    'preview_url' => $worktree->preview_url,
                     'error' => $e->getMessage(),
                 ]);
             }

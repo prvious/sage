@@ -81,7 +81,7 @@ it('updates tls enabled setting', function () {
 it('updates custom directives', function () {
     $project = Project::factory()->create();
 
-    $directives = 'custom caddy directives';
+    $directives = 'custom server directives';
 
     $response = put("/projects/{$project->id}/settings", [
         'custom_directives' => $directives,
@@ -89,42 +89,6 @@ it('updates custom directives', function () {
 
     $response->assertRedirect();
     expect($project->fresh()->custom_directives)->toBe($directives);
-});
-
-it('switches server driver from caddy to nginx', function () {
-    $project = Project::factory()->create([
-        'server_driver' => 'caddy',
-    ]);
-
-    $response = post("/projects/{$project->id}/settings/server-driver", [
-        'server_driver' => 'nginx',
-    ]);
-
-    $response->assertRedirect();
-    expect($project->fresh()->server_driver)->toBe('nginx');
-});
-
-it('switches server driver from nginx to artisan', function () {
-    $project = Project::factory()->create([
-        'server_driver' => 'nginx',
-    ]);
-
-    $response = post("/projects/{$project->id}/settings/server-driver", [
-        'server_driver' => 'artisan',
-    ]);
-
-    $response->assertRedirect();
-    expect($project->fresh()->server_driver)->toBe('artisan');
-});
-
-it('validates server driver must be valid option', function () {
-    $project = Project::factory()->create();
-
-    $response = post("/projects/{$project->id}/settings/server-driver", [
-        'server_driver' => 'invalid',
-    ]);
-
-    $response->assertSessionHasErrors('server_driver');
 });
 
 it('tests server connection', function () {
@@ -139,14 +103,6 @@ it('tests server connection', function () {
         'success',
         'message',
     ]);
-});
-
-it('regenerates server config', function () {
-    $project = Project::factory()->create();
-
-    $response = post("/projects/{$project->id}/settings/regenerate-config");
-
-    $response->assertRedirect();
 });
 
 it('updates server port to null', function () {
