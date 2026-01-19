@@ -18,11 +18,7 @@ class AgentSettingFactory extends Factory
     {
         return [
             'project_id' => \App\Models\Project::factory(),
-            'default_agent' => fake()->randomElement(['claude-code', 'opencode']),
-            'claude_code_api_key' => null,
-            'opencode_api_key' => null,
-            'claude_code_last_tested_at' => null,
-            'opencode_last_tested_at' => null,
+            'default_agent' => 'claude-code',
         ];
     }
 }

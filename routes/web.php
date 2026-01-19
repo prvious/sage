@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\BrainstormController;
-use App\Http\Controllers\ContextController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnvironmentController;
+use App\Http\Controllers\GuidelineController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectAgentController;
 use App\Http\Controllers\ProjectController;
@@ -47,21 +47,18 @@ Route::prefix('projects/{project}')->name('projects.')->group(function () {
     Route::get('/specs/{spec}/edit', [SpecController::class, 'edit'])->name('specs.edit');
     Route::post('/specs/{spec}/refine', [SpecController::class, 'refine'])->name('specs.refine');
 
-    // Context Routes (project-scoped)
-    Route::get('/context', [ContextController::class, 'index'])->name('context.index');
-    Route::get('/context/create', [ContextController::class, 'create'])->name('context.create');
-    Route::post('/context', [ContextController::class, 'store'])->name('context.store');
-    Route::get('/context/{file}', [ContextController::class, 'show'])->name('context.show');
-    Route::get('/context/{file}/edit', [ContextController::class, 'edit'])->name('context.edit');
-    Route::put('/context/{file}', [ContextController::class, 'update'])->name('context.update');
-    Route::delete('/context/{file}', [ContextController::class, 'destroy'])->name('context.destroy');
-    Route::post('/context/aggregate', [ContextController::class, 'aggregate'])->name('context.aggregate');
+    // Custom Guidelines Routes (project-scoped)
+    Route::get('/guidelines', [GuidelineController::class, 'index'])->name('guidelines.index');
+    Route::get('/guidelines/create', [GuidelineController::class, 'create'])->name('guidelines.create');
+    Route::post('/guidelines', [GuidelineController::class, 'store'])->name('guidelines.store');
+    Route::get('/guidelines/{guideline}', [GuidelineController::class, 'show'])->name('guidelines.show');
+    Route::get('/guidelines/{guideline}/edit', [GuidelineController::class, 'edit'])->name('guidelines.edit');
+    Route::put('/guidelines/{guideline}', [GuidelineController::class, 'update'])->name('guidelines.update');
+    Route::delete('/guidelines/{guideline}', [GuidelineController::class, 'destroy'])->name('guidelines.destroy');
+    Route::post('/guidelines/aggregate', [GuidelineController::class, 'aggregate'])->name('guidelines.aggregate');
 
     // Agent Settings Routes (project-scoped)
     Route::get('/agent', [ProjectAgentController::class, 'index'])->name('agent.index');
-    Route::post('/agent/default', [ProjectAgentController::class, 'updateDefault'])->name('agent.updateDefault');
-    Route::post('/agent/api-key', [ProjectAgentController::class, 'storeApiKey'])->name('agent.storeApiKey');
-    Route::post('/agent/test/{agentType}', [ProjectAgentController::class, 'testConnection'])->name('agent.testConnection');
 
     // Brainstorm Routes (project-scoped)
     Route::get('/brainstorm', [BrainstormController::class, 'index'])->name('brainstorm.index');

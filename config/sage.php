@@ -52,19 +52,15 @@ return [
     |--------------------------------------------------------------------------
     |
     | Configure the agent driver system for spawning and managing AI coding agents.
-    | Supported drivers: claude, opencode, fake
+    | Currently only supports Claude Code and a fake driver for testing.
     |
     */
     'agents' => [
-        'default' => env('SAGE_AGENT', 'claude'),
+        'default' => 'claude',
 
         'claude' => [
             'binary' => env('CLAUDE_CODE_PATH', 'claude'),
             'default_model' => env('CLAUDE_DEFAULT_MODEL', 'claude-sonnet-4-20250514'),
-        ],
-
-        'opencode' => [
-            'binary' => env('OPENCODE_PATH', 'opencode'),
         ],
 
         'fake' => [
@@ -82,4 +78,15 @@ return [
     |
     */
     'last_project_ttl' => env('LAST_PROJECT_TTL', 60 * 24 * 30), // 30 days
+
+    /*
+    |--------------------------------------------------------------------------
+    | Command Path Cache TTL
+    |--------------------------------------------------------------------------
+    |
+    | This value determines how long (in seconds) command paths resolved by
+    | the FindCommandPath action will be cached. Default is 1 hour (3600 seconds).
+    |
+    */
+    'command_path_cache_ttl' => env('COMMAND_PATH_CACHE_TTL', 3600), // 1 hour
 ];

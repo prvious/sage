@@ -15,10 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->string('default_agent')->default('claude-code');
-            $table->text('claude_code_api_key')->nullable();
-            $table->text('opencode_api_key')->nullable();
-            $table->timestamp('claude_code_last_tested_at')->nullable();
-            $table->timestamp('opencode_last_tested_at')->nullable();
             $table->timestamps();
 
             $table->unique('project_id');

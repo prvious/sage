@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('branch_name');
             $table->string('path')->unique();
             $table->string('preview_url');
-            $table->enum('status', ['creating', 'active', 'error', 'cleaning_up', 'deleted'])->default('creating');
-            $table->enum('database_isolation', ['separate', 'prefix', 'shared'])->default('separate');
+            $table->string('status')->default('creating');
+            $table->string('database_isolation')->default('separate');
             $table->text('error_message')->nullable();
             $table->json('env_overrides')->nullable();
             $table->timestamps();

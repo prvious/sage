@@ -13,20 +13,11 @@ class AgentSetting extends Model
     protected $fillable = [
         'project_id',
         'default_agent',
-        'claude_code_api_key',
-        'opencode_api_key',
-        'claude_code_last_tested_at',
-        'opencode_last_tested_at',
     ];
 
     protected function casts(): array
     {
-        return [
-            'claude_code_last_tested_at' => 'datetime',
-            'opencode_last_tested_at' => 'datetime',
-            'claude_code_api_key' => 'encrypted',
-            'opencode_api_key' => 'encrypted',
-        ];
+        return [];
     }
 
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo

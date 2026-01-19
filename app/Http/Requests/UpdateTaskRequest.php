@@ -26,7 +26,7 @@ class UpdateTaskRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'status' => ['sometimes', 'in:idea,in_progress,review,done,failed'],
             'worktree_id' => ['nullable', 'exists:worktrees,id'],
-            'agent_type' => ['nullable', 'in:claude,opencode'],
+            'agent_type' => ['nullable', 'in:claude'],
             'model' => ['nullable', 'string'],
         ];
     }

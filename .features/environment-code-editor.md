@@ -9,6 +9,7 @@ depends_on: null
 Replace the current form-based environment variable editor with a single code editor interface that provides a native file editing experience. Instead of individual input fields for each variable, users will edit the raw .env file content directly in an editor with syntax highlighting and validation.
 
 This change provides:
+
 - More natural editing experience for developers familiar with .env files
 - Ability to preserve comments and formatting
 - Faster editing with keyboard shortcuts and multi-cursor support
@@ -20,6 +21,7 @@ This change provides:
 ### Package Selection
 
 **Recommended: Monaco Editor** (`@monaco-editor/react`)
+
 - Same editor that powers VS Code
 - Excellent TypeScript support
 - Built-in .env syntax highlighting
@@ -28,6 +30,7 @@ This change provides:
 - Command: `pnpm add @monaco-editor/react monaco-editor`
 
 **Alternative: CodeMirror 6** (`@uiw/react-codemirror`)
+
 - Lighter weight than Monaco
 - Good performance
 - Simpler API
@@ -36,51 +39,58 @@ This change provides:
 ### Backend Components
 
 **Update Controller**:
+
 - `app/Http/Controllers/EnvironmentController.php`
-  - Modify `index()` to return raw .env content instead of parsed variables
-  - Keep backup/restore functionality unchanged
-  - Update validation to work with raw content
+    - Modify `index()` to return raw .env content instead of parsed variables
+    - Keep backup/restore functionality unchanged
+    - Update validation to work with raw content
 
 **Update Actions**:
+
 - `app/Actions/ReadEnvFile.php`
-  - Add method to return raw content: `handleRaw(string $path): string`
-  - Keep existing `handle()` for backward compatibility if needed elsewhere
+    - Add method to return raw content: `handleRaw(string $path): string`
+    - Keep existing `handle()` for backward compatibility if needed elsewhere
 
 - `app/Actions/WriteEnvFile.php`
-  - Add method to write raw content: `handleRaw(string $path, string $content): void`
-  - Validate content is valid .env format before writing
-  - Keep existing `handle()` for backward compatibility
+    - Add method to write raw content: `handleRaw(string $path, string $content): void`
+    - Validate content is valid .env format before writing
+    - Keep existing `handle()` for backward compatibility
 
 **Update Form Request**:
+
 - `app/Http/Requests/UpdateEnvironmentRequest.php`
-  - Change validation from array of variables to single content string
-  - Add validation to ensure valid .env format
-  - Check for required variables if needed
+    - Change validation from array of variables to single content string
+    - Add validation to ensure valid .env format
+    - Check for required variables if needed
 
 ### Frontend Components
 
 **Remove Files**:
+
 - `resources/js/components/env-variable-form.tsx` - Delete old form component
 
 **Create New Component**:
+
 - `resources/js/components/env-editor.tsx`
-  - Monaco Editor integration
-  - .env language/syntax highlighting
-  - Auto-save or manual save with Cmd/Ctrl+S
-  - Loading state while fetching content
-  - Error boundary for editor failures
-  - Dark mode support matching app theme
+    - Monaco Editor integration
+    - .env language/syntax highlighting
+    - Auto-save or manual save with Cmd/Ctrl+S
+    - Loading state while fetching content
+    - Error boundary for editor failures
+    - Dark mode support matching app theme
 
 **Update Page**:
+
 - `resources/js/pages/projects/environment.tsx`
-  - Replace `<EnvVariableForm>` with `<EnvEditor>`
-  - Update props to pass raw content instead of grouped variables
-  - Keep backup/restore UI
-  - Keep alerts for errors and missing variables
+    - Replace `<EnvVariableForm>` with `<EnvEditor>`
+    - Update props to pass raw content instead of grouped variables
+    - Keep backup/restore UI
+    - Keep alerts for errors and missing variables
 
 ### Monaco Editor Configuration
 
 **Editor Options**:
+
 ```typescript
 {
   language: 'ini', // .env files use INI-like syntax
@@ -96,6 +106,7 @@ This change provides:
 ```
 
 **Custom .env Language** (optional enhancement):
+
 - Define custom language mode for better .env syntax
 - Highlight variable names differently from values
 - Mark sensitive variables (API keys, passwords)
@@ -104,6 +115,7 @@ This change provides:
 ### Data Flow
 
 **Current Flow**:
+
 1. Backend parses .env → grouped variables object
 2. Frontend renders individual inputs per variable
 3. User edits individual fields
@@ -111,6 +123,7 @@ This change provides:
 5. Backend reconstructs .env file
 
 **New Flow**:
+
 1. Backend reads .env → raw string content
 2. Frontend displays in Monaco Editor
 3. User edits raw content
@@ -120,11 +133,13 @@ This change provides:
 ### Validation Strategy
 
 **Frontend Validation**:
+
 - Warn on invalid .env syntax (optional, non-blocking)
 - Check for empty variable names
 - Highlight potential issues
 
 **Backend Validation**:
+
 - Validate .env format before writing
 - Ensure required variables are present
 - Prevent writing if validation fails
@@ -133,6 +148,7 @@ This change provides:
 ### Backup/Restore Functionality
 
 **Keep Existing Behavior**:
+
 - Auto-backup before each save
 - Restore from backup list
 - Show backup timestamps
@@ -141,22 +157,25 @@ This change provides:
 ### Testing Strategy
 
 **Update Existing Tests**:
+
 - `tests/Feature/Http/Controllers/EnvironmentControllerTest.php`
-  - Update to test raw content endpoints
-  - Test validation for malformed .env content
-  - Test backup creation still works
-  - Test restore functionality
+    - Update to test raw content endpoints
+    - Test validation for malformed .env content
+    - Test backup creation still works
+    - Test restore functionality
 
 **Browser Tests**:
+
 - `tests/Browser/Environment/EnvEditorTest.php`
-  - Test editor loads with current .env content
-  - Test editing and saving content
-  - Test validation errors display
-  - Test dark/light mode theme switching
-  - Test keyboard shortcuts (Cmd/Ctrl+S to save)
-  - Test large .env files load properly
+    - Test editor loads with current .env content
+    - Test editing and saving content
+    - Test validation errors display
+    - Test dark/light mode theme switching
+    - Test keyboard shortcuts (Cmd/Ctrl+S to save)
+    - Test large .env files load properly
 
 **Key Test Cases**:
+
 - Loading existing .env content
 - Editing and saving valid content
 - Handling invalid .env syntax
@@ -241,14 +260,16 @@ export function EnvEditor({ content, envPath, projectId }: EnvEditorProps) {
 ## Code Formatting
 
 Format all code using:
+
 - **Backend (PHP)**: Laravel Pint
-  - Command: `vendor/bin/pint --dirty`
+    - Command: `vendor/bin/pint --dirty`
 - **Frontend (TypeScript/React)**: Prettier
-  - Command: `pnpm run format`
+    - Command: `pnpm run format`
 
 ## Additional Notes
 
 ### Monaco Editor Benefits
+
 - Industry-standard editor (VS Code)
 - Excellent accessibility support
 - Built-in keyboard shortcuts developers expect
@@ -257,26 +278,31 @@ Format all code using:
 - Undo/redo with full history
 
 ### Sensitive Variables
+
 - Consider adding visual indicators for sensitive variables (API keys, passwords)
 - Could highlight lines containing common sensitive patterns
 - Optional: Add warning when sensitive values are visible
 
 ### Auto-Save
+
 - Consider implementing auto-save with debouncing
 - Could save on blur or after 2 seconds of inactivity
 - Show "Saving..." indicator during auto-save
 
 ### Mobile Considerations
+
 - Monaco Editor works on mobile but might not be ideal
 - Consider showing a warning or simpler textarea on small screens
 - Or keep mobile editing functional but inform users desktop is better
 
 ### Performance
+
 - Monaco lazy loads language support
 - First load might take a moment - show loading state
 - Consider preloading Monaco on page navigation
 
 ### Future Enhancements
+
 - .env file templates for common setups
 - Variable suggestions based on Laravel standards
 - Duplicate variable detection

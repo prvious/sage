@@ -15,14 +15,6 @@ class AgentManager extends Manager
     }
 
     /**
-     * Create an instance of the OpenCode driver.
-     */
-    public function createOpencodeDriver(): OpenCodeDriver
-    {
-        return $this->container->make(OpenCodeDriver::class);
-    }
-
-    /**
      * Create an instance of the Fake agent driver.
      */
     public function createFakeDriver(): FakeAgentDriver
@@ -35,6 +27,6 @@ class AgentManager extends Manager
      */
     public function getDefaultDriver(): string
     {
-        return config('sage.agents.default', 'claude');
+        return 'claude';
     }
 }

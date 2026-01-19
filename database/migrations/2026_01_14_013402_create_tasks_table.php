@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('worktree_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
             $table->text('description');
-            $table->enum('status', ['idea', 'in_progress', 'review', 'done', 'failed'])->default('idea');
+            $table->string('status')->default('queued');
             $table->string('agent_type')->nullable();
             $table->string('model')->nullable();
             $table->text('agent_output')->nullable();

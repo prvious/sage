@@ -1,20 +1,8 @@
-import { Link, usePage } from "@inertiajs/react";
-import { FolderOpen, Plus } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-    Sidebar,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { Link, usePage } from '@inertiajs/react';
+import { FolderOpen, Plus } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Sidebar, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 
 interface Project {
     id: number;
@@ -31,20 +19,20 @@ export function ProjectSidebar({ projects }: ProjectSidebarProps) {
 
     return (
         <SidebarGroup>
-            <SidebarGroupContent className="px-0">
+            <SidebarGroupContent className='px-0'>
                 <SidebarMenu>
                     {/* Add Project Button */}
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             tooltip={{
-                                children: "Create New Project",
+                                children: 'Create New Project',
                                 hidden: false,
                             }}
-                            className="px-0 rounded-full"
+                            className='px-0 rounded-full'
                             render={() => (
-                                <Link href="/projects/create">
-                                    <div className="flex aspect-square size-10 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/50 hover:border-muted-foreground hover:bg-muted/50 transition-colors">
-                                        <Plus className="h-5 w-5 text-muted-foreground" />
+                                <Link href='/projects/create'>
+                                    <div className='flex aspect-square size-10 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/50 hover:border-muted-foreground hover:bg-muted/50 transition-colors'>
+                                        <Plus className='h-5 w-5 text-muted-foreground' />
                                     </div>
                                 </Link>
                             )}
@@ -59,14 +47,12 @@ export function ProjectSidebar({ projects }: ProjectSidebarProps) {
                                     children: item.name,
                                     hidden: false,
                                 }}
-                                variant="outline"
+                                variant='outline'
                                 isActive={item.path === path}
-                                className="px-0 rounded-full"
+                                className='px-0 rounded-full'
                             >
-                                <Avatar size="lg">
-                                    <AvatarFallback>
-                                        {item.name.charAt(0).toUpperCase()}
-                                    </AvatarFallback>
+                                <Avatar size='lg'>
+                                    <AvatarFallback>{item.name.charAt(0).toUpperCase()}</AvatarFallback>
                                 </Avatar>
                                 <span>{item.name}</span>
                             </SidebarMenuButton>

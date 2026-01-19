@@ -10,6 +10,11 @@
             "type": "local",
             "enabled": true,
             "command": ["npx", "shadcn@latest", "mcp"]
+        },
+        "laravel-inertia": {
+            "type": "remote",
+            "enabled": true,
+            "url": "https://inertiajs.com/docs/mcp"
         }
     }
 }

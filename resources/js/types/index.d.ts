@@ -1,5 +1,5 @@
-import { InertiaLinkProps } from "@inertiajs/react";
-import { LucideIcon } from "lucide-react";
+import { InertiaLinkProps } from '@inertiajs/react';
+import { LucideIcon } from 'lucide-react';
 
 export interface Auth {
     user: User;
@@ -64,29 +64,29 @@ export interface AgentsIndexProps extends SharedData {
     runningAgents: RunningAgent[];
 }
 
-export interface ContextFile {
+export interface GuidelineFile {
     name: string;
     path: string;
     size: number;
     modified_at: number;
 }
 
-export interface ContextIndexProps extends SharedData {
-    files: ContextFile[];
+export interface GuidelineIndexProps extends SharedData {
+    files: GuidelineFile[];
     project: Project;
 }
 
-export interface ContextCreateProps extends SharedData {
+export interface GuidelineCreateProps extends SharedData {
     project: Project;
 }
 
-export interface ContextEditProps extends SharedData {
+export interface GuidelineEditProps extends SharedData {
     project: Project;
     filename: string;
     content: string;
 }
 
-export interface ContextShowProps extends SharedData {
+export interface GuidelineShowProps extends SharedData {
     project: Project;
     filename: string;
     content: string;
@@ -98,7 +98,7 @@ export interface Task {
     worktree_id: number | null;
     title: string;
     description: string | null;
-    status: "queued" | "in_progress" | "waiting_review" | "done";
+    status: 'queued' | 'in_progress' | 'waiting_review' | 'done';
     agent_type: string | null;
     model: string | null;
     agent_output: string | null;

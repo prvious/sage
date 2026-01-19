@@ -49,7 +49,7 @@ class TaskFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => \App\Enums\TaskStatus::InProgress,
-            'agent_type' => fake()->randomElement(['claude', 'opencode']),
+            'agent_type' => 'claude',
             'model' => 'claude-sonnet-4-20250514',
             'started_at' => now()->subHours(fake()->numberBetween(1, 24)),
         ]);
@@ -62,7 +62,7 @@ class TaskFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => \App\Enums\TaskStatus::WaitingReview,
-            'agent_type' => fake()->randomElement(['claude', 'opencode']),
+            'agent_type' => 'claude',
             'model' => 'claude-sonnet-4-20250514',
             'started_at' => now()->subHours(fake()->numberBetween(24, 72)),
             'completed_at' => now()->subHours(fake()->numberBetween(1, 23)),
@@ -76,7 +76,7 @@ class TaskFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => \App\Enums\TaskStatus::Done,
-            'agent_type' => fake()->randomElement(['claude', 'opencode']),
+            'agent_type' => 'claude',
             'model' => 'claude-sonnet-4-20250514',
             'started_at' => now()->subDays(fake()->numberBetween(1, 7)),
             'completed_at' => now()->subDays(fake()->numberBetween(1, 6)),

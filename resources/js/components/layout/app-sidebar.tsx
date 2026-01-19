@@ -23,7 +23,7 @@ import {
 import { Link, usePage } from "@inertiajs/react";
 import { SharedData } from "@/types";
 import BrainstormController from "@/actions/App/Http/Controllers/BrainstormController";
-import ContextController from "@/actions/App/Http/Controllers/ContextController";
+import GuidelineController from "@/actions/App/Http/Controllers/GuidelineController";
 import DashboardController from "@/actions/App/Http/Controllers/DashboardController";
 import EnvironmentController from "@/actions/App/Http/Controllers/EnvironmentController";
 import ProjectAgentController from "@/actions/App/Http/Controllers/ProjectAgentController";
@@ -74,9 +74,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   href: "#",
               },
               {
-                  label: "Context",
+                  label: "Guidelines",
                   icon: FileEdit,
-                  href: ContextController.index(selectedProject.id),
+                  href: GuidelineController.index(selectedProject.id),
               },
               {
                   label: "Agent",
