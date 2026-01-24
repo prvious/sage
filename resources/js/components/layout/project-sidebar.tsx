@@ -1,8 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
-import { FolderOpen, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Sidebar, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 
 interface Project {
     id: number;
@@ -20,18 +19,14 @@ export function ProjectSidebar({ projects }: ProjectSidebarProps) {
     return (
         <SidebarGroup>
             <SidebarGroupContent className='px-0'>
-                <SidebarMenu>
+                <SidebarMenu className='gap-2'>
                     {/* Add Project Button */}
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                            tooltip={{
-                                children: 'Create New Project',
-                                hidden: false,
-                            }}
                             className='px-0 rounded-full'
                             render={() => (
                                 <Link href='/projects/create'>
-                                    <div className='flex aspect-square size-10 items-center justify-center rounded-full border-2 border-dashed border-muted-foreground/50 hover:border-muted-foreground hover:bg-muted/50 transition-colors'>
+                                    <div className='flex aspect-square size-full items-center justify-center rounded-full border border-dashed border-muted-foreground/50 hover:border-muted-foreground hover:bg-muted/50 transition-colors'>
                                         <Plus className='h-5 w-5 text-muted-foreground' />
                                     </div>
                                 </Link>
@@ -43,19 +38,14 @@ export function ProjectSidebar({ projects }: ProjectSidebarProps) {
                     {projects.map((item) => (
                         <SidebarMenuItem key={item.id}>
                             <SidebarMenuButton
-                                tooltip={{
-                                    children: item.name,
-                                    hidden: false,
-                                }}
-                                variant='outline'
-                                isActive={item.path === path}
+                                isActive={path === item.path}
                                 className='px-0 rounded-full'
-                            >
-                                <Avatar size='lg'>
-                                    <AvatarFallback>{item.name.charAt(0).toUpperCase()}</AvatarFallback>
-                                </Avatar>
-                                <span>{item.name}</span>
-                            </SidebarMenuButton>
+                                render={() => (
+                                    <div className='flex aspect-square size-full items-center justify-center rounded-full border border-background bg-background hover:bg-muted/50 transition-colors'>
+                                        <span className='size-5 flex items-center justify-center'>{item.name.charAt(0).toUpperCase()}</span>
+                                    </div>
+                                )}
+                            />
                         </SidebarMenuItem>
                     ))}
                 </SidebarMenu>

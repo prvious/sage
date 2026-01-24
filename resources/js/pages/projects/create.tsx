@@ -30,7 +30,7 @@ interface Props {
     homePath: string;
 }
 
-export default function Create({ directories, breadcrumbs, currentPath, homePath }: Props) {
+export default function Create({ directories, breadcrumbs: _breadcrumbs, currentPath, homePath }: Props) {
     const folderName = currentPath.split('/').filter(Boolean).pop() || '';
     const projectName = folderName
         .replace(/[^a-zA-Z0-9-_]/g, '-')

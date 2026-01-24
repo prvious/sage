@@ -21,7 +21,7 @@ interface Props {
     onSuccess?: () => void;
 }
 
-export default function EnvVariableForm({ grouped, envPath, projectId, onSuccess }: Props) {
+export default function EnvVariableForm({ grouped, envPath: _envPath, projectId, onSuccess }: Props) {
     const [variables, setVariables] = useState(() => {
         const flattened: Record<string, EnvVariable> = {};
         Object.values(grouped).forEach((section) => {
@@ -78,8 +78,17 @@ export default function EnvVariableForm({ grouped, envPath, projectId, onSuccess
         }
     };
 
+    // Serialize variables for form submission
+    const serializedData = Object.entries(variables).reduce(
+        (acc, [key, variable]) => {
+            acc[`variables[${key}]`] = variable.value;
+            return acc;
+        },
+        {} as Record<string, string>,
+    );
+
     return (
-        <Form action={`/projects/${projectId}/environment`} method='put' data={{ variables }} onSuccess={() => onSuccess?.()}>
+        <Form action={`/projects/${projectId}/environment`} method='put' data={serializedData as any} onSuccess={() => onSuccess?.()}>
             {({ processing }) => (
                 <div className='space-y-6'>
                     {Object.entries(grouped).map(([section, sectionVars]) => (

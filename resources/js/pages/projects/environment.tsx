@@ -18,15 +18,13 @@ interface Project {
 
 interface Props {
     project: Project;
-    variables?: Record<string, EnvVariable>;
     grouped?: Record<string, Record<string, EnvVariable>>;
-    errors?: Record<string, string[]>;
     missing?: string[];
     env_path: string;
     error?: string;
 }
 
-export default function Environment({ project, variables, grouped, errors, missing, env_path, error }: Props) {
+export default function Environment({ project, grouped, missing, env_path, error }: Props) {
     return (
         <>
             <Head title={`${project.name} - Environment`} />

@@ -17,15 +17,15 @@ The current implementation uses `Artisan::call()` which runs the command in Sage
 ### Backend Components
 
 - **Actions**: Modify `app/Actions/Guideline/AggregateGuidelines.php`
-  - Remove dependency on `Illuminate\Support\Facades\Artisan`
-  - Add dependency on `Illuminate\Support\Facades\Process`
-  - Change from `Artisan::call()` to `Process::path()->run()`
-  - Set working directory to `$project->path`
-  - Pass system environment variables using `getenv()`
-  - Maintain same return structure: `['exit_code', 'output', 'success']`
+    - Remove dependency on `Illuminate\Support\Facades\Artisan`
+    - Add dependency on `Illuminate\Support\Facades\Process`
+    - Change from `Artisan::call()` to `Process::path()->run()`
+    - Set working directory to `$project->path`
+    - Pass system environment variables using `getenv()`
+    - Maintain same return structure: `['exit_code', 'output', 'success']`
 
 - **Controllers**: No changes to `GuidelineController`
-  - Controller already handles action results correctly
+    - Controller already handles action results correctly
 
 ### Configuration/Infrastructure
 
@@ -54,6 +54,7 @@ The current implementation uses `Artisan::call()` which runs the command in Sage
 **Test file location**: `tests/Unit/Actions/Guideline/AggregateGuidelinesTest.php`
 
 **Key test cases**:
+
 - Test successful execution returns correct structure
 - Test command runs in project's working directory
 - Test system environment variables are passed
@@ -62,6 +63,7 @@ The current implementation uses `Artisan::call()` which runs the command in Sage
 - Test exception when boost:update command doesn't exist
 
 **Implementation approach**:
+
 ```php
 use Illuminate\Support\Facades\Process;
 use function Pest\Laravel\mock;
@@ -113,11 +115,13 @@ it('captures error output when command fails', function () {
 **Test file location**: `tests/Feature/Guideline/GuidelineControllerTest.php`
 
 **Key test cases**:
+
 - Test aggregate endpoint executes command successfully
 - Test aggregate endpoint handles command failure
 - Test aggregate endpoint returns proper redirect and flash messages
 
 **Implementation approach**:
+
 ```php
 it('aggregates guidelines using CLI command', function () {
     Process::fake([

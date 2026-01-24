@@ -8,6 +8,8 @@ import { CenteredCardLayout } from '@/components/layouts/centered-card-layout';
 import { PlusIcon, Search, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { show as projectDashboard } from '@/actions/App/Http/Controllers/DashboardController';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface Project {
     id: number;
@@ -119,60 +121,31 @@ export default function Index({ projects, search = '' }: Props) {
                             )}
                         </div>
                     ) : (
-                        <ScrollArea className='h-150'>
-                            <div className='space-y-4 pr-4'>
-                                {projects.map((project) => (
-                                    <Link key={project.id} href={projectDashboard.url(project.id)} className='block group'>
-                                        <Card className='transition-all duration-200 hover:shadow-lg hover:border-primary'>
-                                            <CardHeader className='pb-3'>
-                                                <div className='flex items-start justify-between'>
-                                                    <div className='flex-1'>
-                                                        <CardTitle className='text-lg font-bold group-hover:text-primary transition-colors'>
-                                                            {project.name}
-                                                        </CardTitle>
-                                                        <CardDescription className='line-clamp-1 font-mono text-xs mt-1'>{project.path}</CardDescription>
-                                                    </div>
-                                                    <Badge variant='secondary' className='ml-2 shrink-0 capitalize'>
-                                                        {project.server_driver}
-                                                    </Badge>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className='pt-0'>
-                                                <div className='flex items-center gap-4'>
-                                                    <div className='flex items-center gap-2 text-sm'>
-                                                        <span className='text-lg font-semibold'>{project.worktrees_count}</span>
-                                                        <span className='text-xs text-muted-foreground'>Worktrees</span>
-                                                    </div>
-                                                    <div className='flex items-center gap-2 text-sm'>
-                                                        <span className='text-lg font-semibold'>{project.tasks_count}</span>
-                                                        <span className='text-xs text-muted-foreground'>Tasks</span>
-                                                    </div>
-                                                    {project.base_url && (
-                                                        <div className='flex items-center gap-2 text-sm ml-auto'>
-                                                            <svg
-                                                                className='h-4 w-4 shrink-0 text-muted-foreground'
-                                                                fill='none'
-                                                                stroke='currentColor'
-                                                                viewBox='0 0 24 24'
-                                                            >
-                                                                <path
-                                                                    strokeLinecap='round'
-                                                                    strokeLinejoin='round'
-                                                                    strokeWidth={2}
-                                                                    d='M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9'
-                                                                />
-                                                            </svg>
-                                                            <span className='text-muted-foreground truncate font-mono text-xs max-w-50'>
-                                                                {project.base_url}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Link>
-                                ))}
-                            </div>
+                        <ScrollArea className='h-150 flex flex-col gap-4 p-1 w-full'>
+                            {projects.map((project) => (
+                                <Item
+                                    key={project.id}
+                                    className='group w-full'
+                                    variant='outline'
+                                    role='listitem'
+                                    render={
+                                        <Link href={projectDashboard.url(project.id)}>
+                                            <ItemMedia variant='icon'>
+                                                <Avatar size='lg'>
+                                                    <AvatarFallback>{project.name.charAt(0).toUpperCase()}</AvatarFallback>
+                                                </Avatar>
+                                            </ItemMedia>
+                                            <ItemContent>
+                                                <ItemTitle className='capitalize'>{project.name}</ItemTitle>
+                                                <ItemDescription>{project.path}</ItemDescription>
+                                            </ItemContent>
+                                            <ItemActions>
+                                                <Button>Open Dashboard</Button>
+                                            </ItemActions>
+                                        </Link>
+                                    }
+                                />
+                            ))}
                         </ScrollArea>
                     )}
                 </CardContent>

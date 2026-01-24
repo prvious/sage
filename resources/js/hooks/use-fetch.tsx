@@ -20,7 +20,7 @@ function getCsrfToken(): string | null {
 }
 
 export function useFetch(): FetchFunction {
-    const fetchFn = useCallback<FetchFunction>(async (url: RequestInfo | URL, init?: UseFetchOptions) => {
+    const baseFetch = useCallback(async (url: RequestInfo | URL, init?: UseFetchOptions) => {
         const { skipCsrf = false, skipJsonHeaders = false, headers = {}, ...restInit } = init ?? {};
 
         const defaultHeaders: HeadersInit = {};
@@ -49,11 +49,13 @@ export function useFetch(): FetchFunction {
             headers: mergedHeaders,
             credentials: restInit.credentials ?? 'same-origin',
         });
-    }, []) as FetchFunction;
+    }, []);
+
+    const fetchFn = baseFetch as FetchFunction;
 
     // Helper method: automatic JSON parsing
     fetchFn.json = async <T = unknown>(url: RequestInfo | URL, init?: UseFetchOptions): Promise<T> => {
-        const response = await fetchFn(url, init);
+        const response = await baseFetch(url, init);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -62,7 +64,7 @@ export function useFetch(): FetchFunction {
 
     // Helper method: POST request
     fetchFn.post = async (url: RequestInfo | URL, body?: unknown, init?: UseFetchOptions): Promise<Response> => {
-        return fetchFn(url, {
+        return baseFetch(url, {
             ...init,
             method: 'POST',
             body: body ? JSON.stringify(body) : undefined,
@@ -71,7 +73,7 @@ export function useFetch(): FetchFunction {
 
     // Helper method: PUT request
     fetchFn.put = async (url: RequestInfo | URL, body?: unknown, init?: UseFetchOptions): Promise<Response> => {
-        return fetchFn(url, {
+        return baseFetch(url, {
             ...init,
             method: 'PUT',
             body: body ? JSON.stringify(body) : undefined,
@@ -80,7 +82,7 @@ export function useFetch(): FetchFunction {
 
     // Helper method: PATCH request
     fetchFn.patch = async (url: RequestInfo | URL, body?: unknown, init?: UseFetchOptions): Promise<Response> => {
-        return fetchFn(url, {
+        return baseFetch(url, {
             ...init,
             method: 'PATCH',
             body: body ? JSON.stringify(body) : undefined,
@@ -89,7 +91,7 @@ export function useFetch(): FetchFunction {
 
     // Helper method: DELETE request
     fetchFn.delete = async (url: RequestInfo | URL, init?: UseFetchOptions): Promise<Response> => {
-        return fetchFn(url, {
+        return baseFetch(url, {
             ...init,
             method: 'DELETE',
         });

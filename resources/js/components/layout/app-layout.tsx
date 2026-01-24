@@ -1,6 +1,5 @@
-import { ReactNode, useState } from 'react';
-import { ProjectSidebar } from './project-sidebar';
-import { Sidebar, SidebarHeader, SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { ReactNode } from 'react';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from './app-sidebar';
 
 interface AppLayoutProps {

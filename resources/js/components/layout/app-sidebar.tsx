@@ -1,13 +1,4 @@
-import {
-    Bot,
-    FileEdit,
-    FileText,
-    GitBranch,
-    LayoutDashboard,
-    Settings,
-    Sparkles,
-    Terminal,
-} from "lucide-react";
+import { Bot, FileEdit, FileText, GitBranch, LayoutDashboard, Settings, Sparkles, Terminal } from 'lucide-react';
 
 import {
     Sidebar,
@@ -19,17 +10,16 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { Link, usePage } from "@inertiajs/react";
-import { SharedData } from "@/types";
-import BrainstormController from "@/actions/App/Http/Controllers/BrainstormController";
-import GuidelineController from "@/actions/App/Http/Controllers/GuidelineController";
-import DashboardController from "@/actions/App/Http/Controllers/DashboardController";
-import EnvironmentController from "@/actions/App/Http/Controllers/EnvironmentController";
-import ProjectAgentController from "@/actions/App/Http/Controllers/ProjectAgentController";
-import SettingsController from "@/actions/App/Http/Controllers/SettingsController";
-import WorktreeController from "@/actions/App/Http/Controllers/WorktreeController";
-import { ProjectSidebar } from "./project-sidebar";
+} from '@/components/ui/sidebar';
+import { Link, usePage } from '@inertiajs/react';
+import { SharedData } from '@/types';
+import BrainstormController from '@/actions/App/Http/Controllers/BrainstormController';
+import GuidelineController from '@/actions/App/Http/Controllers/GuidelineController';
+import DashboardController from '@/actions/App/Http/Controllers/DashboardController';
+import ProjectAgentController from '@/actions/App/Http/Controllers/ProjectAgentController';
+import SettingsController from '@/actions/App/Http/Controllers/SettingsController';
+import WorktreeController from '@/actions/App/Http/Controllers/WorktreeController';
+import { ProjectSidebar } from './project-sidebar';
 
 interface NavigationItem {
     label: string;
@@ -44,47 +34,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const navigationItems: NavigationItem[] = selectedProject
         ? [
               {
-                  label: "Dashboard",
+                  label: 'Dashboard',
                   icon: LayoutDashboard,
                   href: DashboardController.show(selectedProject.id),
               },
               {
-                  label: "Brainstorm",
+                  label: 'Brainstorm',
                   icon: Sparkles,
                   href: BrainstormController.index(selectedProject.id),
               },
               {
-                  label: "Worktrees",
+                  label: 'Worktrees',
                   icon: GitBranch,
                   href: WorktreeController.index(selectedProject.id),
               },
               {
-                  label: "Specs",
+                  label: 'Specs',
                   icon: FileText,
                   href: `/projects/${selectedProject.id}/specs`,
               },
               {
-                  label: "Environment",
+                  label: 'Environment',
                   icon: Settings,
                   href: `/projects/${selectedProject.id}/environment`,
               },
               {
-                  label: "Terminal",
+                  label: 'Terminal',
                   icon: Terminal,
-                  href: "#",
+                  href: '#',
               },
               {
-                  label: "Guidelines",
+                  label: 'Guidelines',
                   icon: FileEdit,
                   href: GuidelineController.index(selectedProject.id),
               },
               {
-                  label: "Agent",
+                  label: 'Agent',
                   icon: Bot,
                   href: ProjectAgentController.index(selectedProject.id),
               },
               {
-                  label: "Settings",
+                  label: 'Settings',
                   icon: Settings,
                   href: SettingsController.index(selectedProject.id),
               },
@@ -92,58 +82,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         : [];
 
     const isActiveLink = (href: string | { url: string; method: string }) => {
-        const linkUrl = typeof href === "string" ? href : href.url;
-        const currentUrl = typeof url === "string" ? url : "";
-        return (
-            currentUrl === linkUrl ||
-            (currentUrl.length > 0 && currentUrl.startsWith(linkUrl))
-        );
+        const linkUrl = typeof href === 'string' ? href : href.url;
+        const currentUrl = typeof url === 'string' ? url : '';
+        return currentUrl === linkUrl || (currentUrl.length > 0 && currentUrl.startsWith(linkUrl));
     };
 
     return (
-        <Sidebar
-            collapsible="icon"
-            className="overflow-hidden *:data-[sidebar=sidebar]:flex-row"
-            {...props}
-        >
+        <Sidebar collapsible='icon' className='overflow-hidden *:data-[sidebar=sidebar]:flex-row' {...props}>
             {/* This is the first sidebar */}
             {/* We disable collapsible and adjust width to icon. */}
             {/* This will make the sidebar appear as icons. */}
-            <Sidebar
-                collapsible="none"
-                className="w-[calc(var(--sidebar-width-icon)+1px)]! border-r"
-            >
+            <Sidebar collapsible='none' className='w-[calc(var(--sidebar-width-icon)+1px)]! border-r'>
                 <SidebarHeader>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <SidebarMenuButton
-                                size="lg"
-                                className="md:h-8 md:p-0"
-                                render={
-                                    <div>
-                                        <Link
-                                            href="/"
-                                            className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg hover:opacity-80 transition-opacity"
-                                            aria-label="Sage - Go to home page"
-                                        >
-                                            <span className="text-xl font-bold">
-                                                S
-                                            </span>
-                                        </Link>
-                                        <Link
-                                            href="/"
-                                            className="grid flex-1 text-left text-sm leading-tight"
-                                        >
-                                            <span className="truncate font-medium">
-                                                Acme Inc
-                                            </span>
-                                            <span className="truncate text-xs">
-                                                Enterprise
-                                            </span>
-                                        </Link>
-                                    </div>
-                                }
-                            ></SidebarMenuButton>
+                            <SidebarMenuButton className='bg-sidebar-primary rounded-full text-sidebar-primary-foreground flex size-full aspect-square items-center justify-center transition-opacity text-xl/0 font-bold'>
+                                <Link href='/' aria-label='Sage - Go to home page'>
+                                    S
+                                </Link>
+                            </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarHeader>
@@ -154,12 +111,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
             {/* This is the second sidebar */}
             {/* We disable collapsible and let it fill remaining space */}
-            <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-                <SidebarHeader className="border-b p-4">
-                    <div className="flex w-full items-center justify-between">
-                        <div className="text-foreground text-base font-medium">
-                            {selectedProject?.name || "Select a project"}
-                        </div>
+            <Sidebar collapsible='none' className='hidden flex-1 md:flex'>
+                <SidebarHeader className='border-b p-4'>
+                    <div className='flex w-full items-center justify-between'>
+                        <div className='text-foreground text-base font-medium'>{selectedProject?.name || 'Select a project'}</div>
                     </div>
                 </SidebarHeader>
 
@@ -167,12 +122,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {selectedProject ? (
                         <SidebarGroup>
                             <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-                            <SidebarMenu className="gap-2">
+                            <SidebarMenu className='gap-2'>
                                 {navigationItems.map((item) => {
-                                    const href =
-                                        typeof item.href === "string"
-                                            ? item.href
-                                            : item.href.url;
+                                    const href = typeof item.href === 'string' ? item.href : item.href.url;
                                     const isActive = isActiveLink(item.href);
 
                                     return (
@@ -181,9 +133,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                                 render={
                                                     <Link href={href}>
                                                         <item.icon />
-                                                        <span>
-                                                            {item.label}
-                                                        </span>
+                                                        <span>{item.label}</span>
                                                     </Link>
                                                 }
                                                 isActive={isActive}
@@ -194,15 +144,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             </SidebarMenu>
                         </SidebarGroup>
                     ) : (
-                        <div className="flex h-full items-center justify-center p-4 text-center">
-                            <div className="text-muted-foreground text-sm">
-                                <p className="mb-2 font-medium">
-                                    No project selected
-                                </p>
-                                <p>
-                                    Select a project from the left sidebar to
-                                    view navigation
-                                </p>
+                        <div className='flex h-full items-center justify-center p-4 text-center'>
+                            <div className='text-muted-foreground text-sm'>
+                                <p className='mb-2 font-medium'>No project selected</p>
+                                <p>Select a project from the left sidebar to view navigation</p>
                             </div>
                         </div>
                     )}
@@ -212,12 +157,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuItem>
                             <SidebarMenuButton
                                 render={
-                                    <Link href="/agents">
+                                    <Link href='/agents'>
                                         <Bot />
                                         <span>Running Agents</span>
                                     </Link>
                                 }
-                                isActive={url === "/agents"}
+                                isActive={url === '/agents'}
                             />
                         </SidebarMenuItem>
                     </SidebarMenu>

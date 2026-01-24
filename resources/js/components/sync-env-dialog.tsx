@@ -81,7 +81,7 @@ export default function SyncEnvDialog({ sourceId, sourceType, worktrees, variabl
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>{children}</DialogTrigger>
+            <DialogTrigger render={(props) => <div {...props}>{children}</div>} />
             <DialogContent className='max-w-2xl'>
                 <DialogHeader>
                     <DialogTitle>Sync Environment Variables</DialogTitle>

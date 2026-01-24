@@ -45,7 +45,7 @@ export default function Agent({ project, agentInstalled, agentAuthenticated }: P
         }
 
         return () => stopPolling();
-    }, [agentInstalled?.installed, agentAuthenticated?.authenticated]);
+    }, [agentInstalled?.installed, agentAuthenticated?.authenticated, startPolling, stopPolling]);
 
     const handleRefresh = () => {
         setIsRefreshing(true);
@@ -89,9 +89,7 @@ export default function Agent({ project, agentInstalled, agentAuthenticated }: P
                                             <Alert variant='default' className='animate-pulse'>
                                                 <XCircle className='size-4' />
                                                 <AlertTitle>Checking Installation...</AlertTitle>
-                                                <AlertDescription>
-                                                    Verifying Claude Code CLI installation status...
-                                                </AlertDescription>
+                                                <AlertDescription>Verifying Claude Code CLI installation status...</AlertDescription>
                                             </Alert>
                                         }
                                     >
@@ -119,51 +117,49 @@ export default function Agent({ project, agentInstalled, agentAuthenticated }: P
 
                                     {/* Authentication Status Section (only show if installed) */}
                                     <Deferred
-                                            data='agentAuthenticated'
-                                            fallback={
-                                                <Alert variant='default' className=' animate-pulse'>
-                                                    <Info className='size-4' />
-                                                    <AlertTitle>Checking Authentication</AlertTitle>
-                                                    <AlertDescription>Verifying Claude Code authentication status...</AlertDescription>
-                                                </Alert>
-                                            }
-                                        >
-                                            {agentAuthenticated && !agentAuthenticated.authenticated && (
-                                                <Alert className='border-yellow-500 text-yellow-900 dark:text-yellow-100'>
-                                                    <AlertCircle className='size-4' />
-                                                    <AlertTitle>Not Authenticated</AlertTitle>
-                                                    <AlertDescription>
-                                                        Claude Code is installed but not authenticated. Run{' '}
-                                                        <code className='bg-muted px-1 rounded'>claude login</code> to authenticate.
-                                                        {agentAuthenticated.error_message && (
-                                                            <div className='mt-2 text-sm'>{agentAuthenticated.error_message}</div>
-                                                        )}
-                                                    </AlertDescription>
-                                                </Alert>
-                                            )}
+                                        data='agentAuthenticated'
+                                        fallback={
+                                            <Alert variant='default' className='animate-pulse'>
+                                                <Info className='size-4' />
+                                                <AlertTitle>Checking Authentication</AlertTitle>
+                                                <AlertDescription>Verifying Claude Code authentication status...</AlertDescription>
+                                            </Alert>
+                                        }
+                                    >
+                                        {agentAuthenticated && !agentAuthenticated.authenticated && (
+                                            <Alert className='border-yellow-500 text-yellow-900 dark:text-yellow-100'>
+                                                <AlertCircle className='size-4' />
+                                                <AlertTitle>Not Authenticated</AlertTitle>
+                                                <AlertDescription>
+                                                    Claude Code is installed but not authenticated. Run{' '}
+                                                    <code className='bg-muted px-1 rounded'>claude login</code> to authenticate.
+                                                    {agentAuthenticated.error_message && <div className='mt-2 text-sm'>{agentAuthenticated.error_message}</div>}
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
 
-                                            {agentAuthenticated && agentAuthenticated.authenticated && (
-                                                <Alert className='border-green-500 text-green-900 dark:text-green-100'>
-                                                    <CheckCircle2 className='size-4 text-green-600 dark:text-green-400' />
-                                                    <AlertTitle>Authenticated</AlertTitle>
-                                                    <AlertDescription>
-                                                        <div className='flex items-center gap-2'>
-                                                            <span>Claude Code is authenticated and ready to use.</span>
-                                                            {agentAuthenticated.auth_type === 'api_key' && (
-                                                                <Badge variant='secondary' className='ml-2'>
-                                                                    API Key
-                                                                </Badge>
-                                                            )}
-                                                            {agentAuthenticated.auth_type === 'cli' && (
-                                                                <Badge variant='secondary' className='ml-2'>
-                                                                    CLI
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-                                                    </AlertDescription>
-                                                </Alert>
-                                            )}
-                                        </Deferred>
+                                        {agentAuthenticated && agentAuthenticated.authenticated && (
+                                            <Alert className='border-green-500 text-green-900 dark:text-green-100'>
+                                                <CheckCircle2 className='size-4 text-green-600 dark:text-green-400' />
+                                                <AlertTitle>Authenticated</AlertTitle>
+                                                <AlertDescription>
+                                                    <div className='flex items-center gap-2'>
+                                                        <span>Claude Code is authenticated and ready to use.</span>
+                                                        {agentAuthenticated.auth_type === 'api_key' && (
+                                                            <Badge variant='secondary' className='ml-2'>
+                                                                API Key
+                                                            </Badge>
+                                                        )}
+                                                        {agentAuthenticated.auth_type === 'cli' && (
+                                                            <Badge variant='secondary' className='ml-2'>
+                                                                CLI
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
+                                    </Deferred>
                                 </div>
                             </CardContent>
                         </Card>

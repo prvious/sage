@@ -18,7 +18,7 @@ const COLUMNS = [
     { id: 'done', title: 'Done' },
 ] as const;
 
-export function KanbanBoard({ tasks, projectId }: KanbanBoardProps) {
+export function KanbanBoard({ tasks, projectId: _projectId }: KanbanBoardProps) {
     return (
         <div className='h-full overflow-hidden'>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-4 h-full auto-rows-fr'>

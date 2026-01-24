@@ -48,7 +48,7 @@ const statusConfig = {
     },
     completed: {
         icon: CheckCircle2,
-        variant: 'success' as const,
+        variant: 'secondary' as const,
         label: 'Completed',
         description: 'Ideas have been successfully generated.',
     },
