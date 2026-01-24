@@ -1,0 +1,13 @@
+{
+  "id": "spec-to-task",
+  "category": "Spec Generator",
+  "title": "Spec to Task Conversion",
+  "description": "Automatically create tasks from approved specs with pre-filled descriptions and agent prompts. Streamlines workflow from planning to execution.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.549Z",
+  "updatedAt": "2026-01-24T20:24:00.008Z",
+  "descriptionHistory": []
+}

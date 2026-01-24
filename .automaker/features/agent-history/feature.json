@@ -6,9 +6,7 @@
   "status": "backlog",
   "priority": 2,
   "complexity": "simple",
-  "dependencies": [
-    "agent-output-viewer"
-  ],
   "createdAt": "2026-01-24T19:16:18.543Z",
-  "updatedAt": "2026-01-24T19:16:18.543Z"
+  "updatedAt": "2026-01-24T19:16:18.543Z",
+  "descriptionHistory": []
 }

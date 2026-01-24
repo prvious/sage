@@ -8,8 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, Save, X } from 'lucide-react';
-import MDEditor from '@uiw/react-md-editor';
-import { useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function Create({ project }: GuidelineCreateProps) {
     const { data, setData, post, processing, errors } = useForm({
@@ -17,8 +16,6 @@ export default function Create({ project }: GuidelineCreateProps) {
         content: '',
         extension: 'md',
     });
-
-    const [editorValue, setEditorValue] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -87,17 +84,13 @@ export default function Create({ project }: GuidelineCreateProps) {
 
                                 <div className='space-y-2'>
                                     <Label htmlFor='content'>Content</Label>
-                                    <div data-color-mode='light'>
-                                        <MDEditor
-                                            value={editorValue}
-                                            onChange={(value) => {
-                                                setEditorValue(value || '');
-                                                setData('content', value || '');
-                                            }}
-                                            height={500}
-                                            preview='edit'
-                                        />
-                                    </div>
+                                    <Textarea
+                                        id='content'
+                                        value={data.content}
+                                        onChange={(e) => setData('content', e.target.value)}
+                                        placeholder='Enter your guideline content here...'
+                                        className='min-h-[500px] font-mono'
+                                    />
                                     {errors.content && <p className='text-sm text-destructive mt-2'>{errors.content}</p>}
                                 </div>
 

@@ -6,22 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Save, X } from 'lucide-react';
-import MDEditor from '@uiw/react-md-editor';
-import { useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function Edit({ project, filename, content }: GuidelineEditProps) {
-    const {
-        data: _data,
-        setData,
-        put,
-        processing,
-        errors,
-    } = useForm({
+    const { data, setData, put, processing, errors } = useForm({
         filename: filename,
         content: content,
     });
-
-    const [editorValue, setEditorValue] = useState(content);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,17 +46,13 @@ export default function Edit({ project, filename, content }: GuidelineEditProps)
                             <CardContent className='space-y-4'>
                                 <div className='space-y-2'>
                                     <Label htmlFor='content'>Content</Label>
-                                    <div data-color-mode='light'>
-                                        <MDEditor
-                                            value={editorValue}
-                                            onChange={(value) => {
-                                                setEditorValue(value || '');
-                                                setData('content', value || '');
-                                            }}
-                                            height={500}
-                                            preview='edit'
-                                        />
-                                    </div>
+                                    <Textarea
+                                        id='content'
+                                        value={data.content}
+                                        onChange={(e) => setData('content', e.target.value)}
+                                        placeholder='Enter your guideline content here...'
+                                        className='min-h-[500px] font-mono'
+                                    />
                                     {errors.content && <p className='text-sm text-destructive mt-2'>{errors.content}</p>}
                                 </div>
 

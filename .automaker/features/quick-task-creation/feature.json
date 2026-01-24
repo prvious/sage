@@ -3,10 +3,10 @@
   "category": "Task Management",
   "title": "Quick Task Creation Modal",
   "description": "Streamlined modal for rapid task creation from any page with title, description, and optional worktree assignment. Supports keyboard shortcuts for power users.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [],
   "createdAt": "2026-01-24T19:16:18.538Z",
-  "updatedAt": "2026-01-24T19:16:18.538Z"
+  "updatedAt": "2026-01-24T20:12:51.717Z"
 }

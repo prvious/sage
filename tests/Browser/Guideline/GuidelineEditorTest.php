@@ -27,7 +27,7 @@ afterEach(function () {
     }
 });
 
-it('navigates to context page from sidebar', function () {
+it('navigates to guidelines page from sidebar', function () {
     $page = visit("/projects/{$this->project->id}/dashboard");
 
     $page->assertNoJavascriptErrors();
@@ -38,7 +38,7 @@ it('displays empty state when no files exist', function () {
     $page = visit("/projects/{$this->project->id}/guidelines");
 
     $page->assertNoJavascriptErrors();
-    $page->assertSee('No Guidelines Files');
+    $page->assertSee('No Custom Guidelines');
 });
 
 it('displays list of guidelines', function () {
@@ -50,7 +50,7 @@ it('displays list of guidelines', function () {
     $page = visit("/projects/{$this->project->id}/guidelines");
 
     $page->assertNoJavascriptErrors();
-    $page->assertSee('Guidelines Files');
+    $page->assertSee('Custom Guidelines');
 });
 
 it('navigates to create page', function () {
@@ -59,11 +59,11 @@ it('navigates to create page', function () {
     $page->assertNoJavascriptErrors();
 });
 
-it('creates new context file', function () {
+it('creates new guideline file', function () {
     $page = visit("/projects/{$this->project->id}/guidelines/create");
 
     $page->assertNoJavascriptErrors();
-    $page->assertSee('Create Guidelines File');
+    $page->assertSee('Create Custom Guideline');
 });
 
 it('navigates to edit page', function () {
@@ -74,17 +74,17 @@ it('navigates to edit page', function () {
     $page = visit("/projects/{$this->project->id}/guidelines/test-rules.md/edit");
 
     $page->assertNoJavascriptErrors();
-    $page->assertSee('Edit Guidelines File');
+    $page->assertSee('Edit Custom Guideline');
 });
 
 it('displays aggregate button', function () {
     $page = visit("/projects/{$this->project->id}/guidelines");
 
     $page->assertNoJavascriptErrors();
-    $page->assertSee('Aggregate Files');
+    $page->assertSee('Aggregate Guidelines');
 });
 
-it('displays context information alert', function () {
+it('displays guidelines information alert', function () {
     $page = visit("/projects/{$this->project->id}/guidelines");
 
     $page->assertNoJavascriptErrors();

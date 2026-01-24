@@ -41,4 +41,4 @@ Some frequently used Shadcn components include:
 - Components are designed to be accessible and follow best practices
 - You must NOT manually edit or create components in the `resources/js/components/ui/`
 - Never attempy to manually edit,extend, or fix anything in the `resources/js/components/ui/`. the directory contains components installed from shadcnui. this is a NO GO zone.
-- The components rely on base-ui implementation instead of radix-ui. so, prefer using `render={() => [element we want to render as the child]}` instead of using the `asChild` prop on the element you'd like to replace
+- The components rely on base-ui implementation instead of radix-ui. so, prefer using `render={[element we want to render as the child]}` instead of using the `asChild` prop on the element you'd like to replace

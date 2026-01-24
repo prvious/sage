@@ -3,8 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle2, Clock, AlertCircle, Loader2, Lightbulb } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import { index } from '@/actions/App/Http/Controllers/BrainstormController';
+import { IdeasList } from '@/components/brainstorm/ideas-list';
 
 interface Project {
     id: number;
@@ -116,38 +117,7 @@ export default function BrainstormShow({ project, brainstorm }: BrainstormShowPr
                     </Card>
 
                     {brainstorm.status === 'completed' && brainstorm.ideas && brainstorm.ideas.length > 0 && (
-                        <div>
-                            <h2 className='text-2xl font-semibold mb-4'>Generated Ideas</h2>
-                            <div className='grid gap-4 md:grid-cols-2'>
-                                {brainstorm.ideas.map((idea, index) => (
-                                    <Card key={index} className='p-4'>
-                                        <div className='space-y-3'>
-                                            <div className='flex items-start gap-3'>
-                                                <Lightbulb className='h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5' />
-                                                <div className='flex-1'>
-                                                    <h3 className='font-semibold'>{idea.title}</h3>
-                                                    <p className='text-sm text-muted-foreground mt-1'>{idea.description}</p>
-                                                </div>
-                                            </div>
-                                            {(idea.priority || idea.category) && (
-                                                <div className='flex gap-2'>
-                                                    {idea.category && <Badge variant='outline'>{idea.category}</Badge>}
-                                                    {idea.priority && (
-                                                        <Badge
-                                                            variant={
-                                                                idea.priority === 'high' ? 'destructive' : idea.priority === 'medium' ? 'default' : 'secondary'
-                                                            }
-                                                        >
-                                                            {idea.priority}
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
-                        </div>
+                        <IdeasList ideas={brainstorm.ideas as any} projectId={project.id} brainstormId={brainstorm.id} />
                     )}
 
                     {brainstorm.status === 'pending' && (

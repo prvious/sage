@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769286514989-89c3998c",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-24T20:28:34.989Z",
+  "projectPath": "/Users/clovismuneza/Apps/sage",
+  "projectName": "sage",
+  "featureId": "spec-to-task",
+  "featureName": "Spec to Task Conversion",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

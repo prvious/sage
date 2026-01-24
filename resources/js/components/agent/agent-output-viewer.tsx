@@ -129,12 +129,7 @@ export function AgentOutputViewer({
 
             {/* Output area */}
             <div className='relative'>
-                <div
-                    ref={containerRef}
-                    className='overflow-auto bg-zinc-950 text-zinc-100 font-mono text-xs'
-                    style={{ maxHeight }}
-                    onScroll={handleScroll}
-                >
+                <div ref={containerRef} className='overflow-auto bg-zinc-950 text-zinc-100 font-mono text-xs' style={{ maxHeight }} onScroll={handleScroll}>
                     <div className='p-4 space-y-0.5'>
                         {output.length === 0 ? (
                             <div className='text-zinc-500 italic'>Waiting for output...</div>
@@ -147,12 +142,7 @@ export function AgentOutputViewer({
 
                 {/* Scroll to bottom button */}
                 {!autoScroll && (
-                    <Button
-                        variant='secondary'
-                        size='sm'
-                        className='absolute bottom-4 right-4 shadow-lg'
-                        onClick={handleScrollToBottom}
-                    >
+                    <Button variant='secondary' size='sm' className='absolute bottom-4 right-4 shadow-lg' onClick={handleScrollToBottom}>
                         <ArrowDown className='h-3.5 w-3.5 mr-1' />
                         Scroll to bottom
                     </Button>

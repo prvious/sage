@@ -214,6 +214,198 @@ it('checks authentication using system environment', function () {
 // ❌ config()->set('sage.agents.claude.binary', 'custom-binary');
 ```
 
+=== .ai/services rules ===
+
+# App/Services guidelines
+
+- Service classes encapsulate interactions with external systems and third-party services.
+- Services live in `app/Services`, they are named based on what they interact with, with a `Service` suffix.
+- Services should be called from Action classes, not directly from controllers, jobs, or commands.
+- Create new services with `php artisan make:class "Services/{name}Service"`
+- Service classes must provide a `fake()` method for convenient testing.
+
+## When to Use Services
+
+Use service classes for:
+
+- **External system interactions**: Git, Docker, system binaries via Process
+- **Third-party API clients**: GitHub API, Anthropic API, external webhooks
+- **Complex system operations**: File system operations, SSH connections
+- **Process execution**: Running CLI commands and parsing output
+
+## Testing with fake()
+
+All service classes must implement a `fake()` method that:
+
+- Mocks the underlying dependencies (e.g., `Process::fake()`, `Http::fake()`)
+- Returns a mock instance for setting expectations
+- Allows for assertions after the test completes
+- Follows Laravel's facade mocking patterns
+
+## Example: GitService
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use Illuminate\Process\Factory as ProcessFactory;
+use Illuminate\Process\PendingProcess;
+use Mockery;
+use Mockery\MockInterface;
+
+final readonly class GitService
+{
+    public function __construct(
+        private ProcessFactory $process
+    ) {}
+
+    /**
+     * Create a fake instance for testing.
+     */
+    public static function fake(array $commands = []): MockInterface
+    {
+        // Mock the underlying Process facade
+        Process::fake($commands);
+
+        // Create and bind a mock of this service
+        $mock = Mockery::mock(GitService::class);
+        app()->instance(GitService::class, $mock);
+
+        return $mock;
+    }
+
+    public function status(string $path): array
+    {
+        $result = $this->process
+            ->path($path)
+            ->run('git status --porcelain');
+
+        return $this->parseStatus($result->output());
+    }
+
+    public function commit(string $path, string $message): bool
+    {
+        $result = $this->process
+            ->path($path)
+            ->run(['git', 'commit', '-m', $message]);
+
+        return $result->successful();
+    }
+
+    private function parseStatus(string $output): array
+    {
+        // Parse git status output...
+        return [];
+    }
+}
+```
+
+## Example: Using GitService in an Action
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Actions;
+
+use App\Services\GitService;
+
+final readonly class CommitChanges
+{
+    public function __construct(
+        private GitService $git
+    ) {}
+
+    public function handle(string $path, string $message): bool
+    {
+        // Get current status
+        $status = $this->git->status($path);
+
+        if (empty($status)) {
+            return false;
+        }
+
+        // Commit changes
+        return $this->git->commit($path, $message);
+    }
+}
+```
+
+## Example: Testing with fake()
+
+```php
+<?php
+
+use App\Services\GitService;
+use App\Actions\CommitChanges;
+
+it('commits changes when files are modified', function () {
+    // Mock the GitService
+    $git = GitService::fake();
+
+    // Set expectations
+    $git->shouldReceive('status')
+        ->once()
+        ->with('/path/to/repo')
+        ->andReturn(['modified' => ['file.txt']]);
+
+    $git->shouldReceive('commit')
+        ->once()
+        ->with('/path/to/repo', 'Update file')
+        ->andReturn(true);
+
+    // Execute action
+    $action = new CommitChanges($git);
+    $result = $action->handle('/path/to/repo', 'Update file');
+
+    expect($result)->toBeTrue();
+});
+
+it('does not commit when no changes exist', function () {
+    $git = GitService::fake();
+
+    $git->shouldReceive('status')
+        ->once()
+        ->andReturn([]);
+
+    $git->shouldNotReceive('commit');
+
+    $action = new CommitChanges($git);
+    $result = $action->handle('/path/to/repo', 'Update file');
+
+    expect($result)->toBeFalse();
+});
+```
+
+## Alternative: Partial Faking with Process
+
+For simpler cases, you can use `Process::fake()` directly in tests:
+
+```php
+it('gets git status', function () {
+    Process::fake([
+        'git status --porcelain' => Process::result('M file.txt'),
+    ]);
+
+    $service = app(GitService::class);
+    $status = $service->status('/path/to/repo');
+
+    expect($status)->not->toBeEmpty();
+});
+```
+
+## Key Principles
+
+1. **Single Responsibility**: Each service handles one external system or API
+2. **Dependency Injection**: Inject dependencies (Process, Http, etc.) via constructor
+3. **Testability**: Always provide a `fake()` method for easy mocking
+4. **Consistency**: Follow Laravel's mocking patterns and conventions
+5. **Type Safety**: Use proper type hints and return types
+
 === .ai/shadcn rules ===
 
 # Shadcn UI Components
@@ -259,7 +451,7 @@ Some frequently used Shadcn components include:
 - Components are designed to be accessible and follow best practices
 - You must NOT manually edit or create components in the `resources/js/components/ui/`
 - Never attempy to manually edit,extend, or fix anything in the `resources/js/components/ui/`. the directory contains components installed from shadcnui. this is a NO GO zone.
-- The components rely on base-ui implementation instead of radix-ui. so, prefer using `render={() => [element we want to render as the child]}` instead of using the `asChild` prop on the element you'd like to replace
+- The components rely on base-ui implementation instead of radix-ui. so, prefer using `render={[element we want to render as the child]}` instead of using the `asChild` prop on the element you'd like to replace
 
 === .ai/actions rules ===
 
@@ -271,6 +463,19 @@ Some frequently used Shadcn components include:
 - Create dedicated Action classes for business logic with a single `handle()` method.
 - Create new actions with `php artisan make:action "{name}" --no-interaction`
 - Wrap complex operations in `DB::transaction()` within actions when multiple models are involved.
+
+## When to Use Actions
+
+Use actions for any interaction or mutation of data and system state - anything the application has control over:
+
+- **Database mutations**: Creating, updating, or deleting records
+- **Configuration changes**: Modifying application settings or user preferences
+- **File system operations**: Creating, moving, or deleting files
+- **External API calls**: Interacting with third-party service classes via Service classes
+- **Complex business logic**: Operations involving multiple steps or models
+- **System state changes**: Updating cache, queues, or other system components
+
+Actions provide a single, testable, reusable entry point for these operations across the application.
 
 <?php
 
@@ -299,6 +504,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - inertiajs/inertia-laravel (INERTIA) - v2
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
+- laravel/reverb (REVERB) - v1
 - laravel/wayfinder (WAYFINDER) - v0
 - laravel/mcp (MCP) - v0
 - laravel/pint (PINT) - v1
@@ -306,6 +512,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
 - @inertiajs/react (INERTIA) - v2
+- laravel-echo (ECHO) - v2
 - react (REACT) - v19
 - tailwindcss (TAILWINDCSS) - v4
 - @laravel/vite-plugin-wayfinder (WAYFINDER) - v0

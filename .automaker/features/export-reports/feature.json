@@ -7,9 +7,9 @@
   "priority": 3,
   "complexity": "moderate",
   "dependencies": [
-    "project-stats-dashboard",
-    "cost-tracking-dashboard"
+    "project-stats-dashboard"
   ],
   "createdAt": "2026-01-24T19:16:18.553Z",
-  "updatedAt": "2026-01-24T19:16:18.553Z"
+  "updatedAt": "2026-01-24T19:16:18.553Z",
+  "descriptionHistory": []
 }

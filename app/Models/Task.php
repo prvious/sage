@@ -20,6 +20,7 @@ class Task extends Model
     protected $fillable = [
         'project_id',
         'worktree_id',
+        'spec_id',
         'title',
         'description',
         'status',
@@ -58,6 +59,14 @@ class Task extends Model
     public function worktree(): BelongsTo
     {
         return $this->belongsTo(Worktree::class);
+    }
+
+    /**
+     * Get the spec this task was created from.
+     */
+    public function spec(): BelongsTo
+    {
+        return $this->belongsTo(Spec::class);
     }
 
     /**

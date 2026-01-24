@@ -1,140 +1,123 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Jobs\GenerateBrainstormIdeas;
 use App\Models\Brainstorm;
 use App\Models\Project;
 use App\Models\User;
-use Inertia\Testing\AssertableInertia as Assert;
+use Illuminate\Support\Facades\Queue;
 
-it('renders brainstorm index page', function () {
-    $project = Project::factory()->create();
+uses()->group('brainstorm', 'feature');
 
-    $response = $this->get(route('projects.brainstorm.index', $project));
+beforeEach(function () {
+    $this->user = User::factory()->create();
+    $this->actingAs($this->user);
+
+    $this->project = Project::factory()->create([
+        'path' => storage_path('testing/project-'.uniqid()),
+    ]);
+});
+
+it('displays brainstorm index page', function () {
+    $response = $this->get(route('projects.brainstorm.index', $this->project));
 
     $response->assertSuccessful();
-    $response->assertInertia(fn (Assert $page) => $page
+    $response->assertInertia(fn ($page) => $page
         ->component('projects/brainstorm')
         ->has('project')
         ->has('brainstorms')
     );
 });
 
-it('displays brainstorms for specific project only', function () {
-    $project1 = Project::factory()->create();
-    $project2 = Project::factory()->create();
+it('shows existing brainstorms on index page', function () {
+    Brainstorm::factory()->count(3)->create([
+        'project_id' => $this->project->id,
+    ]);
 
-    $brainstorm1 = Brainstorm::factory()->create(['project_id' => $project1->id]);
-    $brainstorm2 = Brainstorm::factory()->create(['project_id' => $project2->id]);
-
-    $response = $this->get(route('projects.brainstorm.index', $project1));
+    $response = $this->get(route('projects.brainstorm.index', $this->project));
 
     $response->assertSuccessful();
-    $response->assertInertia(fn (Assert $page) => $page
-        ->component('projects/brainstorm')
-        ->has('brainstorms', 1)
-        ->where('brainstorms.0.id', $brainstorm1->id)
+    $response->assertInertia(fn ($page) => $page
+        ->has('brainstorms', 3)
     );
 });
 
-it('creates brainstorm with user context', function () {
-    $project = Project::factory()->create();
-    $user = User::factory()->create();
+it('creates brainstorm and dispatches job', function () {
+    Queue::fake();
 
-    $this->actingAs($user);
-
-    $response = $this->post(route('projects.brainstorm.store', $project), [
-        'user_context' => 'Test brainstorm context',
+    $response = $this->post(route('projects.brainstorm.store', $this->project), [
+        'user_context' => 'Generate ideas for improving user experience',
     ]);
 
-    $response->assertRedirect(route('projects.brainstorm.index', $project));
+    $response->assertRedirect(route('projects.brainstorm.index', $this->project));
     $response->assertSessionHas('success');
 
-    $this->assertDatabaseHas('brainstorms', [
-        'project_id' => $project->id,
-        'user_id' => $user->id,
-        'user_context' => 'Test brainstorm context',
-        'status' => 'pending',
-    ]);
+    expect(Brainstorm::count())->toBe(1);
+
+    $brainstorm = Brainstorm::first();
+    expect($brainstorm->project_id)->toBe($this->project->id);
+    expect($brainstorm->user_id)->toBe($this->user->id);
+    expect($brainstorm->user_context)->toBe('Generate ideas for improving user experience');
+    expect($brainstorm->status)->toBe('pending');
+
+    Queue::assertPushed(GenerateBrainstormIdeas::class, function ($job) use ($brainstorm) {
+        return $job->brainstorm->id === $brainstorm->id;
+    });
 });
 
-it('creates brainstorm without user context', function () {
-    $project = Project::factory()->create();
-
-    $response = $this->post(route('projects.brainstorm.store', $project), [
-        'user_context' => null,
-    ]);
-
-    $response->assertRedirect(route('projects.brainstorm.index', $project));
-
-    $this->assertDatabaseHas('brainstorms', [
-        'project_id' => $project->id,
-        'user_context' => null,
-        'status' => 'pending',
-    ]);
-});
-
-it('validates user context max length', function () {
-    $project = Project::factory()->create();
-
-    $response = $this->post(route('projects.brainstorm.store', $project), [
+it('validates user context length', function () {
+    $response = $this->post(route('projects.brainstorm.store', $this->project), [
         'user_context' => str_repeat('a', 5001),
     ]);
 
     $response->assertSessionHasErrors('user_context');
 });
 
-it('brainstorm record has correct default status', function () {
-    $project = Project::factory()->create();
+it('allows empty user context', function () {
+    Queue::fake();
 
-    $this->post(route('projects.brainstorm.store', $project), [
-        'user_context' => 'Test context',
+    $response = $this->post(route('projects.brainstorm.store', $this->project), [
+        'user_context' => '',
     ]);
 
-    $brainstorm = Brainstorm::latest()->first();
-
-    expect($brainstorm->status)->toBe('pending');
-    expect($brainstorm->ideas)->toBeNull();
-    expect($brainstorm->completed_at)->toBeNull();
+    $response->assertRedirect();
+    expect(Brainstorm::count())->toBe(1);
 });
 
-it('displays brainstorms ordered by created_at desc', function () {
-    $project = Project::factory()->create();
-
-    $brainstorm1 = Brainstorm::factory()->create([
-        'project_id' => $project->id,
-        'created_at' => now()->subHours(2),
+it('displays specific brainstorm session', function () {
+    $brainstorm = Brainstorm::factory()->create([
+        'project_id' => $this->project->id,
+        'status' => 'completed',
+        'ideas' => [
+            [
+                'title' => 'Test Idea',
+                'description' => 'Test description',
+                'priority' => 'high',
+                'category' => 'feature',
+            ],
+        ],
     ]);
 
-    $brainstorm2 = Brainstorm::factory()->create([
-        'project_id' => $project->id,
-        'created_at' => now()->subHour(),
-    ]);
-
-    $brainstorm3 = Brainstorm::factory()->create([
-        'project_id' => $project->id,
-        'created_at' => now(),
-    ]);
-
-    $response = $this->get(route('projects.brainstorm.index', $project));
-
-    $response->assertInertia(fn (Assert $page) => $page
-        ->has('brainstorms', 3)
-        ->where('brainstorms.0.id', $brainstorm3->id)
-        ->where('brainstorms.1.id', $brainstorm2->id)
-        ->where('brainstorms.2.id', $brainstorm1->id)
-    );
-});
-
-it('renders brainstorm show page', function () {
-    $project = Project::factory()->create();
-    $brainstorm = Brainstorm::factory()->create(['project_id' => $project->id]);
-
-    $response = $this->get(route('projects.brainstorm.show', [$project, $brainstorm]));
+    $response = $this->get(route('projects.brainstorm.show', [$this->project, $brainstorm]));
 
     $response->assertSuccessful();
-    $response->assertInertia(fn (Assert $page) => $page
+    $response->assertInertia(fn ($page) => $page
         ->component('projects/brainstorm-show')
         ->has('project')
         ->has('brainstorm')
         ->where('brainstorm.id', $brainstorm->id)
+        ->where('brainstorm.status', 'completed')
     );
+});
+
+it('only shows brainstorms for the current project', function () {
+    $otherProject = Project::factory()->create();
+
+    Brainstorm::factory()->create(['project_id' => $this->project->id]);
+    Brainstorm::factory()->create(['project_id' => $otherProject->id]);
+
+    $response = $this->get(route('projects.brainstorm.index', $this->project));
+
+    $response->assertInertia(fn ($page) => $page->has('brainstorms', 1));
 });

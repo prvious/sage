@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Spec\GenerateTaskFromSpec;
 use App\Http\Resources\SpecResource;
 use App\Models\Project;
 use App\Models\Spec;
 use App\Services\SpecGeneratorService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class SpecController extends Controller
 {
-    public function __construct(protected SpecGeneratorService $specGenerator) {}
+    public function __construct(
+        protected SpecGeneratorService $specGenerator,
+        protected GenerateTaskFromSpec $generateTaskFromSpec
+    ) {}
 
     /**
      * Display a listing of specs for a project.
@@ -165,5 +170,42 @@ class SpecController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Get pre-filled task data from a spec.
+     */
+    public function previewTask(Project $project, Spec $spec): JsonResponse
+    {
+        abort_if($spec->project_id !== $project->id, 404);
+
+        return response()->json([
+            'title' => $this->generateTaskFromSpec->generateTitle($spec),
+            'description' => $this->generateTaskFromSpec->generateDescription($spec),
+        ]);
+    }
+
+    /**
+     * Create a task from a spec.
+     */
+    public function createTask(Request $request, Project $project, Spec $spec): RedirectResponse
+    {
+        abort_if($spec->project_id !== $project->id, 404);
+
+        $validated = $request->validate([
+            'title' => ['nullable', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:10000'],
+            'worktree_id' => ['nullable', 'exists:worktrees,id'],
+        ]);
+
+        $task = $this->generateTaskFromSpec->handle($spec, [
+            'title' => $validated['title'] ?? null,
+            'description' => $validated['description'],
+            'worktree_id' => $validated['worktree_id'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('tasks.show', $task)
+            ->with('success', 'Task created from spec successfully.');
     }
 }

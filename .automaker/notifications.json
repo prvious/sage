@@ -21,6 +21,28 @@
       "dismissed": false,
       "featureId": "agent-output-viewer",
       "projectPath": "/Users/clovismuneza/Apps/sage"
+    },
+    {
+      "id": "371649f2-a636-4462-81d2-2b52066c83e3",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"cost-tracking-dashboard\" has been verified and is complete.",
+      "createdAt": "2026-01-24T19:56:14.035Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "cost-tracking-dashboard",
+      "projectPath": "/Users/clovismuneza/Apps/sage"
+    },
+    {
+      "id": "646ec948-7b4b-4417-bfd1-8625d0b9f8b6",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"quick-task-creation\" has been verified and is complete.",
+      "createdAt": "2026-01-24T20:12:51.719Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "quick-task-creation",
+      "projectPath": "/Users/clovismuneza/Apps/sage"
     }
   ]
 }

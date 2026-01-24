@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 
 uses()->group('guideline');
 
@@ -193,4 +194,51 @@ it('returns 404 when file does not exist on show', function () {
     $response = $this->get(route('projects.guidelines.show', [$this->project, 'nonexistent.md']));
 
     $response->assertNotFound();
+});
+
+it('aggregates guidelines using CLI command', function () {
+    Process::fake([
+        'php artisan boost:update' => Process::result(
+            output: 'Guidelines aggregated',
+            exitCode: 0
+        ),
+    ]);
+
+    $response = $this->from(route('projects.guidelines.index', $this->project))
+        ->post(route('projects.guidelines.aggregate', $this->project));
+
+    $response->assertRedirect(route('projects.guidelines.index', $this->project));
+    $response->assertSessionHas('success', 'Guidelines aggregated successfully.');
+
+    Process::assertRan('php artisan boost:update');
+});
+
+it('handles aggregate command failure gracefully', function () {
+    Process::fake([
+        'php artisan boost:update' => Process::result(
+            errorOutput: 'Command failed',
+            exitCode: 1
+        ),
+    ]);
+
+    $response = $this->from(route('projects.guidelines.index', $this->project))
+        ->post(route('projects.guidelines.aggregate', $this->project));
+
+    $response->assertRedirect(route('projects.guidelines.index', $this->project));
+    $response->assertSessionHasErrors('error');
+});
+
+it('runs aggregate command in project directory', function () {
+    Process::fake([
+        'php artisan boost:update' => Process::result(
+            output: 'Success',
+            exitCode: 0
+        ),
+    ]);
+
+    $this->post(route('projects.guidelines.aggregate', $this->project));
+
+    Process::assertRan(function ($process) {
+        return $process->path === $this->project->path;
+    });
 });

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Project;
+use App\Models\Spec;
 use App\Models\Worktree;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,6 +22,7 @@ class TaskFactory extends Factory
         return [
             'project_id' => Project::factory(),
             'worktree_id' => null,
+            'spec_id' => null,
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'status' => \App\Enums\TaskStatus::Queued,
@@ -90,6 +92,16 @@ class TaskFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'worktree_id' => Worktree::factory(),
+        ]);
+    }
+
+    /**
+     * Indicate that the task was created from a spec.
+     */
+    public function fromSpec(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'spec_id' => Spec::factory(),
         ]);
     }
 }

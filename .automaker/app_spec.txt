@@ -195,6 +195,14 @@
       <name>Live Agent Output Viewer</name>
       <description>Real-time streaming display of agent command output with syntax highlighting and scroll-to-bottom. Shows current agent task and progress indicators.</description>
     </feature>
+    <feature>
+      <name>API Cost Tracking Dashboard</name>
+      <description>Track and visualize Anthropic API costs per project, task, and agent run. Shows token usage, estimated costs, and budget alerts.</description>
+    </feature>
+    <feature>
+      <name>Quick Task Creation Modal</name>
+      <description>Streamlined modal for rapid task creation from any page with title, description, and optional worktree assignment. Supports keyboard shortcuts for power users.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

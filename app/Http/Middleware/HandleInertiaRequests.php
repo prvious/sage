@@ -62,6 +62,19 @@ class HandleInertiaRequests extends Middleware
             }
         }
 
+        // Load worktrees for the selected project (for quick task creation modal)
+        $selectedProjectWorktrees = [];
+        if ($selectedProject) {
+            $projectModel = Project::find($selectedProject['id']);
+            if ($projectModel) {
+                $selectedProjectWorktrees = $projectModel->worktrees()
+                    ->where('status', 'active')
+                    ->select(['id', 'branch_name'])
+                    ->get()
+                    ->toArray();
+            }
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -71,6 +84,7 @@ class HandleInertiaRequests extends Middleware
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'projects' => Project::query()->select(['id', 'name', 'path'])->get(),
             'selectedProject' => $selectedProject,
+            'selectedProjectWorktrees' => $selectedProjectWorktrees,
         ];
     }
 }

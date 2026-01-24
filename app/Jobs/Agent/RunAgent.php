@@ -2,10 +2,12 @@
 
 namespace App\Jobs\Agent;
 
+use App\Actions\Cost\RecordApiUsage;
 use App\Drivers\Agent\AgentManager;
 use App\Events\Agent\AgentOutputReceived;
 use App\Events\Agent\AgentStatusChanged;
 use App\Models\Task;
+use App\Services\AgentOutputParser;
 use App\Services\CommitDetector;
 use App\Services\ProcessStreamer;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,7 +32,9 @@ class RunAgent implements ShouldQueue
     public function handle(
         AgentManager $agentManager,
         ProcessStreamer $processStreamer,
-        CommitDetector $commitDetector
+        CommitDetector $commitDetector,
+        AgentOutputParser $agentOutputParser,
+        RecordApiUsage $recordApiUsage
     ): void {
         $this->task->update([
             'status' => 'in_progress',
@@ -82,6 +86,8 @@ class RunAgent implements ShouldQueue
                 'agent_output' => $output,
             ]);
 
+            $this->recordUsage($output, $agentOutputParser, $recordApiUsage);
+
             AgentStatusChanged::dispatch(
                 $this->task->id,
                 $exitCode === 0 ? 'done' : 'failed',
@@ -98,5 +104,31 @@ class RunAgent implements ShouldQueue
 
             throw $e;
         }
+    }
+
+    /**
+     * Record API usage for cost tracking.
+     */
+    protected function recordUsage(
+        string $output,
+        AgentOutputParser $agentOutputParser,
+        RecordApiUsage $recordApiUsage
+    ): void {
+        $usage = $agentOutputParser->parseUsage($output);
+
+        if ($usage === null) {
+            return;
+        }
+
+        $recordApiUsage->handle([
+            'project_id' => $this->task->project_id,
+            'task_id' => $this->task->id,
+            'source' => 'agent_run',
+            'model' => $this->task->model ?? config('sage.agents.claude.default_model', 'claude-sonnet-4-20250514'),
+            'input_tokens' => $usage['input_tokens'],
+            'output_tokens' => $usage['output_tokens'],
+            'cache_creation_input_tokens' => $usage['cache_creation_input_tokens'] ?? null,
+            'cache_read_input_tokens' => $usage['cache_read_input_tokens'] ?? null,
+        ]);
     }
 }

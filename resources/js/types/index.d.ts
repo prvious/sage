@@ -1,5 +1,13 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
+import Echo from 'laravel-echo';
+
+declare global {
+    interface Window {
+        Echo: Echo;
+        Pusher: any;
+    }
+}
 
 export interface Auth {
     user: User;
@@ -25,12 +33,18 @@ export interface ServerStatus {
     worktrees_count: number;
 }
 
+export interface WorktreeOption {
+    id: number;
+    branch_name: string;
+}
+
 export interface SharedData {
     name: string;
     auth: Auth;
     sidebarOpen: boolean;
     projects: Project[];
     selectedProject: Project | null;
+    selectedProjectWorktrees: WorktreeOption[];
     [key: string]: unknown;
 }
 
@@ -96,6 +110,7 @@ export interface Task {
     id: number;
     project_id: number;
     worktree_id: number | null;
+    spec_id: number | null;
     title: string;
     description: string | null;
     status: TaskStatus;
@@ -108,6 +123,16 @@ export interface Task {
     updated_at: string;
 }
 
+export interface Spec {
+    id: number;
+    project_id: number;
+    title: string;
+    content: string;
+    generated_from_idea: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
 export type TaskStatus = 'queued' | 'in_progress' | 'waiting_review' | 'done' | 'failed';
 
 export interface Commit {
@@ -115,6 +140,22 @@ export interface Commit {
     message: string;
     author: string;
     created_at: string;
+}
+
+export type WorktreeStatus = 'creating' | 'active' | 'error' | 'cleaning_up';
+export type DatabaseIsolation = 'separate' | 'prefix' | 'shared';
+
+export interface Worktree {
+    id: number;
+    project_id: number;
+    branch_name: string;
+    path: string;
+    preview_url: string;
+    status: WorktreeStatus;
+    database_isolation: DatabaseIsolation;
+    error_message?: string | null;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface TaskWithDetails extends Task {

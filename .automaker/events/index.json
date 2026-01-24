@@ -2,6 +2,27 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769286514989-89c3998c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T20:28:34.989Z",
+      "featureName": "Spec to Task Conversion",
+      "featureId": "spec-to-task"
+    },
+    {
+      "id": "evt-1769285571736-6b96dec5",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T20:12:51.736Z",
+      "featureName": "Quick Task Creation Modal",
+      "featureId": "quick-task-creation"
+    },
+    {
+      "id": "evt-1769284574038-b042054e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T19:56:14.038Z",
+      "featureName": "API Cost Tracking Dashboard",
+      "featureId": "cost-tracking-dashboard"
+    },
+    {
       "id": "evt-1769282884539-933e5bfc",
       "trigger": "feature_success",
       "timestamp": "2026-01-24T19:28:04.539Z",

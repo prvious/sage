@@ -13,14 +13,7 @@ interface AgentProgressIndicatorProps {
     showDuration?: boolean;
 }
 
-export function AgentProgressIndicator({
-    status,
-    currentTask,
-    startedAt,
-    completedAt,
-    className,
-    showDuration = true,
-}: AgentProgressIndicatorProps) {
+export function AgentProgressIndicator({ status, currentTask, startedAt, completedAt, className, showDuration = true }: AgentProgressIndicatorProps) {
     const getStatusConfig = (status: TaskStatus) => {
         switch (status) {
             case 'queued':
@@ -112,9 +105,7 @@ export function AgentProgressIndicator({
             <div className='flex flex-col min-w-0'>
                 <div className='flex items-center gap-2'>
                     <Badge variant={config.badgeVariant}>{config.label}</Badge>
-                    {duration && status !== 'queued' && (
-                        <span className='text-xs text-muted-foreground'>{duration}</span>
-                    )}
+                    {duration && status !== 'queued' && <span className='text-xs text-muted-foreground'>{duration}</span>}
                 </div>
                 <p className='text-xs text-muted-foreground mt-0.5 truncate'>{config.description}</p>
             </div>
@@ -123,13 +114,7 @@ export function AgentProgressIndicator({
 }
 
 // Compact version for use in cards/lists
-export function AgentProgressIndicatorCompact({
-    status,
-    className,
-}: {
-    status: TaskStatus;
-    className?: string;
-}) {
+export function AgentProgressIndicatorCompact({ status, className }: { status: TaskStatus; className?: string }) {
     const getStatusConfig = (status: TaskStatus) => {
         switch (status) {
             case 'queued':
@@ -174,14 +159,5 @@ export function AgentProgressIndicatorCompact({
     const config = getStatusConfig(status);
     const Icon = config.icon;
 
-    return (
-        <Icon
-            className={cn(
-                'h-4 w-4',
-                config.className,
-                config.animate && 'animate-spin',
-                className
-            )}
-        />
-    );
+    return <Icon className={cn('h-4 w-4', config.className, config.animate && 'animate-spin', className)} />;
 }

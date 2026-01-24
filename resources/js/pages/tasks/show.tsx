@@ -49,10 +49,13 @@ export default function TaskShow({ task }: TaskShowProps) {
     // Parse the agent_output into OutputLine format
     const parseOutput = useCallback((rawOutput: string | null): OutputLine[] => {
         if (!rawOutput) return [];
-        return rawOutput.split('\n').filter(Boolean).map((line) => ({
-            content: line,
-            type: 'stdout' as const,
-        }));
+        return rawOutput
+            .split('\n')
+            .filter(Boolean)
+            .map((line) => ({
+                content: line,
+                type: 'stdout' as const,
+            }));
     }, []);
 
     useEffect(() => {
@@ -68,7 +71,7 @@ export default function TaskShow({ task }: TaskShowProps) {
         },
         {
             autoStart: task.status === 'in_progress',
-        }
+        },
     );
 
     useEffect(() => {
@@ -94,7 +97,7 @@ export default function TaskShow({ task }: TaskShowProps) {
                     onSuccess: () => {
                         router.reload({ only: ['task'] });
                     },
-                }
+                },
             );
         }
     };
@@ -120,15 +123,7 @@ export default function TaskShow({ task }: TaskShowProps) {
                                     <Button
                                         variant='ghost'
                                         size='icon-sm'
-                                        render={
-                                            <Link
-                                                href={
-                                                    task.project
-                                                        ? `/projects/${task.project.id}/dashboard`
-                                                        : '/agents'
-                                                }
-                                            />
-                                        }
+                                        render={<Link href={task.project ? `/projects/${task.project.id}/dashboard` : '/agents'} />}
                                     >
                                         <ArrowLeft className='h-4 w-4' />
                                     </Button>
@@ -136,11 +131,7 @@ export default function TaskShow({ task }: TaskShowProps) {
                                         <div className='flex items-center gap-3'>
                                             <h1 className='text-2xl font-bold'>{task.title}</h1>
                                         </div>
-                                        {task.description && (
-                                            <p className='text-muted-foreground mt-1 max-w-2xl'>
-                                                {task.description}
-                                            </p>
-                                        )}
+                                        {task.description && <p className='text-muted-foreground mt-1 max-w-2xl'>{task.description}</p>}
                                         <div className='flex items-center gap-4 mt-3'>
                                             {task.project && (
                                                 <Link
@@ -151,29 +142,14 @@ export default function TaskShow({ task }: TaskShowProps) {
                                                     {task.project.name}
                                                 </Link>
                                             )}
-                                            {task.worktree && (
-                                                <Badge variant='outline'>
-                                                    {task.worktree.branch_name}
-                                                </Badge>
-                                            )}
-                                            {task.model && (
-                                                <span className='text-xs text-muted-foreground'>
-                                                    Model: {task.model}
-                                                </span>
-                                            )}
+                                            {task.worktree && <Badge variant='outline'>{task.worktree.branch_name}</Badge>}
+                                            {task.model && <span className='text-xs text-muted-foreground'>Model: {task.model}</span>}
                                         </div>
                                     </div>
                                 </div>
                                 <div className='flex items-center gap-2'>
-                                    <Button
-                                        variant='ghost'
-                                        size='icon-sm'
-                                        onClick={handleRefresh}
-                                        disabled={isRefreshing}
-                                    >
-                                        <RefreshCw
-                                            className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
-                                        />
+                                    <Button variant='ghost' size='icon-sm' onClick={handleRefresh} disabled={isRefreshing}>
+                                        <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                                     </Button>
                                     {isRunning ? (
                                         <Button variant='destructive' size='sm' onClick={handleStop}>
@@ -216,11 +192,7 @@ export default function TaskShow({ task }: TaskShowProps) {
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <AgentProgressIndicator
-                                            status={task.status}
-                                            startedAt={task.started_at}
-                                            completedAt={task.completed_at}
-                                        />
+                                        <AgentProgressIndicator status={task.status} startedAt={task.started_at} completedAt={task.completed_at} />
                                     </CardContent>
                                 </Card>
 
@@ -232,27 +204,16 @@ export default function TaskShow({ task }: TaskShowProps) {
                                                 <GitCommit className='h-4 w-4' />
                                                 Commits ({task.commits.length})
                                             </CardTitle>
-                                            <CardDescription>
-                                                Changes made by the agent
-                                            </CardDescription>
+                                            <CardDescription>Changes made by the agent</CardDescription>
                                         </CardHeader>
                                         <CardContent>
                                             <div className='space-y-3'>
                                                 {task.commits.map((commit) => (
-                                                    <div
-                                                        key={commit.sha}
-                                                        className='border-l-2 border-muted pl-3 py-1'
-                                                    >
-                                                        <p className='text-sm font-medium line-clamp-2'>
-                                                            {commit.message}
-                                                        </p>
+                                                    <div key={commit.sha} className='border-l-2 border-muted pl-3 py-1'>
+                                                        <p className='text-sm font-medium line-clamp-2'>{commit.message}</p>
                                                         <div className='flex items-center gap-2 mt-1'>
-                                                            <code className='text-xs text-muted-foreground font-mono'>
-                                                                {commit.sha.substring(0, 7)}
-                                                            </code>
-                                                            <span className='text-xs text-muted-foreground'>
-                                                                by {commit.author}
-                                                            </span>
+                                                            <code className='text-xs text-muted-foreground font-mono'>{commit.sha.substring(0, 7)}</code>
+                                                            <span className='text-xs text-muted-foreground'>by {commit.author}</span>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -274,38 +235,24 @@ export default function TaskShow({ task }: TaskShowProps) {
                                             </div>
                                             {task.agent_type && (
                                                 <div>
-                                                    <dt className='text-muted-foreground'>
-                                                        Agent Type
-                                                    </dt>
+                                                    <dt className='text-muted-foreground'>Agent Type</dt>
                                                     <dd className='capitalize'>{task.agent_type}</dd>
                                                 </div>
                                             )}
                                             <div>
                                                 <dt className='text-muted-foreground'>Created</dt>
-                                                <dd>
-                                                    {new Date(task.created_at).toLocaleString()}
-                                                </dd>
+                                                <dd>{new Date(task.created_at).toLocaleString()}</dd>
                                             </div>
                                             {task.started_at && (
                                                 <div>
-                                                    <dt className='text-muted-foreground'>
-                                                        Started
-                                                    </dt>
-                                                    <dd>
-                                                        {new Date(task.started_at).toLocaleString()}
-                                                    </dd>
+                                                    <dt className='text-muted-foreground'>Started</dt>
+                                                    <dd>{new Date(task.started_at).toLocaleString()}</dd>
                                                 </div>
                                             )}
                                             {task.completed_at && (
                                                 <div>
-                                                    <dt className='text-muted-foreground'>
-                                                        Completed
-                                                    </dt>
-                                                    <dd>
-                                                        {new Date(
-                                                            task.completed_at
-                                                        ).toLocaleString()}
-                                                    </dd>
+                                                    <dt className='text-muted-foreground'>Completed</dt>
+                                                    <dd>{new Date(task.completed_at).toLocaleString()}</dd>
                                                 </div>
                                             )}
                                         </dl>

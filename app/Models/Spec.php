@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Spec extends Model
 {
@@ -29,5 +30,13 @@ class Spec extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Get the tasks created from this spec.
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }

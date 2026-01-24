@@ -21,11 +21,7 @@ export function KanbanCard({ task }: KanbanCardProps) {
                     <h3 className='font-medium text-sm flex-1'>{task.title}</h3>
                     <AgentProgressIndicatorCompact status={task.status} />
                 </div>
-                {task.description && (
-                    <p className='mt-1 text-xs text-muted-foreground line-clamp-2'>
-                        {truncateText(task.description, 100)}
-                    </p>
-                )}
+                {task.description && <p className='mt-1 text-xs text-muted-foreground line-clamp-2'>{truncateText(task.description, 100)}</p>}
                 <div className='mt-2 flex items-center justify-between text-xs text-muted-foreground'>
                     <span>
                         {formatDistanceToNow(new Date(task.created_at), {

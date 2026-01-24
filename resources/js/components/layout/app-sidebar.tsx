@@ -1,4 +1,4 @@
-import { Bot, FileEdit, FileText, GitBranch, LayoutDashboard, Settings, Sparkles, Terminal } from 'lucide-react';
+import { Bot, FileEdit, FileText, GitBranch, LayoutDashboard, Plus, Settings, Sparkles, Terminal } from 'lucide-react';
 
 import {
     Sidebar,
@@ -11,6 +11,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
 import { Link, usePage } from '@inertiajs/react';
 import { SharedData } from '@/types';
 import BrainstormController from '@/actions/App/Http/Controllers/BrainstormController';
@@ -20,6 +21,7 @@ import ProjectAgentController from '@/actions/App/Http/Controllers/ProjectAgentC
 import SettingsController from '@/actions/App/Http/Controllers/SettingsController';
 import WorktreeController from '@/actions/App/Http/Controllers/WorktreeController';
 import { ProjectSidebar } from './project-sidebar';
+import { useQuickTask } from '@/contexts/quick-task-context';
 
 interface NavigationItem {
     label: string;
@@ -30,6 +32,7 @@ interface NavigationItem {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { projects, selectedProject, url } = usePage<SharedData>().props;
+    const { open: openQuickTask } = useQuickTask();
 
     const navigationItems: NavigationItem[] = selectedProject
         ? [
@@ -115,6 +118,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarHeader className='border-b p-4'>
                     <div className='flex w-full items-center justify-between'>
                         <div className='text-foreground text-base font-medium'>{selectedProject?.name || 'Select a project'}</div>
+                        {selectedProject && (
+                            <Button variant='outline' size='sm' onClick={openQuickTask} className='gap-1.5'>
+                                <Plus className='h-3.5 w-3.5' />
+                                <span className='hidden lg:inline'>Task</span>
+                                <kbd className='bg-muted text-muted-foreground pointer-events-none hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium lg:inline-flex'>
+                                    <span className='text-xs'>&#8984;</span>K
+                                </kbd>
+                            </Button>
+                        )}
                     </div>
                 </SidebarHeader>
 

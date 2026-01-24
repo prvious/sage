@@ -46,6 +46,8 @@ Route::prefix('projects/{project}')->name('projects.')->group(function () {
     Route::delete('/specs/{spec}', [SpecController::class, 'destroy'])->name('specs.destroy');
     Route::get('/specs/{spec}/edit', [SpecController::class, 'edit'])->name('specs.edit');
     Route::post('/specs/{spec}/refine', [SpecController::class, 'refine'])->name('specs.refine');
+    Route::get('/specs/{spec}/preview-task', [SpecController::class, 'previewTask'])->name('specs.preview-task');
+    Route::post('/specs/{spec}/create-task', [SpecController::class, 'createTask'])->name('specs.create-task');
 
     // Custom Guidelines Routes (project-scoped)
     Route::get('/guidelines', [GuidelineController::class, 'index'])->name('guidelines.index');
@@ -64,6 +66,8 @@ Route::prefix('projects/{project}')->name('projects.')->group(function () {
     Route::get('/brainstorm', [BrainstormController::class, 'index'])->name('brainstorm.index');
     Route::post('/brainstorm', [BrainstormController::class, 'store'])->name('brainstorm.store');
     Route::get('/brainstorm/{brainstorm}', [BrainstormController::class, 'show'])->name('brainstorm.show');
+    Route::get('/brainstorm/{brainstorm}/export', [BrainstormController::class, 'export'])->name('brainstorm.export');
+    Route::post('/brainstorm/{brainstorm}/ideas/{index}/create-spec', [BrainstormController::class, 'createSpec'])->name('brainstorm.create-spec');
 });
 
 // Task Routes

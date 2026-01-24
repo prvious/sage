@@ -140,3 +140,168 @@ it('updates session when switching between projects', function () {
             ->where('selectedProject.name', 'Second Project')
         );
 });
+
+// Quick Task Feature - Worktree Sharing Tests
+it('shares empty selectedProjectWorktrees array when no worktrees exist', function () {
+    $project = Project::factory()->create();
+
+    $this->get("/projects/{$project->id}/dashboard")
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('selectedProjectWorktrees', 0)
+        );
+});
+
+it('shares active worktrees for selected project', function () {
+    $project = Project::factory()->create();
+    $worktree = \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/test-branch',
+        'status' => 'active',
+    ]);
+
+    $this->get("/projects/{$project->id}/dashboard")
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('selectedProjectWorktrees', 1)
+            ->where('selectedProjectWorktrees.0.id', $worktree->id)
+            ->where('selectedProjectWorktrees.0.branch_name', 'feature/test-branch')
+        );
+});
+
+it('only shares active worktrees not inactive ones', function () {
+    $project = Project::factory()->create();
+
+    // Create active worktree
+    $activeWorktree = \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/active',
+        'status' => 'active',
+    ]);
+
+    // Create non-active worktrees
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/creating',
+        'status' => 'creating',
+    ]);
+
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/error',
+        'status' => 'error',
+    ]);
+
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/cleaning-up',
+        'status' => 'cleaning_up',
+    ]);
+
+    $this->get("/projects/{$project->id}/dashboard")
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('selectedProjectWorktrees', 1)
+            ->where('selectedProjectWorktrees.0.id', $activeWorktree->id)
+            ->where('selectedProjectWorktrees.0.branch_name', 'feature/active')
+        );
+});
+
+it('shares multiple active worktrees for selected project', function () {
+    $project = Project::factory()->create();
+
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/branch-1',
+        'status' => 'active',
+    ]);
+
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/branch-2',
+        'status' => 'active',
+    ]);
+
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'bugfix/branch-3',
+        'status' => 'active',
+    ]);
+
+    $this->get("/projects/{$project->id}/dashboard")
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('selectedProjectWorktrees', 3)
+        );
+});
+
+it('does not share worktrees from other projects', function () {
+    $project1 = Project::factory()->create();
+    $project2 = Project::factory()->create();
+
+    // Create worktree for project1
+    $worktree1 = \App\Models\Worktree::factory()->create([
+        'project_id' => $project1->id,
+        'branch_name' => 'feature/project1-branch',
+        'status' => 'active',
+    ]);
+
+    // Create worktree for project2
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project2->id,
+        'branch_name' => 'feature/project2-branch',
+        'status' => 'active',
+    ]);
+
+    // Visit project1 - should only see project1's worktrees
+    $this->get("/projects/{$project1->id}/dashboard")
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('selectedProjectWorktrees', 1)
+            ->where('selectedProjectWorktrees.0.id', $worktree1->id)
+            ->where('selectedProjectWorktrees.0.branch_name', 'feature/project1-branch')
+        );
+});
+
+it('shares empty worktrees array when no project is selected', function () {
+    $this->get('/projects')
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('selectedProjectWorktrees', [])
+        );
+});
+
+it('shares worktrees for session-stored project on non-project route', function () {
+    $project = Project::factory()->create();
+    $worktree = \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/session-test',
+        'status' => 'active',
+    ]);
+
+    // Visit project route to store in session
+    $this->get("/projects/{$project->id}/dashboard");
+
+    // Visit non-project route - should still have worktrees from session
+    $this->get('/agents')
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('selectedProjectWorktrees', 1)
+            ->where('selectedProjectWorktrees.0.id', $worktree->id)
+            ->where('selectedProjectWorktrees.0.branch_name', 'feature/session-test')
+        );
+});
+
+it('selectedProjectWorktrees only contains id and branch_name', function () {
+    $project = Project::factory()->create();
+    \App\Models\Worktree::factory()->create([
+        'project_id' => $project->id,
+        'branch_name' => 'feature/minimal-fields',
+        'status' => 'active',
+        'path' => '/some/path',
+        'preview_url' => 'http://preview.url',
+    ]);
+
+    $this->get("/projects/{$project->id}/dashboard")
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('selectedProjectWorktrees', 1)
+            ->has('selectedProjectWorktrees.0.id')
+            ->has('selectedProjectWorktrees.0.branch_name')
+            ->missing('selectedProjectWorktrees.0.path')
+            ->missing('selectedProjectWorktrees.0.preview_url')
+            ->missing('selectedProjectWorktrees.0.status')
+        );
+});
