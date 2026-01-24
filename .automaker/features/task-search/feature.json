@@ -1,0 +1,15 @@
+{
+  "id": "task-search",
+  "category": "Task Management",
+  "title": "Advanced Task Search",
+  "description": "Full-text search across task titles, descriptions, and comments with filters for status, labels, dates, and assigned worktrees. Supports search operators.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "task-labels",
+    "task-comments"
+  ],
+  "createdAt": "2026-01-24T19:16:18.541Z",
+  "updatedAt": "2026-01-24T19:16:18.541Z"
+}

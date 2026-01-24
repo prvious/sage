@@ -1,0 +1,12 @@
+{
+  "id": "worktree-clone-settings",
+  "category": "Worktree Management",
+  "title": "Clone Worktree Settings",
+  "description": "Duplicate an existing worktree's environment configuration and setup when creating new worktrees. Speeds up consistent worktree creation.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.545Z",
+  "updatedAt": "2026-01-24T19:16:18.545Z"
+}

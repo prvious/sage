@@ -1,0 +1,12 @@
+{
+  "id": "task-comments",
+  "category": "Task Management",
+  "title": "Task Comments and Notes",
+  "description": "Add comments and notes to tasks for context, collaboration notes, and progress updates. Supports markdown formatting and timestamps.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.539Z",
+  "updatedAt": "2026-01-24T19:16:18.539Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "task-attachments",
+  "category": "Task Management",
+  "title": "Task File Attachments",
+  "description": "Attach files, screenshots, or design mockups to tasks. Files stored locally with preview support for images and documents.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [
+    "task-comments"
+  ],
+  "createdAt": "2026-01-24T19:16:18.539Z",
+  "updatedAt": "2026-01-24T19:16:18.539Z"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "activity-timeline",
+  "category": "Analytics",
+  "title": "Project Activity Timeline",
+  "description": "Chronological feed of all project activities including task updates, worktree creation, agent runs, and spec generations. Filterable by type.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.552Z",
+  "updatedAt": "2026-01-24T19:16:18.552Z"
+}

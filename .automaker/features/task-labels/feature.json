@@ -1,0 +1,12 @@
+{
+  "id": "task-labels",
+  "category": "Task Management",
+  "title": "Task Labels and Tags",
+  "description": "Create custom labels/tags for organizing tasks by type, priority, or team. Filter and search tasks by labels on dashboard.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.540Z",
+  "updatedAt": "2026-01-24T19:16:18.540Z"
+}

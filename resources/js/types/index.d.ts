@@ -98,7 +98,7 @@ export interface Task {
     worktree_id: number | null;
     title: string;
     description: string | null;
-    status: 'queued' | 'in_progress' | 'waiting_review' | 'done';
+    status: TaskStatus;
     agent_type: string | null;
     model: string | null;
     agent_output: string | null;
@@ -106,4 +106,35 @@ export interface Task {
     completed_at: string | null;
     created_at: string;
     updated_at: string;
+}
+
+export type TaskStatus = 'queued' | 'in_progress' | 'waiting_review' | 'done' | 'failed';
+
+export interface Commit {
+    sha: string;
+    message: string;
+    author: string;
+    created_at: string;
+}
+
+export interface TaskWithDetails extends Task {
+    project: {
+        id: number;
+        name: string;
+    } | null;
+    worktree: {
+        id: number;
+        branch_name: string;
+    } | null;
+    commits: Commit[];
+}
+
+export interface TaskShowProps extends SharedData {
+    task: TaskWithDetails;
+}
+
+export interface OutputLine {
+    content: string;
+    type: 'stdout' | 'stderr';
+    timestamp?: string;
 }

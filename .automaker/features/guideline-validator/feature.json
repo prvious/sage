@@ -1,0 +1,12 @@
+{
+  "id": "guideline-validator",
+  "category": "Guidelines",
+  "title": "Guideline Syntax Validator",
+  "description": "Validate guideline markdown syntax and structure before saving. Highlights issues and suggests corrections for AI-readable format.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.550Z",
+  "updatedAt": "2026-01-24T19:16:18.550Z"
+}

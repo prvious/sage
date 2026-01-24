@@ -1,0 +1,12 @@
+{
+  "id": "project-search",
+  "category": "Project Management",
+  "title": "Global Project Search",
+  "description": "Search across all projects by name, path, or metadata with fuzzy matching. Shows recent and favorite projects first.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.551Z",
+  "updatedAt": "2026-01-24T19:16:18.551Z"
+}

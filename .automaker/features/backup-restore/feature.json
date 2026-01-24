@@ -1,0 +1,12 @@
+{
+  "id": "backup-restore",
+  "category": "Core",
+  "title": "Sage Data Backup and Restore",
+  "description": "Backup entire Sage database including projects, tasks, worktrees, and settings. Restore from backup files with conflict resolution.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.553Z",
+  "updatedAt": "2026-01-24T19:16:18.553Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "kanban-swim-lanes",
+  "category": "UI",
+  "title": "Kanban Swim Lanes",
+  "description": "Group Kanban board by worktree, label, or agent to visualize work distribution. Toggle between flat view and swim lane layouts.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "task-labels"
+  ],
+  "createdAt": "2026-01-24T19:16:18.541Z",
+  "updatedAt": "2026-01-24T19:16:18.541Z"
+}

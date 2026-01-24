@@ -1,0 +1,12 @@
+{
+  "id": "task-time-tracking",
+  "category": "Task Management",
+  "title": "Task Time Tracking",
+  "description": "Automatic and manual time tracking per task showing total time in each status and overall completion time. Helpful for estimating future work.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.540Z",
+  "updatedAt": "2026-01-24T19:16:18.540Z"
+}

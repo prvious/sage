@@ -1,0 +1,12 @@
+{
+  "id": "spec-export",
+  "category": "Spec Generator",
+  "title": "Spec Export Options",
+  "description": "Export specs in multiple formats (Markdown, PDF, HTML) for sharing with team or documentation. Includes metadata and timestamps.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.549Z",
+  "updatedAt": "2026-01-24T19:16:18.549Z"
+}

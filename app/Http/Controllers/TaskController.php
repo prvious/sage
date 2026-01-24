@@ -6,9 +6,49 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class TaskController extends Controller
 {
+    /**
+     * Display the specified task with its output.
+     */
+    public function show(Task $task): Response
+    {
+        $task->load(['project', 'worktree', 'commits']);
+
+        return Inertia::render('tasks/show', [
+            'task' => [
+                'id' => $task->id,
+                'title' => $task->title,
+                'description' => $task->description,
+                'status' => $task->status,
+                'agent_type' => $task->agent_type,
+                'model' => $task->model,
+                'agent_output' => $task->agent_output,
+                'started_at' => $task->started_at,
+                'completed_at' => $task->completed_at,
+                'created_at' => $task->created_at,
+                'updated_at' => $task->updated_at,
+                'project' => $task->project ? [
+                    'id' => $task->project->id,
+                    'name' => $task->project->name,
+                ] : null,
+                'worktree' => $task->worktree ? [
+                    'id' => $task->worktree->id,
+                    'branch_name' => $task->worktree->branch_name,
+                ] : null,
+                'commits' => $task->commits->map(fn ($commit) => [
+                    'sha' => $commit->sha,
+                    'message' => $commit->message,
+                    'author' => $commit->author,
+                    'created_at' => $commit->created_at,
+                ]),
+            ],
+        ]);
+    }
+
     /**
      * Store a newly created task.
      */

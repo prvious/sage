@@ -1,0 +1,12 @@
+{
+  "id": "project-favorites",
+  "category": "Project Management",
+  "title": "Favorite Projects",
+  "description": "Star frequently accessed projects for quick access at top of project list. Persists per user preference.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.551Z",
+  "updatedAt": "2026-01-24T19:16:18.551Z"
+}

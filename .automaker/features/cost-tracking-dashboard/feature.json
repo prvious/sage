@@ -1,0 +1,12 @@
+{
+  "id": "cost-tracking-dashboard",
+  "category": "Analytics",
+  "title": "API Cost Tracking Dashboard",
+  "description": "Track and visualize Anthropic API costs per project, task, and agent run. Shows token usage, estimated costs, and budget alerts.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.552Z",
+  "updatedAt": "2026-01-24T19:16:18.552Z"
+}

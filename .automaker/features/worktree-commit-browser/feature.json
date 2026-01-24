@@ -1,0 +1,12 @@
+{
+  "id": "worktree-commit-browser",
+  "category": "Worktree Management",
+  "title": "Worktree Commit Browser",
+  "description": "Visual commit history browser per worktree showing diffs, commit messages, and author info. Supports filtering and search.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.546Z",
+  "updatedAt": "2026-01-24T19:16:18.546Z"
+}

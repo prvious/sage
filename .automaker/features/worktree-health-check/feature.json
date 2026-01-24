@@ -1,0 +1,14 @@
+{
+  "id": "worktree-health-check",
+  "category": "Worktree Management",
+  "title": "Worktree Health Monitoring",
+  "description": "Automated health checks for worktrees verifying server status, database connectivity, and required dependencies. Displays health indicators on dashboard with actionable alerts.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "worktree-logs-viewer"
+  ],
+  "createdAt": "2026-01-24T19:16:18.537Z",
+  "updatedAt": "2026-01-24T19:16:18.537Z"
+}

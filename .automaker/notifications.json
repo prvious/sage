@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "notifications": [
+    {
+      "id": "63b7ae71-18a6-4396-9e7b-cf841988f8aa",
+      "type": "spec_regeneration_complete",
+      "title": "Spec Generation Complete",
+      "message": "Created 50 features from the project specification.",
+      "createdAt": "2026-01-24T19:16:18.555Z",
+      "read": false,
+      "dismissed": false,
+      "projectPath": "/Users/clovismuneza/Apps/sage"
+    },
+    {
+      "id": "6c300614-52df-43ee-8659-b20d46dfcd7e",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"agent-output-viewer\" has been verified and is complete.",
+      "createdAt": "2026-01-24T19:28:04.535Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "agent-output-viewer",
+      "projectPath": "/Users/clovismuneza/Apps/sage"
+    }
+  ]
+}

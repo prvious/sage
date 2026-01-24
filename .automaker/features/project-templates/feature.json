@@ -1,0 +1,12 @@
+{
+  "id": "project-templates",
+  "category": "Project Management",
+  "title": "Project Templates",
+  "description": "Save project configurations as templates including server settings, guidelines, and database preferences. Quick setup for similar projects.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.551Z",
+  "updatedAt": "2026-01-24T19:16:18.551Z"
+}

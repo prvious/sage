@@ -1,0 +1,12 @@
+{
+  "id": "migration-runner",
+  "category": "Database",
+  "title": "Manual Migration Runner",
+  "description": "Execute migrations manually for worktrees with rollback support and batch management. Displays migration status and pending migrations.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.548Z",
+  "updatedAt": "2026-01-24T19:16:18.548Z"
+}

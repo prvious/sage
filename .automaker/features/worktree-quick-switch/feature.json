@@ -1,0 +1,12 @@
+{
+  "id": "worktree-quick-switch",
+  "category": "Worktree Management",
+  "title": "Quick Worktree Switcher",
+  "description": "Keyboard-accessible command palette for instant worktree switching with fuzzy search. Shows worktree status and preview URLs.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.545Z",
+  "updatedAt": "2026-01-24T19:16:18.545Z"
+}

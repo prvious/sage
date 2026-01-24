@@ -1,0 +1,12 @@
+{
+  "id": "guideline-templates",
+  "category": "Guidelines",
+  "title": "Guideline Templates Library",
+  "description": "Pre-built guideline templates for common frameworks and coding standards (Laravel best practices, React patterns, API design). Quick setup for new projects.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.550Z",
+  "updatedAt": "2026-01-24T19:16:18.550Z"
+}

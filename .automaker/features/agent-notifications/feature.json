@@ -1,0 +1,12 @@
+{
+  "id": "agent-notifications",
+  "category": "Agent Management",
+  "title": "Agent Completion Notifications",
+  "description": "Desktop notifications when agents complete tasks or encounter errors. Configurable notification preferences per project.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.545Z",
+  "updatedAt": "2026-01-24T19:16:18.545Z"
+}

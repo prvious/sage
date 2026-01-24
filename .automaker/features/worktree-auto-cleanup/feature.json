@@ -1,0 +1,12 @@
+{
+  "id": "worktree-auto-cleanup",
+  "category": "Worktree Management",
+  "title": "Automatic Worktree Cleanup",
+  "description": "Configurable rules to auto-delete merged worktrees after specified time period. Keeps workspace clean with optional retention policies.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.547Z",
+  "updatedAt": "2026-01-24T19:16:18.547Z"
+}

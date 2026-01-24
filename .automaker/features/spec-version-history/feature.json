@@ -1,0 +1,12 @@
+{
+  "id": "spec-version-history",
+  "category": "Spec Generator",
+  "title": "Spec Version History",
+  "description": "Track all versions of generated specs with diff viewer and ability to restore previous versions. Preserves iteration history.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.549Z",
+  "updatedAt": "2026-01-24T19:16:18.549Z"
+}

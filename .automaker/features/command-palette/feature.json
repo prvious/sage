@@ -1,0 +1,14 @@
+{
+  "id": "command-palette",
+  "category": "UI",
+  "title": "Command Palette",
+  "description": "Fuzzy-searchable command palette for executing any action from keyboard (create task, switch project, spawn agent). Context-aware suggestions.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "keyboard-shortcuts"
+  ],
+  "createdAt": "2026-01-24T19:16:18.554Z",
+  "updatedAt": "2026-01-24T19:16:18.554Z"
+}

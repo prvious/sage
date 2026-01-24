@@ -1,0 +1,14 @@
+{
+  "id": "database-snapshot",
+  "category": "Database",
+  "title": "Database Snapshots",
+  "description": "Create and restore database snapshots per worktree for testing and rollback scenarios. Manages snapshot storage with size limits.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "database-browser"
+  ],
+  "createdAt": "2026-01-24T19:16:18.548Z",
+  "updatedAt": "2026-01-24T19:16:18.548Z"
+}

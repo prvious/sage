@@ -1,0 +1,12 @@
+{
+  "id": "worktree-stash-management",
+  "category": "Worktree Management",
+  "title": "Worktree Stash Manager",
+  "description": "View, apply, and delete git stashes per worktree from the dashboard. Helps manage work-in-progress changes across branches.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.546Z",
+  "updatedAt": "2026-01-24T19:16:18.546Z"
+}

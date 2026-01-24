@@ -1,0 +1,12 @@
+{
+  "id": "customizable-dashboard",
+  "category": "UI",
+  "title": "Customizable Dashboard Widgets",
+  "description": "Drag-and-drop dashboard customization with widgets for recent tasks, agent status, worktree health, and quick actions. Save layout preferences.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "complex",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.554Z",
+  "updatedAt": "2026-01-24T19:16:18.554Z"
+}

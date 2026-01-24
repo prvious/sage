@@ -1,0 +1,15 @@
+{
+  "id": "export-reports",
+  "category": "Analytics",
+  "title": "Export Activity Reports",
+  "description": "Generate exportable reports of project activity, task completion, and costs in CSV, JSON, or PDF format. Configurable date ranges and filters.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [
+    "project-stats-dashboard",
+    "cost-tracking-dashboard"
+  ],
+  "createdAt": "2026-01-24T19:16:18.553Z",
+  "updatedAt": "2026-01-24T19:16:18.553Z"
+}

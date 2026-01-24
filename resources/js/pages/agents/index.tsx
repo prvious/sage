@@ -4,9 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AgentsIndexProps } from '@/types';
 import { AppLayout } from '@/components/layout/app-layout';
-import { Bot, ExternalLink, Square } from 'lucide-react';
+import { Bot, ExternalLink, Square, Eye, Loader2 } from 'lucide-react';
 
-// Helper function to format relative time without date-fns
 function formatRelativeTime(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
@@ -31,7 +30,9 @@ function formatRelativeTime(dateString: string): string {
 }
 
 export default function Index({ runningAgents }: AgentsIndexProps) {
-    const handleStop = (agentId: number) => {
+    const handleStop = (agentId: number, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (confirm('Are you sure you want to stop this agent?')) {
             router.post(
                 `/tasks/${agentId}/stop`,
@@ -67,14 +68,18 @@ export default function Index({ runningAgents }: AgentsIndexProps) {
                     ) : (
                         <div className='grid gap-4'>
                             {runningAgents.map((agent) => (
-                                <Card key={agent.id}>
+                                <Card key={agent.id} className='hover:shadow-md transition-shadow'>
                                     <CardHeader>
                                         <div className='flex items-start justify-between'>
                                             <div className='space-y-1'>
                                                 <CardTitle className='flex items-center gap-2'>
-                                                    <Bot className='h-5 w-5' />
+                                                    <Loader2 className='h-5 w-5 animate-spin text-blue-500' />
                                                     Agent #{agent.id}
                                                     <Badge variant='default' className='ml-2'>
+                                                        <span className='relative flex h-2 w-2 mr-1.5'>
+                                                            <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75'></span>
+                                                            <span className='relative inline-flex rounded-full h-2 w-2 bg-green-500'></span>
+                                                        </span>
                                                         Running
                                                     </Badge>
                                                 </CardTitle>
@@ -85,13 +90,23 @@ export default function Index({ runningAgents }: AgentsIndexProps) {
                                                     variant='outline'
                                                     size='sm'
                                                     render={
-                                                        <Link href={`/projects/${agent.project_id}/dashboard`}>
-                                                            <ExternalLink className='h-4 w-4 mr-2' />
-                                                            View Project
+                                                        <Link href={`/tasks/${agent.id}`}>
+                                                            <Eye className='h-4 w-4 mr-2' />
+                                                            View Output
                                                         </Link>
                                                     }
                                                 />
-                                                <Button variant='destructive' size='sm' onClick={() => handleStop(agent.id)}>
+                                                <Button
+                                                    variant='ghost'
+                                                    size='sm'
+                                                    render={
+                                                        <Link href={`/projects/${agent.project_id}/dashboard`}>
+                                                            <ExternalLink className='h-4 w-4 mr-2' />
+                                                            Project
+                                                        </Link>
+                                                    }
+                                                />
+                                                <Button variant='destructive' size='sm' onClick={(e) => handleStop(agent.id, e)}>
                                                     <Square className='h-4 w-4 mr-2' />
                                                     Stop
                                                 </Button>
@@ -119,12 +134,17 @@ export default function Index({ runningAgents }: AgentsIndexProps) {
                                         </div>
 
                                         {agent.agent_output && (
-                                            <div className='bg-muted rounded-lg p-4'>
-                                                <p className='text-xs font-medium mb-2 text-muted-foreground'>Latest Output</p>
-                                                <pre className='text-xs whitespace-pre-wrap font-mono overflow-x-auto max-h-64'>
-                                                    {agent.agent_output.split('\n').slice(-10).join('\n')}
-                                                </pre>
-                                            </div>
+                                            <Link href={`/tasks/${agent.id}`} className='block'>
+                                                <div className='bg-zinc-950 rounded-lg p-4 hover:ring-2 hover:ring-primary/50 transition-all'>
+                                                    <div className='flex items-center justify-between mb-2'>
+                                                        <p className='text-xs font-medium text-zinc-400'>Latest Output</p>
+                                                        <span className='text-xs text-zinc-500'>Click to view full output</span>
+                                                    </div>
+                                                    <pre className='text-xs whitespace-pre-wrap font-mono overflow-x-auto max-h-40 text-zinc-100'>
+                                                        {agent.agent_output.split('\n').slice(-8).join('\n')}
+                                                    </pre>
+                                                </div>
+                                            </Link>
                                         )}
                                     </CardContent>
                                 </Card>

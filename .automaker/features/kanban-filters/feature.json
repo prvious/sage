@@ -1,0 +1,15 @@
+{
+  "id": "kanban-filters",
+  "category": "UI",
+  "title": "Kanban Board Filters",
+  "description": "Filter Kanban cards by worktree, labels, date ranges, or search terms. Persists filter state in URL for sharing and bookmarking.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "task-labels",
+    "task-search"
+  ],
+  "createdAt": "2026-01-24T19:16:18.542Z",
+  "updatedAt": "2026-01-24T19:16:18.542Z"
+}

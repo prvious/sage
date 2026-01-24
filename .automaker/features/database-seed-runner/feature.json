@@ -1,0 +1,12 @@
+{
+  "id": "database-seed-runner",
+  "category": "Database",
+  "title": "On-Demand Database Seeding",
+  "description": "Run specific seeders or all seeders for a worktree database from dashboard. Shows seeder output and handles errors gracefully.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.548Z",
+  "updatedAt": "2026-01-24T19:16:18.548Z"
+}

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "evt-1769282884539-933e5bfc",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T19:28:04.539Z",
+      "featureName": "Live Agent Output Viewer",
+      "featureId": "agent-output-viewer"
+    },
+    {
+      "id": "evt-1769280731084-0ec0645a",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-24T18:52:11.084Z"
+    }
+  ]
+}

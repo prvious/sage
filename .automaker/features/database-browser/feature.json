@@ -1,0 +1,12 @@
+{
+  "id": "database-browser",
+  "category": "Database",
+  "title": "Worktree Database Browser",
+  "description": "Browse and query SQLite databases for each worktree with table viewer, query editor, and export functionality. Useful for debugging data issues.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.547Z",
+  "updatedAt": "2026-01-24T19:16:18.547Z"
+}

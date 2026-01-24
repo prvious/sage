@@ -1,0 +1,12 @@
+{
+  "id": "global-settings",
+  "category": "Core",
+  "title": "Global Sage Settings",
+  "description": "Application-wide settings for default ports, timeout values, theme preferences, and notification settings. Separate from per-project configuration.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.553Z",
+  "updatedAt": "2026-01-24T19:16:18.553Z"
+}

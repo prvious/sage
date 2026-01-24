@@ -1,0 +1,12 @@
+{
+  "id": "multi-agent-queue",
+  "category": "Agent Management",
+  "title": "Multi-Agent Task Queue",
+  "description": "Queue multiple tasks for sequential execution by agents with prioritization and parallel execution support (configurable concurrency). Prevents resource conflicts.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "complex",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.544Z",
+  "updatedAt": "2026-01-24T19:16:18.544Z"
+}

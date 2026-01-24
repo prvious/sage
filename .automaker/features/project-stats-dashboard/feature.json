@@ -1,0 +1,12 @@
+{
+  "id": "project-stats-dashboard",
+  "category": "Analytics",
+  "title": "Project Statistics Dashboard",
+  "description": "Overview dashboard showing task completion rates, worktree count, agent usage, and activity trends per project. Visualized with charts.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.552Z",
+  "updatedAt": "2026-01-24T19:16:18.552Z"
+}

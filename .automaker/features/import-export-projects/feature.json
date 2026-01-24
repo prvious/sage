@@ -1,0 +1,12 @@
+{
+  "id": "import-export-projects",
+  "category": "Core",
+  "title": "Import/Export Projects",
+  "description": "Export project configurations (without worktrees) for sharing or migration. Import projects from JSON with validation.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.553Z",
+  "updatedAt": "2026-01-24T19:16:18.553Z"
+}

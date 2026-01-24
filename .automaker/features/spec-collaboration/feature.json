@@ -1,0 +1,14 @@
+{
+  "id": "spec-collaboration",
+  "category": "Spec Generator",
+  "title": "Collaborative Spec Editing",
+  "description": "Share specs for review with revision suggestions and approval workflow. Tracks who made changes and when.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "complex",
+  "dependencies": [
+    "spec-version-history"
+  ],
+  "createdAt": "2026-01-24T19:16:18.550Z",
+  "updatedAt": "2026-01-24T19:16:18.550Z"
+}

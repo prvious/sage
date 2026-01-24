@@ -1,0 +1,14 @@
+{
+  "id": "task-templates",
+  "category": "Task Management",
+  "title": "Task Templates",
+  "description": "Pre-defined task templates for common workflows (bug fix, feature, refactor) with customizable fields and default prompts for agents. Reduces repetitive task setup.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "quick-task-creation"
+  ],
+  "createdAt": "2026-01-24T19:16:18.538Z",
+  "updatedAt": "2026-01-24T19:16:18.538Z"
+}

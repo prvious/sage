@@ -66,7 +66,8 @@ Route::prefix('projects/{project}')->name('projects.')->group(function () {
     Route::get('/brainstorm/{brainstorm}', [BrainstormController::class, 'show'])->name('brainstorm.show');
 });
 
-// Task API Routes (no index/show - handled by dashboard)
+// Task Routes
+Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
 Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
 Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');

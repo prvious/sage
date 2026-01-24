@@ -1,0 +1,14 @@
+{
+  "id": "agent-retry-failed",
+  "category": "Agent Management",
+  "title": "Retry Failed Agent Tasks",
+  "description": "One-click retry for failed agent executions with option to modify prompt or change model. Preserves original task context and parameters.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "agent-history"
+  ],
+  "createdAt": "2026-01-24T19:16:18.544Z",
+  "updatedAt": "2026-01-24T19:16:18.544Z"
+}

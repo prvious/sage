@@ -1,0 +1,12 @@
+{
+  "id": "agent-model-selection",
+  "category": "Agent Management",
+  "title": "Per-Task Model Selection",
+  "description": "Choose specific AI models (claude-opus, sonnet, haiku) per task based on complexity and cost requirements. Shows estimated costs before execution.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.543Z",
+  "updatedAt": "2026-01-24T19:16:18.543Z"
+}

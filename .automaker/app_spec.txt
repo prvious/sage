@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project_specification>
+  <project_name>Sage</project_name>
+
+  <overview>
+    Sage is an AI Agent Orchestrator for Laravel Applications - a local development dashboard that orchestrates AI coding agents across Git worktrees, providing instant preview URLs for each feature branch. It serves as a &quot;GitHub PR previews on your machine&quot; solution, enabling developers to manage multiple feature branches with isolated environments, spawn AI agents to work on tasks, and visualize progress through a Kanban-style dashboard. The project follows a zero-config philosophy, handling server configuration automatically, and aims for cross-platform compatibility (macOS, Linux, Windows via WSL). Sage is designed to be distributed as a single binary using FrankenPHP, requiring no PHP installation on the target machine.
+  </overview>
+
+  <technology_stack>
+    <technology>Laravel 12 (PHP 8.2+)</technology>
+    <technology>Inertia.js 2.x</technology>
+    <technology>React 19</technology>
+    <technology>TypeScript 5.9</technology>
+    <technology>Tailwind CSS v4</technology>
+    <technology>shadcn/ui components</technology>
+    <technology>Vite 7.x</technology>
+    <technology>SQLite database</technology>
+    <technology>Pest PHP testing framework</technology>
+    <technology>Pest Browser (E2E testing)</technology>
+    <technology>Playwright</technology>
+    <technology>Symfony Process component</technology>
+    <technology>Laravel Queues (database driver)</technology>
+    <technology>Anthropic Claude API</technology>
+    <technology>FrankenPHP (planned for binary distribution)</technology>
+    <technology>pnpm package manager</technology>
+    <technology>ESLint</technology>
+    <technology>Prettier</technology>
+    <technology>Laravel Pint (PHP code formatting)</technology>
+    <technology>lucide-react icons</technology>
+    <technology>class-variance-authority</technology>
+    <technology>tailwind-merge</technology>
+    <technology>date-fns</technology>
+  </technology_stack>
+
+  <core_capabilities>
+    <capability>Git Worktree Management - Create and delete worktrees from the dashboard, each with instant preview URLs</capability>
+    <capability>Server Driver System - Abstracted server configuration management (currently Artisan driver, with planned Caddy and Nginx support)</capability>
+    <capability>AI Agent Orchestration - Spawn AI coding agents (Claude Code) on specific worktrees with real-time output streaming</capability>
+    <capability>Kanban Dashboard - Visual task board with drag-through stages (queued, in_progress, waiting_review, done)</capability>
+    <capability>Environment Manager - View and edit .env files across projects and worktrees with validation and backup</capability>
+    <capability>Spec Generator - AI-assisted feature specification generation from ideas with refinement support</capability>
+    <capability>Custom Guidelines Editor - Manage AI agent instructions per project via .ai/guidelines directory</capability>
+    <capability>Brainstorming System - AI-powered idea generation for project features</capability>
+    <capability>Multi-Project Support - Manage multiple Laravel applications from one Sage instance</capability>
+    <capability>Database Isolation - Options for separate SQLite databases, table prefixes, or shared databases per worktree</capability>
+    <capability>Preview URL Generation - Automatic subdomain-style URLs for feature branches (e.g., feature-auth.myapp.local)</capability>
+  </core_capabilities>
+
+  <implemented_features>
+    <feature>
+      <name>Project Management</name>
+      <description>Full CRUD operations for projects with name, path, server driver, base URL, port, TLS settings, and custom domain configuration</description>
+      <file_locations>
+        <location>app/Models/Project.php</location>
+        <location>app/Http/Controllers/ProjectController.php</location>
+        <location>resources/js/pages/projects/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Git Worktree Management</name>
+      <description>Create and delete Git worktrees linked to projects with automatic preview URL generation, database isolation options (separate/prefix/shared), and asynchronous setup via queued jobs including composer install, npm install, and database migrations</description>
+      <file_locations>
+        <location>app/Models/Worktree.php</location>
+        <location>app/Services/WorktreeService.php</location>
+        <location>app/Services/GitService.php</location>
+        <location>app/Jobs/SetupWorktreeJob.php</location>
+        <location>app/Http/Controllers/WorktreeController.php</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Preview URL Generation</name>
+      <description>Automatic generation of subdomain-style preview URLs from branch names with proper sanitization (feature/auth-system becomes feature-auth-system.myapp.local)</description>
+      <file_locations>
+        <location>app/Support/PreviewUrl.php</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Task Management with Kanban Board</name>
+      <description>Task CRUD with status tracking (queued, in_progress, waiting_review, done), project and worktree associations, agent tracking, and visual Kanban board interface</description>
+      <file_locations>
+        <location>app/Models/Task.php</location>
+        <location>app/Enums/TaskStatus.php</location>
+        <location>app/Http/Controllers/TaskController.php</location>
+        <location>app/Http/Controllers/DashboardController.php</location>
+        <location>resources/js/pages/projects/dashboard.tsx</location>
+        <location>resources/js/components/kanban/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>AI Agent Driver System</name>
+      <description>Manager-based abstraction for AI coding agents using Laravel&apos;s Manager pattern. Includes ClaudeDriver for Claude Code CLI integration and FakeAgentDriver for testing. Agents can be spawned on worktrees with prompts and model selection.</description>
+      <file_locations>
+        <location>app/Drivers/Agent/AgentManager.php</location>
+        <location>app/Drivers/Agent/ClaudeDriver.php</location>
+        <location>app/Drivers/Agent/FakeAgentDriver.php</location>
+        <location>app/Drivers/Agent/Contracts/AgentDriverInterface.php</location>
+        <location>app/Facades/Agent.php</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Server Driver System</name>
+      <description>Abstracted server configuration management using Manager pattern. Currently implements ArtisanDriver for php artisan serve with configurable host and port ranges.</description>
+      <file_locations>
+        <location>app/Drivers/Server/ServerDriverManager.php</location>
+        <location>app/Drivers/Server/ArtisanDriver.php</location>
+        <location>app/Drivers/Server/Contracts/ServerDriverInterface.php</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Environment Manager</name>
+      <description>Full .env file management with reading, writing, validation, backup/restore, grouped variable display, and missing variable detection. Automatic patching of APP_URL and database settings for worktrees.</description>
+      <file_locations>
+        <location>app/Http/Controllers/EnvironmentController.php</location>
+        <location>app/Services/EnvironmentPatcher.php</location>
+        <location>app/Support/EnvParser.php</location>
+        <location>app/Actions/Env/</location>
+        <location>resources/js/pages/projects/environment.tsx</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Spec Generator</name>
+      <description>AI-powered feature specification generation using Anthropic&apos;s Claude API. Supports multiple spec types (feature, api, refactor, bug) and iterative refinement with feedback.</description>
+      <file_locations>
+        <location>app/Services/SpecGeneratorService.php</location>
+        <location>app/Support/SpecPrompts.php</location>
+        <location>app/Http/Controllers/SpecController.php</location>
+        <location>app/Models/Spec.php</location>
+        <location>resources/js/pages/projects/specs/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Custom Guidelines Management</name>
+      <description>Manage AI agent instructions per project through .ai/guidelines directory. Supports markdown and blade.php files with secure filename validation and aggregation across guidelines.</description>
+      <file_locations>
+        <location>app/Actions/Guideline/WriteGuideline.php</location>
+        <location>app/Actions/Guideline/ReadGuideline.php</location>
+        <location>app/Actions/Guideline/ListGuidelines.php</location>
+        <location>app/Actions/Guideline/AggregateGuidelines.php</location>
+        <location>app/Http/Controllers/GuidelineController.php</location>
+        <location>resources/js/pages/projects/guidelines/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Brainstorming System</name>
+      <description>AI-powered brainstorming for project ideas with context input, status tracking, and persistence of generated ideas</description>
+      <file_locations>
+        <location>app/Models/Brainstorm.php</location>
+        <location>app/Http/Controllers/BrainstormController.php</location>
+        <location>resources/js/pages/projects/brainstorm.tsx</location>
+        <location>resources/js/components/brainstorm/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Agent Status Management</name>
+      <description>Actions to check agent installation status, authentication status, and find command paths with caching. Supports expanding home paths and system environment detection.</description>
+      <file_locations>
+        <location>app/Actions/CheckAgentStatus.php</location>
+        <location>app/Actions/CheckAgentInstalled.php</location>
+        <location>app/Actions/CheckAgentAuthenticated.php</location>
+        <location>app/Actions/FindCommandPath.php</location>
+        <location>app/Support/SystemEnvironment.php</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Project Settings</name>
+      <description>Comprehensive project settings management including general settings, server configuration, and danger zone operations with server connection testing</description>
+      <file_locations>
+        <location>app/Http/Controllers/SettingsController.php</location>
+        <location>app/Actions/Settings/UpdateProjectSettings.php</location>
+        <location>app/Actions/Server/TestServerConnection.php</location>
+        <location>resources/js/pages/projects/settings.tsx</location>
+        <location>resources/js/components/settings/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Real-time Broadcasting</name>
+      <description>WebSocket events for worktree status updates and agent output streaming using Laravel&apos;s broadcasting system</description>
+      <file_locations>
+        <location>app/Events/WorktreeStatusUpdated.php</location>
+        <location>app/Events/Agent/AgentStatusChanged.php</location>
+        <location>app/Events/Agent/AgentOutputReceived.php</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Responsive Dashboard UI</name>
+      <description>Full React-based SPA with Inertia.js including app layout, project sidebar, theme toggling (dark/light mode), breadcrumbs, and mobile navigation support</description>
+      <file_locations>
+        <location>resources/js/components/layout/app-layout.tsx</location>
+        <location>resources/js/components/layout/project-sidebar.tsx</location>
+        <location>resources/js/components/layout/app-sidebar.tsx</location>
+        <location>resources/js/components/theme-toggler.tsx</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Live Agent Output Viewer</name>
+      <description>Real-time streaming display of agent command output with syntax highlighting and scroll-to-bottom. Shows current agent task and progress indicators.</description>
+    </feature>
+  </implemented_features>
+
+  <additional_requirements>
+    <requirement>PHP 8.2 or higher</requirement>
+    <requirement>Node.js with pnpm package manager</requirement>
+    <requirement>Git CLI for worktree operations</requirement>
+    <requirement>Claude Code CLI for AI agent functionality (configurable binary path)</requirement>
+    <requirement>SQLite for database storage</requirement>
+    <requirement>Composer for PHP dependencies</requirement>
+    <requirement>Environment agnostic - works on macOS, Linux, Windows (via WSL)</requirement>
+    <requirement>WSL2 recommended for Windows (projects should be inside WSL filesystem for performance)</requirement>
+    <requirement>Anthropic API key required for spec generation and AI features</requirement>
+  </additional_requirements>
+
+  <development_guidelines>
+    <guideline>Use Laravel Pint for PHP code formatting (pint --parallel)</guideline>
+    <guideline>Use ESLint and Prettier for TypeScript/React code</guideline>
+    <guideline>Follow PSR-4 autoloading standards</guideline>
+    <guideline>Use Pest for PHP testing with parallel execution</guideline>
+    <guideline>Use Pest Browser for E2E tests</guideline>
+    <guideline>Leverage FakeAgentDriver for testing agent functionality</guideline>
+    <guideline>Use Laravel&apos;s Manager pattern for driver abstractions</guideline>
+    <guideline>Keep services readonly and final where appropriate</guideline>
+    <guideline>Use typed properties and return types in PHP</guideline>
+    <guideline>Follow Inertia.js patterns for page components</guideline>
+    <guideline>Use shadcn/ui components for consistent UI</guideline>
+    <guideline>Validate all user input with Form Requests</guideline>
+    <guideline>Use queued jobs for long-running operations (worktree setup)</guideline>
+    <guideline>Broadcast events for real-time updates</guideline>
+    <guideline>Use action classes for single-responsibility operations</guideline>
+    <guideline>Secure file operations with path traversal prevention</guideline>
+  </development_guidelines>
+
+  <implementation_roadmap>
+    <phase>
+      <name>Core Infrastructure</name>
+      <status>completed</status>
+      <description>Project and worktree models, Git service, environment patching, basic CRUD operations, database migrations and factories</description>
+    </phase>
+    <phase>
+      <name>Dashboard &amp; Task Management</name>
+      <status>completed</status>
+      <description>Kanban board UI, task CRUD, status management, dashboard controller with grouped tasks by status</description>
+    </phase>
+    <phase>
+      <name>Agent Driver System</name>
+      <status>completed</status>
+      <description>AgentManager with ClaudeDriver and FakeAgentDriver, agent spawning, process management, agent status checking</description>
+    </phase>
+    <phase>
+      <name>Server Driver System</name>
+      <status>in_progress</status>
+      <description>ServerDriverManager foundation complete with ArtisanDriver. Caddy and Nginx drivers planned for dynamic vhost generation and automatic TLS</description>
+    </phase>
+    <phase>
+      <name>Spec Generator</name>
+      <status>completed</status>
+      <description>AI-powered spec generation with Anthropic API, multiple spec types, iterative refinement</description>
+    </phase>
+    <phase>
+      <name>Environment Manager</name>
+      <status>completed</status>
+      <description>Full .env editing, validation, backup/restore, automatic worktree environment patching</description>
+    </phase>
+    <phase>
+      <name>Guidelines Editor</name>
+      <status>completed</status>
+      <description>CLAUDE.md and custom guidelines management per project with aggregation support</description>
+    </phase>
+    <phase>
+      <name>Brainstorming System</name>
+      <status>completed</status>
+      <description>AI-powered idea generation with context input and persistence</description>
+    </phase>
+    <phase>
+      <name>Real-time Updates</name>
+      <status>in_progress</status>
+      <description>Broadcasting events implemented for worktree and agent status. WebSocket integration with Reverb planned</description>
+    </phase>
+    <phase>
+      <name>FrankenPHP Binary Distribution</name>
+      <status>pending</status>
+      <description>Single binary build with FrankenPHP embedding webserver, queue worker, and scheduler</description>
+    </phase>
+    <phase>
+      <name>CLI Commands</name>
+      <status>pending</status>
+      <description>sage serve, sage worktree:create, sage worktree:list, sage task:run, sage preview:open commands</description>
+    </phase>
+    <phase>
+      <name>Tunnel Support</name>
+      <status>pending</status>
+      <description>Public URL exposure via Cloudflare Tunnel or ngrok for mobile testing</description>
+    </phase>
+    <phase>
+      <name>Additional Agent Drivers</name>
+      <status>pending</status>
+      <description>OpenCode driver and future support for Cursor, Aider agents</description>
+    </phase>
+    <phase>
+      <name>Cost Tracking</name>
+      <status>pending</status>
+      <description>API token usage tracking per task and agent</description>
+    </phase>
+    <phase>
+      <name>Diff Viewer</name>
+      <status>pending</status>
+      <description>Visual diff of agent changes before merge</description>
+    </phase>
+  </implementation_roadmap>
+</project_specification>

@@ -1,0 +1,12 @@
+{
+  "id": "guideline-sharing",
+  "category": "Guidelines",
+  "title": "Share Guidelines Between Projects",
+  "description": "Import and export guidelines across projects with conflict resolution. Build reusable guideline libraries for teams.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.550Z",
+  "updatedAt": "2026-01-24T19:16:18.550Z"
+}

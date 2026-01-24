@@ -1,0 +1,12 @@
+{
+  "id": "worktree-logs-viewer",
+  "category": "Worktree Management",
+  "title": "Worktree Setup Logs Viewer",
+  "description": "Display real-time logs from worktree setup jobs including composer install, npm install, and migration output. Helps developers debug setup failures and monitor progress.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.536Z",
+  "updatedAt": "2026-01-24T19:16:18.536Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "agent-pause-resume",
+  "category": "Agent Management",
+  "title": "Agent Pause and Resume",
+  "description": "Pause running agents to review progress and resume later. Useful for long-running tasks requiring intervention or review checkpoints.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "complex",
+  "dependencies": [
+    "agent-output-viewer"
+  ],
+  "createdAt": "2026-01-24T19:16:18.543Z",
+  "updatedAt": "2026-01-24T19:16:18.543Z"
+}

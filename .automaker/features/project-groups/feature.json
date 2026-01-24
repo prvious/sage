@@ -1,0 +1,12 @@
+{
+  "id": "project-groups",
+  "category": "Project Management",
+  "title": "Project Groups and Organization",
+  "description": "Organize projects into groups/folders for clients or teams. Filter and navigate grouped projects in sidebar.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.551Z",
+  "updatedAt": "2026-01-24T19:16:18.551Z"
+}

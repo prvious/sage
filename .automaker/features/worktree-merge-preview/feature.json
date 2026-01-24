@@ -1,0 +1,14 @@
+{
+  "id": "worktree-merge-preview",
+  "category": "Worktree Management",
+  "title": "Merge Preview and Conflict Detection",
+  "description": "Preview merge results before merging worktree to main branch with conflict detection and resolution interface. Reduces merge surprises.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "worktree-commit-browser"
+  ],
+  "createdAt": "2026-01-24T19:16:18.546Z",
+  "updatedAt": "2026-01-24T19:16:18.546Z"
+}

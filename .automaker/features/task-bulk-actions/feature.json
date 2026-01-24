@@ -1,0 +1,12 @@
+{
+  "id": "task-bulk-actions",
+  "category": "Task Management",
+  "title": "Bulk Task Operations",
+  "description": "Select multiple tasks and perform bulk operations like status changes, label assignment, deletion, or worktree reassignment. Improves workflow efficiency.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.541Z",
+  "updatedAt": "2026-01-24T19:16:18.541Z"
+}

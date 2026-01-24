@@ -1,0 +1,12 @@
+{
+  "id": "keyboard-shortcuts",
+  "category": "UI",
+  "title": "Global Keyboard Shortcuts",
+  "description": "Comprehensive keyboard shortcuts for navigation, quick actions, and command palette. Display shortcut help overlay with customization options.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-24T19:16:18.554Z",
+  "updatedAt": "2026-01-24T19:16:18.554Z"
+}
