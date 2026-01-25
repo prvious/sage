@@ -41,7 +41,9 @@ export function GlobalQuickTaskDialog() {
         if (selectedProject) {
             setData('project_id', selectedProject.id);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedProject]);
+    // setData is a stable function from useForm and doesn't need to be in dependencies
 
     // Focus description field when dialog opens
     useEffect(() => {

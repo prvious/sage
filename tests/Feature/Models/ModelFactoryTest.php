@@ -12,20 +12,8 @@ it('can create a project using factory', function () {
     expect($project)->toBeInstanceOf(Project::class);
     expect($project->name)->not->toBeEmpty();
     expect($project->path)->not->toBeEmpty();
-    expect($project->server_driver)->toBeIn(['caddy', 'nginx']);
+    expect($project->server_driver)->toBe('artisan');
     expect($project->base_url)->not->toBeEmpty();
-});
-
-it('can create a project with caddy server driver', function () {
-    $project = Project::factory()->caddy()->create();
-
-    expect($project->server_driver)->toBe('caddy');
-});
-
-it('can create a project with nginx server driver', function () {
-    $project = Project::factory()->nginx()->create();
-
-    expect($project->server_driver)->toBe('nginx');
 });
 
 it('can create a worktree using factory', function () {

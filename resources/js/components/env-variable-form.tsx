@@ -88,7 +88,7 @@ export default function EnvVariableForm({ grouped, envPath: _envPath, projectId,
     );
 
     return (
-        <Form action={`/projects/${projectId}/environment`} method='put' data={serializedData as any} onSuccess={() => onSuccess?.()}>
+        <Form action={`/projects/${projectId}/environment`} method='put' data={serializedData as Record<string, string>} onSuccess={() => onSuccess?.()}>
             {({ processing }) => (
                 <div className='space-y-6'>
                     {Object.entries(grouped).map(([section, sectionVars]) => (

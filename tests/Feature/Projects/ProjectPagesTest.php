@@ -45,7 +45,7 @@ it('accepts form submission on create', function () {
     $data = [
         'name' => 'New Project',
         'path' => '/var/www/newproject-'.uniqid(),
-        'server_driver' => 'caddy',
+        'server_driver' => 'artisan',
         'base_url' => 'newproject.local',
     ];
 
@@ -129,7 +129,7 @@ it('creates project with artisan server driver', function () {
 
 it('updates project to artisan server driver', function () {
     $project = Project::factory()->create([
-        'server_driver' => 'caddy',
+        'server_driver' => 'artisan',
     ]);
 
     $data = [

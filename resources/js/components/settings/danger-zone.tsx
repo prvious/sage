@@ -48,12 +48,12 @@ export function DangerZone({ project }: DangerZoneProps) {
                     </div>
                     <AlertDialog>
                         <AlertDialogTrigger
-                            render={() => (
+                            render={
                                 <Button variant='destructive'>
                                     <Trash2 className='mr-2 h-4 w-4' />
                                     Delete Project
                                 </Button>
-                            )}
+                            }
                         />
                         <AlertDialogContent>
                             <AlertDialogHeader>

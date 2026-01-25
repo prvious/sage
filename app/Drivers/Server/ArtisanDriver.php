@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Drivers\Server;
 
-use App\Drivers\Server\Contracts\ServerDriverInterface;
+use App\Drivers\Server\Contracts\ServerDriver;
 use App\Models\Project;
 use App\Models\Worktree;
+use App\Support\SystemEnvironment;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
 
-final class ArtisanDriver implements ServerDriverInterface
+final class ArtisanDriver implements ServerDriver
 {
+    public function __construct(
+        private SystemEnvironment $env,
+    ) {}
+
     /**
      * Generate configuration (not applicable for artisan serve).
      * Returns empty string as artisan serve doesn't need config files.
@@ -37,7 +42,7 @@ final class ArtisanDriver implements ServerDriverInterface
      */
     public function validate(): bool
     {
-        $result = Process::run('php -v');
+        $result = Process::env($this->env->all())->run('php -v');
 
         return $result->successful();
     }
@@ -51,6 +56,7 @@ final class ArtisanDriver implements ServerDriverInterface
         $host = config('sage.artisan_server.host', '127.0.0.1');
 
         Process::path($worktree->path)
+            ->env($this->env->all())
             ->start("php artisan serve --host={$host} --port={$port}");
 
         // Store the port in worktree metadata
@@ -71,9 +77,9 @@ final class ArtisanDriver implements ServerDriverInterface
         if ($port) {
             // Kill process listening on this port
             if (PHP_OS_FAMILY === 'Windows') {
-                Process::run("netstat -ano | findstr :{$port}");
+                Process::env($this->env->all())->run("netstat -ano | findstr :{$port}");
             } else {
-                Process::run("lsof -ti:{$port} | xargs kill -9");
+                Process::env($this->env->all())->run("lsof -ti:{$port} | xargs kill -9");
             }
         }
     }
@@ -107,9 +113,9 @@ final class ArtisanDriver implements ServerDriverInterface
     protected function isPortAvailable(int $port): bool
     {
         if (PHP_OS_FAMILY === 'Windows') {
-            $result = Process::run("netstat -ano | findstr :{$port}");
+            $result = Process::env($this->env->all())->run("netstat -ano | findstr :{$port}");
         } else {
-            $result = Process::run("lsof -i:{$port}");
+            $result = Process::env($this->env->all())->run("lsof -i:{$port}");
         }
 
         return ! $result->successful(); // Port is available if lsof/netstat fails

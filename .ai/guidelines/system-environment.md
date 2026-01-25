@@ -1,163 +1,93 @@
 # System Environment Guidelines
 
-## Binary Deployment Architecture
+This app is a self-contained binary that interacts with the user's system environment, not application config files.
 
-This application will be served to users as a self-contained binary. It is designed to interact with the user's system environment and external system dependencies, not with application-managed configuration files.
+## When to Use System Environment vs Application Config
 
-## Environment and Configuration Handling
+**System Environment:** External binaries (`claude`, `git`, `docker`), system env vars (`ANTHROPIC_API_KEY`, `PATH`), shell configs, system capabilities
 
-### System Environment vs Application Config
+**Application Config:** Database connections, app features, internal behavior
 
-**Use System Environment:**
+## Process Execution Rule
 
-- When interacting with external binaries (e.g., `claude`, `git`, `docker`)
-- When checking for system-level environment variables (e.g., `ANTHROPIC_API_KEY`, `PATH`)
-- When executing processes that rely on user's shell configuration
-- When detecting system capabilities and installed tools
+**CRITICAL: Always inject `SystemEnvironment` and call `->env($this->env->all())` when using `Process::class`**
 
-**Use Application Config:**
+Required steps:
 
-- For application-specific settings (database connections, app features, etc.)
-- For internal application behavior and preferences
-- For settings that the binary manages internally
-
-### Process Execution
-
-When executing system commands or external processes:
+1. Inject `App\Support\SystemEnvironment` in constructor
+2. Call `->env($this->env->all())` before running process
 
 ```php
-// ✅ CORRECT - Use system environment
-use Illuminate\Support\Facades\Process;
+// ✅ CORRECT
+class CheckAgentAuthenticated
+{
+    public function __construct(private SystemEnvironment $env) {}
 
-$process = Process::timeout(20)
-    ->env(getenv())  // Pass system environment variables
-    ->run('claude hello -p --output-format json');
-```
-
-```php
-// ❌ INCORRECT - Don't rely on Laravel config for system binaries
-$binary = config('sage.agents.claude.binary', 'claude');
-$process = Process::run("{$binary} whoami");
-```
-
-### Environment Variable Access
-
-```php
-// ✅ CORRECT - Check system environment directly
-if (getenv('ANTHROPIC_API_KEY')) {
-    // API key is available in system
+    public function handle(): array
+    {
+        return Process::timeout(20)
+            ->env($this->env->all())
+            ->run('claude hello -p');
+    }
 }
 
-// ❌ INCORRECT - Don't rely on .env file
-if (config('services.anthropic.api_key')) {
-    // This checks Laravel's .env, not the user's system
-}
+// ❌ WRONG - Missing SystemEnvironment
+Process::run("claude whoami");
+
+// ❌ WRONG - Missing ->env($this->env->all())
+Process::timeout(20)->run('claude hello');
 ```
 
-### Binary Detection and Path Resolution
+## Environment Variable Access
 
 ```php
-// ✅ CORRECT - Use ExecutableFinder to locate system binaries
+// ✅ CORRECT
+class ApiKeyChecker
+{
+    public function __construct(private SystemEnvironment $env) {}
+
+    public function hasApiKey(): bool
+    {
+        return $this->env->has('ANTHROPIC_API_KEY');
+    }
+}
+
+// ❌ WRONG - Don't use config() or getenv()
+config('services.anthropic.api_key');
+getenv('ANTHROPIC_API_KEY');
+```
+
+## Binary Detection
+
+```php
+// ✅ CORRECT - Use ExecutableFinder
 use Symfony\Component\Process\ExecutableFinder;
 
-$finder = new ExecutableFinder();
-$path = $finder->find('claude');
+$path = (new ExecutableFinder())->find('claude');
 
-// ❌ INCORRECT - Don't configure binary paths in config files
-$binary = config('sage.agents.claude.binary');
+// ❌ WRONG - Don't configure binary paths
+config('sage.agents.claude.binary');
 ```
 
 ## Key Principles
 
-1. **Self-Contained Binary**: The application binary contains all internal dependencies but relies on the system for external tools and configurations.
+1. **SystemEnvironment Required**: Always inject `SystemEnvironment` and use `->env($this->env->all())` with `Process::class`
+2. **System First**: Prefer system env vars and PATH over app config
+3. **No .env Management**: Users shouldn't manage `.env` for system integrations
+4. **Testability**: Use `SystemEnvironment::fake()` for testing
 
-2. **System First**: Always prefer system environment variables, PATH resolution, and system configurations over application config files.
+## Testing
 
-3. **No User .env Management**: Users should not need to manage a `.env` file for system-level integrations. The binary should detect and use what's available on their system.
-
-4. **External Dependencies**: The binary should gracefully detect, validate, and report on external system dependencies (like `claude`, `git`, `docker`) without requiring users to configure them in the application.
-
-## Examples
-
-### ✅ Good Example: Agent Installation Check
+Use `SystemEnvironment::fake()` to mock environment variables:
 
 ```php
-class CheckAgentInstalled
-{
-    public function handle(): array
-    {
-        // Uses system PATH to find binary
-        $path = $this->findCommandPath->handle('claude');
+it('checks authentication', function () {
+    SystemEnvironment::fake(['ANTHROPIC_API_KEY' => 'test-key']);
+    Process::fake(['claude hello' => Process::result('{"success": true}')]);
 
-        return $path
-            ? ['installed' => true, 'path' => $path, 'error_message' => null]
-            : ['installed' => false, 'path' => null, 'error_message' => 'Binary not found in PATH'];
-    }
-}
-```
-
-### ✅ Good Example: Agent Authentication Check
-
-```php
-class CheckAgentAuthenticated
-{
-    public function handle(?string $binaryPath = null): array
-    {
-        // Defaults to 'claude', uses system environment
-        $binary = $binaryPath ?? 'claude';
-
-        $process = Process::timeout(20)
-            ->env(getenv())  // System environment
-            ->run("{$binary} hello -p --output-format json");
-
-        // Check output for authentication status
-        if ($process->successful() && !empty($process->output())) {
-            return ['authenticated' => true, 'auth_type' => 'cli', 'error_message' => null];
-        }
-
-        return ['authenticated' => false, 'auth_type' => 'none', 'error_message' => $process->errorOutput()];
-    }
-}
-```
-
-### ❌ Bad Example: Config-Dependent Checks
-
-```php
-// DON'T DO THIS
-class CheckAgentStatus
-{
-    public function handle(): array
-    {
-        // ❌ Relying on application config instead of system
-        $binary = config('sage.agents.claude.binary', 'claude');
-
-        // ❌ Checking Laravel config instead of system env
-        if (config('services.anthropic.api_key')) {
-            return ['authenticated' => true, 'auth_type' => 'api_key'];
-        }
-
-        // This won't work well when distributed as a binary
-    }
-}
-```
-
-## Testing Considerations
-
-When testing system interactions:
-
-```php
-// Use Process::fake() for unit tests
-it('checks authentication using system environment', function () {
-    Process::fake([
-        'claude hello -p --output-format json' => Process::result('{"success": true}'),
-    ]);
-
-    $action = new CheckAgentAuthenticated;
-    $result = $action->handle();
-
+    $result = app(CheckAgentAuthenticated::class)->handle();
     expect($result['authenticated'])->toBeTrue();
 });
-
-// Don't set config values for system-level tests
-// ❌ config()->set('sage.agents.claude.binary', 'custom-binary');
 ```
+
+For available `SystemEnvironment` methods, see `app/Support/SystemEnvironment.php`.

@@ -4,12 +4,15 @@ import { AppSidebar } from './app-sidebar';
 import { QuickTaskProvider } from '@/contexts/quick-task-context';
 import { GlobalQuickTaskDialog } from '@/components/global-quick-task-dialog';
 import { Toaster } from 'sonner';
+import { useFlashToasts } from '@/hooks/use-flash-toasts';
 
 interface AppLayoutProps {
     children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+    useFlashToasts();
+
     return (
         <QuickTaskProvider>
             <div className='flex h-screen bg-background'>

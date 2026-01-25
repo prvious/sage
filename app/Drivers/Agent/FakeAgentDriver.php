@@ -2,18 +2,41 @@
 
 namespace App\Drivers\Agent;
 
-use App\Drivers\Agent\Contracts\AgentDriverInterface;
+use App\Drivers\Agent\Contracts\AgentDriver;
 use App\Models\Worktree;
 use Symfony\Component\Process\Process;
 
-class FakeAgentDriver implements AgentDriverInterface
+class FakeAgentDriver implements AgentDriver
 {
+    /**
+     * Options for configuring fake responses.
+     */
+    protected array $options = [];
+
+    /**
+     * Whether the agent should be available.
+     */
+    public bool $available = true;
+
+    /**
+     * Exception to throw when executing.
+     */
+    public ?\Throwable $shouldThrow = null;
+
+    /**
+     * Create a new fake agent driver instance.
+     */
+    public function __construct(array $options = [])
+    {
+        $this->options = $options;
+    }
+
     /**
      * Spawn an agent process on a worktree with a given prompt.
      */
     public function spawn(Worktree $worktree, string $prompt, array $options = []): Process
     {
-        $output = $options['output'] ?? $this->getDefaultOutput($prompt);
+        $output = $this->options['output'] ?? $options['output'] ?? $this->getDefaultOutput($prompt);
 
         $command = ['echo', $output];
 
@@ -44,7 +67,7 @@ class FakeAgentDriver implements AgentDriverInterface
      */
     public function isAvailable(): bool
     {
-        return true;
+        return $this->available;
     }
 
     /**
@@ -53,6 +76,18 @@ class FakeAgentDriver implements AgentDriverInterface
     public function getSupportedModels(): array
     {
         return ['fake-model'];
+    }
+
+    /**
+     * Execute a one-shot prompt and return the output.
+     */
+    public function executePrompt(string $prompt, array $options = []): string
+    {
+        if ($this->shouldThrow !== null) {
+            throw $this->shouldThrow;
+        }
+
+        return $this->options['output'] ?? $options['output'] ?? $this->getDefaultOutput($prompt);
     }
 
     /**

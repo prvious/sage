@@ -2,12 +2,17 @@
 
 namespace App\Drivers\Agent;
 
-use App\Drivers\Agent\Contracts\AgentDriverInterface;
+use App\Drivers\Agent\Contracts\AgentDriver;
 use App\Models\Worktree;
+use App\Support\SystemEnvironment;
 use Symfony\Component\Process\Process;
 
-class ClaudeDriver implements AgentDriverInterface
+class ClaudeDriver implements AgentDriver
 {
+    public function __construct(
+        private SystemEnvironment $env,
+    ) {}
+
     /**
      * Spawn an agent process on a worktree with a given prompt.
      */
@@ -25,9 +30,7 @@ class ClaudeDriver implements AgentDriverInterface
             $model,
         ];
 
-        $process = new Process($command, $worktree->path, [
-            'ANTHROPIC_API_KEY' => config('services.anthropic.api_key'),
-        ]);
+        $process = new Process($command, $worktree->path, $this->env->all());
 
         $process->setTimeout(null);
         $process->start();
@@ -60,7 +63,7 @@ class ClaudeDriver implements AgentDriverInterface
     {
         $binaryPath = $this->getBinaryPath();
 
-        $process = new Process([$binaryPath, '--version']);
+        $process = new Process([$binaryPath, '--version'], null, $this->env->all());
 
         try {
             $process->run();
@@ -81,6 +84,38 @@ class ClaudeDriver implements AgentDriverInterface
             'claude-opus-4-20250514',
             'claude-3-5-sonnet-20241022',
         ];
+    }
+
+    /**
+     * Execute a one-shot prompt and return the output.
+     */
+    public function executePrompt(string $prompt, array $options = []): string
+    {
+        $model = $options['model'] ?? config('sage.agents.claude.default_model', 'claude-sonnet-4-20250514');
+        $timeout = $options['timeout'] ?? 120;
+
+        $command = [
+            $this->getBinaryPath(),
+            '--print',
+            '--output-format',
+            'text',
+            '--model',
+            $model,
+            $prompt,
+        ];
+
+        $process = new Process($command, null, $this->env->all());
+
+        $process->setTimeout($timeout);
+        $process->run();
+
+        if (! $process->isSuccessful()) {
+            throw new \RuntimeException(
+                'Agent execution failed: '.$process->getErrorOutput()
+            );
+        }
+
+        return $process->getOutput();
     }
 
     /**

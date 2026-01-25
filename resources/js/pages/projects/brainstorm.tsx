@@ -9,7 +9,8 @@ import { Head, router } from '@inertiajs/react';
 import { Sparkles, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { usePrivateChannel } from '@/hooks/use-echo';
+import { useEcho } from '@laravel/echo-react';
+import { BrainstormIdea, BrainstormCompletedEvent, BrainstormFailedEvent } from '@/types';
 
 interface Project {
     id: number;
@@ -21,7 +22,7 @@ interface Brainstorm {
     id: number;
     project_id: number;
     user_context: string | null;
-    ideas: any[] | null;
+    ideas: BrainstormIdea[] | null;
     status: 'pending' | 'processing' | 'completed' | 'failed';
     error_message: string | null;
     created_at: string;
@@ -36,29 +37,28 @@ interface BrainstormPageProps {
 export default function BrainstormPage({ project, brainstorms }: BrainstormPageProps) {
     const [hasActiveBrainstorm, setHasActiveBrainstorm] = useState(false);
 
-    // Set up WebSocket listener for brainstorm events
-    usePrivateChannel(`project.${project.id}.brainstorm`, (channel) => {
-        channel
-            .listen('.brainstorm.completed', (event: any) => {
-                toast.success(event.message, {
-                    description: `${event.ideas_count} ideas generated!`,
-                    action: {
-                        label: 'View',
-                        onClick: () => router.visit(`/projects/${project.id}/brainstorm/${event.brainstorm_id}`),
-                    },
-                });
+    // Listen to brainstorm completion events
+    useEcho<BrainstormCompletedEvent>(`project.${project.id}.brainstorm`, 'brainstorm.completed', (event) => {
+        toast.success(event.message, {
+            description: `${event.ideas_count} ideas generated!`,
+            action: {
+                label: 'View',
+                onClick: () => router.visit(`/projects/${project.id}/brainstorm/${event.brainstorm_id}`),
+            },
+        });
 
-                // Reload brainstorms list
-                router.reload({ only: ['brainstorms'] });
-            })
-            .listen('.brainstorm.failed', (event: any) => {
-                toast.error('Failed to generate ideas', {
-                    description: event.error,
-                });
+        // Reload brainstorms list
+        router.reload({ only: ['brainstorms'] });
+    });
 
-                // Reload brainstorms list
-                router.reload({ only: ['brainstorms'] });
-            });
+    // Listen to brainstorm failure events
+    useEcho<BrainstormFailedEvent>(`project.${project.id}.brainstorm`, 'brainstorm.failed', (event) => {
+        toast.error('Failed to generate ideas', {
+            description: event.error,
+        });
+
+        // Reload brainstorms list
+        router.reload({ only: ['brainstorms'] });
     });
 
     useEffect(() => {

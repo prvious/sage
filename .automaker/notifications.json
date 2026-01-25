@@ -8,7 +8,7 @@
       "message": "Created 50 features from the project specification.",
       "createdAt": "2026-01-24T19:16:18.555Z",
       "read": false,
-      "dismissed": false,
+      "dismissed": true,
       "projectPath": "/Users/clovismuneza/Apps/sage"
     },
     {
@@ -18,7 +18,7 @@
       "message": "\"agent-output-viewer\" has been verified and is complete.",
       "createdAt": "2026-01-24T19:28:04.535Z",
       "read": false,
-      "dismissed": false,
+      "dismissed": true,
       "featureId": "agent-output-viewer",
       "projectPath": "/Users/clovismuneza/Apps/sage"
     },
@@ -29,7 +29,7 @@
       "message": "\"cost-tracking-dashboard\" has been verified and is complete.",
       "createdAt": "2026-01-24T19:56:14.035Z",
       "read": false,
-      "dismissed": false,
+      "dismissed": true,
       "featureId": "cost-tracking-dashboard",
       "projectPath": "/Users/clovismuneza/Apps/sage"
     },
@@ -40,7 +40,7 @@
       "message": "\"quick-task-creation\" has been verified and is complete.",
       "createdAt": "2026-01-24T20:12:51.719Z",
       "read": false,
-      "dismissed": false,
+      "dismissed": true,
       "featureId": "quick-task-creation",
       "projectPath": "/Users/clovismuneza/Apps/sage"
     }

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Actions\Brainstorm;
 
+use App\Drivers\Agent\AgentManager;
 use App\Models\Project;
-use Illuminate\Support\Facades\Http;
 
 final readonly class GenerateIdeas
 {
     public function __construct(
         private GatherProjectContext $gatherContext,
-        private ParseGeneratedIdeas $parseIdeas
+        private ParseGeneratedIdeas $parseIdeas,
+        private AgentManager $agentManager
     ) {}
 
     /**
@@ -25,8 +26,18 @@ final readonly class GenerateIdeas
         // Construct prompt
         $prompt = $this->constructPrompt($project, $context, $userContext);
 
-        // Call AI API
-        $response = $this->callAnthropicAPI($prompt);
+        // Get agent driver
+        $driver = $this->agentManager->driver('claude');
+
+        if (! $driver->isAvailable()) {
+            throw new \RuntimeException('Claude agent is not available on this system');
+        }
+
+        // Execute prompt using agent
+        $response = $driver->executePrompt($prompt, [
+            'model' => config('services.anthropic.model', 'claude-sonnet-4-20250514'),
+            'timeout' => 120,
+        ]);
 
         // Parse and return ideas
         return $this->parseIdeas->handle($response);
@@ -113,36 +124,5 @@ final readonly class GenerateIdeas
         $prompt .= ']';
 
         return $prompt;
-    }
-
-    /**
-     * Call the Anthropic API.
-     */
-    private function callAnthropicAPI(string $prompt): string
-    {
-        $response = Http::withHeaders([
-            'x-api-key' => config('services.anthropic.api_key'),
-            'anthropic-version' => '2023-06-01',
-            'content-type' => 'application/json',
-        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model' => config('services.anthropic.model', 'claude-sonnet-4-20250514'),
-            'max_tokens' => 4096,
-            'messages' => [
-                ['role' => 'user', 'content' => $prompt],
-            ],
-        ]);
-
-        if (! $response->successful()) {
-            throw new \RuntimeException('Failed to generate ideas: '.$response->body());
-        }
-
-        $data = $response->json();
-        $content = $data['content'][0]['text'] ?? null;
-
-        if (empty($content)) {
-            throw new \RuntimeException('Empty response from AI service');
-        }
-
-        return $content;
     }
 }

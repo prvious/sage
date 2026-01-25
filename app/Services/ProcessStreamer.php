@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Sleep;
 use Symfony\Component\Process\Process;
 
 class ProcessStreamer
@@ -31,7 +32,7 @@ class ProcessStreamer
                 }
             }
 
-            usleep(100000);
+            Sleep::for(100)->milliseconds();
         }
 
         $remainingOutput = $process->getIncrementalOutput();

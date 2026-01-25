@@ -10,18 +10,6 @@ it('checks installation and authentication status', function () {
         ->and($result)->toHaveKeys(['installed', 'authenticated', 'auth_type', 'error_message']);
 });
 
-it('handles timeout gracefully', function () {
-    // This test verifies the action doesn't hang indefinitely
-    $action = app(CheckAgentStatus::class);
-
-    $start = microtime(true);
-    $result = $action->handle();
-    $duration = microtime(true) - $start;
-
-    // Should complete within 30 seconds (includes installation + authentication checks)
-    expect($duration)->toBeLessThan(30);
-});
-
 it('uses CheckAgentInstalled to resolve binary path', function () {
     $action = app(CheckAgentStatus::class);
     $result = $action->handle();

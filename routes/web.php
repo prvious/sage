@@ -3,7 +3,7 @@
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\BrainstormController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\EnvironmentController;
+use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\GuidelineController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectAgentController;
@@ -17,9 +17,6 @@ use Illuminate\Support\Facades\Route;
 // Root Route - Redirects to last opened project or projects list
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Project Dashboard Route
-Route::get('/projects/{project}/dashboard', [DashboardController::class, 'show'])->name('projects.dashboard');
-
 Route::resource('projects', ProjectController::class)->except(['show']);
 
 Route::resource('projects.worktrees', WorktreeController::class)
@@ -27,14 +24,12 @@ Route::resource('projects.worktrees', WorktreeController::class)
 
 // Project Settings Routes
 Route::prefix('projects/{project}')->name('projects.')->group(function () {
+    // Project Dashboard Route
+    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
+
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('/settings/test-server', [SettingsController::class, 'testServer'])->name('settings.test-server');
-
-    // Environment Routes (project-scoped)
-    Route::get('/environment', [EnvironmentController::class, 'index'])->name('environment.index');
-    Route::put('/environment', [EnvironmentController::class, 'update'])->name('environment.update');
-    Route::post('/environment/restore', [EnvironmentController::class, 'restore'])->name('environment.restore');
 
     // Spec Routes (project-scoped)
     Route::get('/specs', [SpecController::class, 'index'])->name('specs.index');
@@ -68,6 +63,9 @@ Route::prefix('projects/{project}')->name('projects.')->group(function () {
     Route::get('/brainstorm/{brainstorm}', [BrainstormController::class, 'show'])->name('brainstorm.show');
     Route::get('/brainstorm/{brainstorm}/export', [BrainstormController::class, 'export'])->name('brainstorm.export');
     Route::post('/brainstorm/{brainstorm}/ideas/{index}/create-spec', [BrainstormController::class, 'createSpec'])->name('brainstorm.create-spec');
+
+    // Feature Routes (project-scoped)
+    Route::post('/features', [FeatureController::class, 'store'])->name('features.store');
 });
 
 // Task Routes

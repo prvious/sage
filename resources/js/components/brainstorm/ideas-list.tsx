@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
-import { export as exportBrainstorm } from '@/actions/App/Http/Controllers/BrainstormController';
+import { exportMethod as exportBrainstorm } from '@/actions/App/Http/Controllers/BrainstormController';
 
 interface Idea {
     title: string;
@@ -45,13 +45,25 @@ export function IdeasList({ ideas, projectId, brainstormId }: IdeasListProps) {
         const params = new URLSearchParams(window.location.search);
 
         if (newFilters.category !== undefined) {
-            newFilters.category !== 'all' ? params.set('category', newFilters.category) : params.delete('category');
+            if (newFilters.category !== 'all') {
+                params.set('category', newFilters.category);
+            } else {
+                params.delete('category');
+            }
         }
         if (newFilters.priority !== undefined) {
-            newFilters.priority !== 'all' ? params.set('priority', newFilters.priority) : params.delete('priority');
+            if (newFilters.priority !== 'all') {
+                params.set('priority', newFilters.priority);
+            } else {
+                params.delete('priority');
+            }
         }
         if (newFilters.search !== undefined) {
-            newFilters.search ? params.set('search', newFilters.search) : params.delete('search');
+            if (newFilters.search) {
+                params.set('search', newFilters.search);
+            } else {
+                params.delete('search');
+            }
         }
         if (newFilters.sortBy !== undefined) {
             params.set('sortBy', newFilters.sortBy);
@@ -138,9 +150,7 @@ export function IdeasList({ ideas, projectId, brainstormId }: IdeasListProps) {
         // Filter by search
         if (search) {
             const searchLower = search.toLowerCase();
-            filtered = filtered.filter(
-                (idea) => idea.title.toLowerCase().includes(searchLower) || idea.description.toLowerCase().includes(searchLower),
-            );
+            filtered = filtered.filter((idea) => idea.title.toLowerCase().includes(searchLower) || idea.description.toLowerCase().includes(searchLower));
         }
 
         // Sort ideas
@@ -209,13 +219,7 @@ export function IdeasList({ ideas, projectId, brainstormId }: IdeasListProps) {
             <div className='space-y-4'>
                 {filteredAndSortedIdeas.length > 0 ? (
                     filteredAndSortedIdeas.map((idea, index) => (
-                        <IdeaCard
-                            key={index}
-                            idea={idea}
-                            index={ideas.findIndex((i) => i === idea)}
-                            projectId={projectId}
-                            brainstormId={brainstormId}
-                        />
+                        <IdeaCard key={index} idea={idea} index={ideas.findIndex((i) => i === idea)} projectId={projectId} brainstormId={brainstormId} />
                     ))
                 ) : (
                     <div className='text-center py-12 text-muted-foreground'>

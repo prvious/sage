@@ -15,7 +15,7 @@ it('executes boost:update in project directory', function () {
     ]);
 
     $project = Project::factory()->create(['path' => '/path/to/project']);
-    $action = new AggregateGuidelines;
+    $action = app(AggregateGuidelines::class);
 
     $result = $action->handle($project);
 
@@ -39,7 +39,7 @@ it('passes system environment variables to subprocess', function () {
     ]);
 
     $project = Project::factory()->create(['path' => '/path/to/project']);
-    $action = new AggregateGuidelines;
+    $action = app(AggregateGuidelines::class);
 
     $result = $action->handle($project);
 
@@ -56,7 +56,7 @@ it('captures error output when command fails', function () {
     ]);
 
     $project = Project::factory()->create(['path' => '/path/to/project']);
-    $action = new AggregateGuidelines;
+    $action = app(AggregateGuidelines::class);
 
     expect(fn () => $action->handle($project))
         ->toThrow(RuntimeException::class, 'Failed to aggregate guidelines: Command failed: File not found');
@@ -71,7 +71,7 @@ it('throws exception when command fails', function () {
     ]);
 
     $project = Project::factory()->create(['path' => '/path/to/project']);
-    $action = new AggregateGuidelines;
+    $action = app(AggregateGuidelines::class);
 
     expect(fn () => $action->handle($project))
         ->toThrow(RuntimeException::class);
@@ -86,7 +86,7 @@ it('applies 60 second timeout to command execution', function () {
     ]);
 
     $project = Project::factory()->create(['path' => '/path/to/project']);
-    $action = new AggregateGuidelines;
+    $action = app(AggregateGuidelines::class);
 
     $action->handle($project);
 

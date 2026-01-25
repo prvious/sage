@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -16,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('server.driver', function ($app) {
-            return new \App\Drivers\Server\ServerDriverManager($app);
+            return new \App\Drivers\Server\ServerManager($app);
         });
 
         $this->app->singleton('agent.driver', function ($app) {
@@ -29,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Vite::prefetch(concurrency: 3);
+
         $this->configureDefaults();
         $this->configureObservers();
     }

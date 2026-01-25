@@ -2,10 +2,16 @@ import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
 import Echo from 'laravel-echo';
 
+// Pusher type definition
+export interface PusherStatic {
+    logToConsole?: boolean;
+    [key: string]: unknown;
+}
+
 declare global {
     interface Window {
         Echo: Echo;
-        Pusher: any;
+        Pusher: PusherStatic;
     }
 }
 
@@ -38,6 +44,13 @@ export interface WorktreeOption {
     branch_name: string;
 }
 
+export interface FlashToast {
+    type: 'success' | 'error' | 'info' | 'warning' | 'default';
+    message: string;
+    description?: string;
+    duration?: number;
+}
+
 export interface SharedData {
     name: string;
     auth: Auth;
@@ -45,6 +58,9 @@ export interface SharedData {
     projects: Project[];
     selectedProject: Project | null;
     selectedProjectWorktrees: WorktreeOption[];
+    flash?: {
+        toasts?: FlashToast[];
+    };
     [key: string]: unknown;
 }
 
@@ -178,4 +194,26 @@ export interface OutputLine {
     content: string;
     type: 'stdout' | 'stderr';
     timestamp?: string;
+}
+
+// Brainstorm Idea structure
+export interface BrainstormIdea {
+    title: string;
+    description: string;
+    category: string;
+    priority: string;
+    [key: string]: unknown;
+}
+
+// Brainstorm event types
+export interface BrainstormCompletedEvent {
+    message: string;
+    brainstorm_id: number;
+    ideas_count?: number;
+}
+
+export interface BrainstormFailedEvent {
+    message: string;
+    brainstorm_id: number;
+    error?: string;
 }

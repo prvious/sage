@@ -4,13 +4,19 @@
 
 Sage is a local development dashboard that orchestrates AI coding agents across Git worktrees, providing instant preview URLs for each feature branch — like GitHub PR previews, but on your machine.
 
+## Currently Supported
+
+- **Agent:** Claude Code (requires `claude` CLI in system PATH and `ANTHROPIC_API_KEY` in environment)
+- **Server:** Laravel Artisan Serve (built-in development server with auto port assignment)
+- **Platform:** macOS, Linux, Windows (via WSL2)
+
 ---
 
 ## Core Philosophy
 
 - **Environment agnostic** — Works on macOS, Linux, and Windows (via WSL)
 - **Container optional** — Run natively or in Docker, as long as project folders are accessible
-- **Zero config server management** — Sage handles Caddy/Nginx configs automatically
+- **Zero config server management** — Sage uses Laravel's built-in `artisan serve` for instant preview URLs
 - **Single binary distribution** — Download and run. No PHP install required (FrankenPHP)
 
 ---
@@ -25,16 +31,16 @@ Sage is a local development dashboard that orchestrates AI coding agents across 
 
 ### Server Driver System
 
-- **Caddy driver** — Dynamic vhost generation, automatic TLS
-- **Nginx driver** — Config file management with safe append/delete
-- Drivers handle config injection without touching user's existing setup
+- **Artisan Serve driver** — Uses Laravel's built-in development server
+- Each worktree gets its own port automatically assigned
+- Zero configuration required - works out of the box
 
 ### AI Agent Orchestration
 
-- Spawn agents (Claude Code, etc.) on specific worktrees
+- Spawn Claude Code agent on specific worktrees
 - Real-time terminal output streaming
-- Model selection (claude-sonnet-4-20250514, opus, etc.)
-- Agent switching (future: Cursor, Aider, etc.)
+- Model selection (claude-sonnet-4-20250514, claude-opus-4-20250514, etc.)
+- Agent switching (future: OpenCode, Cursor, Aider, etc.)
 
 ### Dashboard Views
 
@@ -48,15 +54,16 @@ Sage is a local development dashboard that orchestrates AI coding agents across 
 
 ## Tech Stack
 
-| Layer    | Tech                                              |
+| Layer    | Tech                                              | Notes                                               |
 | -------- | ------------------------------------------------- | --------------------------------------------------- |
-| Backend  | Laravel 11, Octane, Reverb                        |
-| Frontend | React 19, shadcn/ui, Tailwind v4, Inertia.js      |
-| Database | SQLite (single file for data + queues)            |
-| Runtime  | FrankenPHP (static binary)                        |
-| Process  | Laravel Queues (database driver), Symfony Process |
+| Backend  | Laravel 12, Octane, Reverb                        |                                                     |
+| Frontend | React 19, shadcn/ui, Tailwind v4, Inertia.js      |                                                     |
+| Database | SQLite (single file for data + queues)            |                                                     |
+| Runtime  | FrankenPHP (static binary)                        |                                                     |
+| Process  | Laravel Queues (database driver), Symfony Process |                                                     |
 | Testing  | Pest + Pest Browser                               | Full coverage: unit, feature, and E2E browser tests |
-| Agents   | Claude Code, OpenCode                             |
+| Agents   | Claude Code                                       | Uses system `ANTHROPIC_API_KEY` from environment    |
+| Server   | Artisan Serve                                     | Built-in Laravel development server                 |
 
 ---
 
@@ -75,13 +82,11 @@ Sage is a local development dashboard that orchestrates AI coding agents across 
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **APP_URL per worktree**      | Each worktree needs its own `.env` with correct `APP_URL`. Sage should auto-generate/patch this on worktree creation |
 | **Database isolation**        | Worktrees sharing a DB will collide. Options: separate SQLite per worktree, or DB prefix, or user chooses            |
-| **Port conflicts**            | If user runs Sage + their app both via Octane, ports clash. Sage should use a dedicated port (e.g., 1984)            |
-| **File permissions**          | Sage modifying Nginx configs needs appropriate permissions. May need sudo or user to add Sage to www-data group      |
-| **Caddy API vs file**         | Caddy supports hot reload via admin API — prefer this over file writes for zero-downtime                             |
+| **Port conflicts**            | Artisan serve automatically assigns available ports per worktree to avoid conflicts                                  |
 | **Windows path hell**         | WSL2 file access from Windows is slow. Recommend keeping projects inside WSL filesystem                              |
 | **Reverb + Octane**           | Both need to run. Sage binary needs to boot both (Reverb on separate port)                                           |
 | **Pest Browser + FrankenPHP** | Need to verify Dusk/Pest Browser works when app runs via Octane. May need `php artisan serve` fallback for tests     |
-| **Agent PATH**                | Binary might not find `claude` or `opencode` if not in PATH. Allow explicit binary path config                       |
+| **Agent PATH**                | Binary requires `claude` in system PATH. Sage reads `ANTHROPIC_API_KEY` from system environment, not config          |
 
 ### Nice to Have
 
@@ -138,8 +143,9 @@ sage preview:open feature-x   # Open preview URL in browser
 
 ## Single binary build
 
-Use frankenphp to build a single static binary of the application 'Sage'
-the binary will start the webserver(Caddy), start the queue(queue:work), and the schedule(schedule:work)
+Use FrankenPHP to build a single static binary of the application 'Sage'.
+The binary will start the webserver (FrankenPHP), start the queue (`queue:work`), and the scheduler (`schedule:work`).
+Worktrees use Laravel's `artisan serve` for individual preview servers.
 
 ---
 
@@ -160,13 +166,18 @@ class Agent extends Manager
 }
 
 // Implementations
-ClaudeDriver::class   // claude --worktree /path --prompt "..."
-OpenCodeDriver::class     // opencode --dir /path "..."
+ClaudeDriver::class    // Uses system 'claude' binary and ANTHROPIC_API_KEY from environment
 FakeAgentDriver::class // Fake agent for testing/mocks
 ```
 
-Both Claude Code and OpenCode are CLI-based, so the abstraction is straightforward — spawn a process, stream output, track status.
-There must be a FakeAgentDriver::class
+Claude Code is CLI-based, so the abstraction is straightforward — spawn a process with system environment, stream output, track status.
+There must be a FakeAgentDriver::class for testing.
+
+**Important:** The agent relies on the user's system environment:
+
+- `claude` binary must be in PATH
+- `ANTHROPIC_API_KEY` must be set in system environment (not in Sage's config)
+- All Process calls use `->env(getenv())` to access system environment
 
 Config would look like:
 
@@ -174,16 +185,13 @@ Config would look like:
 // config/sage.php
 'agents' => [
     'claude' => [
-        'driver' => ClaudeCodeDriver::class,
-        'binary' => env('CLAUDE_CODE_PATH', 'claude'),
-    ],
-    'opencode' => [
-        'driver' => OpenCodeDriver::class,
-        'binary' => env('OPENCODE_PATH', 'opencode'),
+        'driver' => ClaudeDriver::class,
+        'binary' => 'claude', // Resolved from system PATH
+        'default_model' => 'claude-sonnet-4-20250514',
     ],
 ],
 
-'default' => env('SAGE_AGENT', 'claude'),
+'default' => 'claude',
 ```
 
 ---
@@ -200,18 +208,18 @@ it('generates correct preview url from branch name', function () {
 });
 
 // Feature: full Laravel stack
-it('creates a worktree and updates server config', function () {
-    $project = Project::factory()->create(['server_driver' => 'caddy']);
+it('creates a worktree with preview server', function () {
+    $project = Project::factory()->create(['server_driver' => 'artisan']);
 
     post('/api/worktrees', [
         'branch' => 'feature-payments',
         'project_id' => $project->id,
     ])->assertCreated();
 
-    expect(Worktree::where('branch_name', 'feature-payments')->exists())->toBeTrue();
+    $worktree = Worktree::where('branch_name', 'feature-payments')->first();
 
-    // Assert Caddy config was updated
-    Caddy::assertConfigContains('feature-payments.myapp.local');
+    expect($worktree)->not->toBeNull();
+    expect($worktree->preview_url)->toContain('http://127.0.0.1:');
 });
 ```
 
@@ -224,7 +232,7 @@ it('can create a task from the kanban board', function () {
         $browser->visit('/dashboard')
             ->click('@new-task-button')
             ->type('@task-prompt', 'Add user authentication with Laravel Breeze')
-            ->select('@agent-select', 'claude-code')
+            ->select('@agent-select', 'claude')
             ->press('Create Task')
             ->waitForText('Task created')
             ->assertSee('Add user authentication');

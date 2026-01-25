@@ -12,7 +12,7 @@ class TestServerDriver extends Command
      *
      * @var string
      */
-    protected $signature = 'sage:test-server {driver? : The driver to test (caddy, nginx)}';
+    protected $signature = 'sage:test-server {driver? : The driver to test (artisan)}';
 
     /**
      * The console command description.

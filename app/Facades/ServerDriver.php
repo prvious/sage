@@ -5,7 +5,7 @@ namespace App\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \App\Contracts\ServerDriver driver(string|null $driver = null)
+ * @method static \App\Drivers\Server\Contracts\ServerDriver driver(string|null $driver = null)
  * @method static bool addVirtualHost(string $domain, string $documentRoot, int $port = 8000)
  * @method static bool removeVirtualHost(string $domain)
  * @method static array listVirtualHosts()
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool testConfiguration()
  * @method static array getServerInfo()
  *
- * @see \App\Drivers\Server\ServerDriverManager
+ * @see \App\Drivers\Server\ServerManager
  */
 class ServerDriver extends Facade
 {

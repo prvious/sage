@@ -1,12 +1,9 @@
 <?php
 
-use App\Drivers\Server\Contracts\ServerDriverInterface;
-use App\Drivers\Server\Manager as ServerManager;
+use App\Drivers\Server\ServerManager;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Worktree;
-
-use function Pest\Laravel\mock;
 
 it('can list all projects', function () {
     $user = User::factory()->create();
@@ -23,12 +20,8 @@ it('can list all projects', function () {
 it('can create a new project with valid path', function () {
     $user = User::factory()->create();
 
-    // Mock the ServerManager and driver
-    $driverMock = mock(ServerDriverInterface::class);
-    $driverMock->shouldReceive('validate')->andReturn(true);
-
-    $serverManager = mock(ServerManager::class);
-    $serverManager->shouldReceive('driver')->with('caddy')->andReturn($driverMock);
+    // Use fake driver
+    ServerManager::fake(['available' => true]);
 
     // Create a temporary directory for testing
     $testPath = sys_get_temp_dir().'/test-laravel-project-'.uniqid();
@@ -43,7 +36,7 @@ it('can create a new project with valid path', function () {
     $response = $this->actingAs($user)->post('/projects', [
         'name' => 'Test Project',
         'path' => $testPath,
-        'server_driver' => 'caddy',
+        'server_driver' => 'artisan',
         'base_url' => 'test.local',
     ]);
 
@@ -65,7 +58,7 @@ it('rejects invalid Laravel project paths', function () {
     $response = $this->actingAs($user)->post('/projects', [
         'name' => 'Test Project',
         'path' => '/nonexistent/path',
-        'server_driver' => 'caddy',
+        'server_driver' => 'artisan',
         'base_url' => 'test.local',
     ]);
 
@@ -122,7 +115,7 @@ it('validates base_url format correctly', function () {
     $response = $this->actingAs($user)->post('/projects', [
         'name' => 'Test Project',
         'path' => '/tmp/test',
-        'server_driver' => 'caddy',
+        'server_driver' => 'artisan',
         'base_url' => '',
     ]);
 
@@ -132,12 +125,8 @@ it('validates base_url format correctly', function () {
 it('redirects to project dashboard after creation', function () {
     $user = User::factory()->create();
 
-    // Mock the ServerManager and driver
-    $driverMock = mock(ServerDriverInterface::class);
-    $driverMock->shouldReceive('validate')->andReturn(true);
-
-    $serverManager = mock(ServerManager::class);
-    $serverManager->shouldReceive('driver')->with('caddy')->andReturn($driverMock);
+    // Use fake driver
+    ServerManager::fake(['available' => true]);
 
     // Create a temporary directory for testing
     $testPath = sys_get_temp_dir().'/test-laravel-project-'.uniqid();
@@ -152,7 +141,7 @@ it('redirects to project dashboard after creation', function () {
     $response = $this->actingAs($user)->post('/projects', [
         'name' => 'Test Project',
         'path' => $testPath,
-        'server_driver' => 'caddy',
+        'server_driver' => 'artisan',
         'base_url' => 'test.local',
     ]);
 

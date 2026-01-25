@@ -1,10 +1,11 @@
 import { BrainstormCard } from './brainstorm-card';
+import { BrainstormIdea } from '@/types';
 
 interface Brainstorm {
     id: number;
     project_id: number;
     user_context: string | null;
-    ideas: any[] | null;
+    ideas: BrainstormIdea[] | null;
     status: 'pending' | 'processing' | 'completed' | 'failed';
     error_message: string | null;
     created_at: string;

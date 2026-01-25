@@ -38,13 +38,7 @@ export function IdeaFilters({
             <div className='flex flex-col sm:flex-row gap-3'>
                 <div className='flex-1 relative'>
                     <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-                    <Input
-                        type='text'
-                        placeholder='Search ideas...'
-                        value={search}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                        className='pl-9'
-                    />
+                    <Input type='text' placeholder='Search ideas...' value={search} onChange={(e) => onSearchChange(e.target.value)} className='pl-9' />
                 </div>
 
                 <Select value={category} onValueChange={onCategoryChange}>
@@ -86,11 +80,7 @@ export function IdeaFilters({
                         </SelectContent>
                     </Select>
 
-                    <Button
-                        variant='outline'
-                        size='sm'
-                        onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    >
+                    <Button variant='outline' size='sm' onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}>
                         {sortOrder === 'asc' ? '↑' : '↓'}
                     </Button>
                 </div>

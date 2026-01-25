@@ -6,7 +6,7 @@ use App\Models\Worktree;
 use Illuminate\Support\Facades\Process;
 
 beforeEach(function () {
-    $this->driver = new ArtisanDriver;
+    $this->driver = app(ArtisanDriver::class);
 });
 
 it('generates empty config for artisan driver', function () {

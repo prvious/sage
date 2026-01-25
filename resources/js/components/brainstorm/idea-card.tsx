@@ -1,12 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreVertical, FileText, Copy } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
@@ -91,9 +86,7 @@ export function IdeaCard({ idea, index, projectId, brainstormId }: IdeaCardProps
                 </div>
             </CardHeader>
             <CardContent>
-                <p className={`text-sm text-muted-foreground ${!isExpanded && isLongDescription ? 'line-clamp-3' : ''}`}>
-                    {idea.description}
-                </p>
+                <p className={`text-sm text-muted-foreground ${!isExpanded && isLongDescription ? 'line-clamp-3' : ''}`}>{idea.description}</p>
                 {isLongDescription && (
                     <Button variant='link' size='sm' className='mt-2 h-auto p-0' onClick={() => setIsExpanded(!isExpanded)}>
                         {isExpanded ? 'Show less' : 'Show more'}

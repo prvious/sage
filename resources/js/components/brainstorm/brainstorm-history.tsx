@@ -3,12 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { History, ChevronRight } from 'lucide-react';
+import { BrainstormIdea } from '@/types';
 
 interface Brainstorm {
     id: number;
     created_at: string;
     status: 'pending' | 'processing' | 'completed' | 'failed';
-    ideas?: any[];
+    ideas?: BrainstormIdea[];
     error_message?: string;
 }
 

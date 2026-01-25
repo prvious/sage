@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Project;
+use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('shares projects in Inertia shared data', function () {

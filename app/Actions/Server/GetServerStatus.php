@@ -2,15 +2,16 @@
 
 namespace App\Actions\Server;
 
-use App\Drivers\Server\ServerDriverManager;
+use App\Drivers\Server\ServerManager;
 use App\Models\Project;
-use Illuminate\Support\Facades\Http;
+use App\Support\SystemEnvironment;
 use Illuminate\Support\Facades\Process;
 
 final readonly class GetServerStatus
 {
     public function __construct(
-        private ServerDriverManager $serverDriverManager,
+        private ServerManager $serverDriverManager,
+        private SystemEnvironment $env,
     ) {}
 
     /**
@@ -52,35 +53,9 @@ final readonly class GetServerStatus
     private function isRunning(string $driver): bool
     {
         return match ($driver) {
-            'caddy' => $this->isCaddyRunning(),
-            'nginx' => $this->isNginxRunning(),
             'artisan' => true,
             default => false,
         };
-    }
-
-    /**
-     * Check if Caddy is running.
-     */
-    private function isCaddyRunning(): bool
-    {
-        try {
-            $response = Http::timeout(2)->get('http://localhost:2019/config/');
-
-            return $response->successful();
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Check if Nginx is running.
-     */
-    private function isNginxRunning(): bool
-    {
-        $result = Process::run('pgrep nginx');
-
-        return $result->successful();
     }
 
     /**
@@ -89,9 +64,7 @@ final readonly class GetServerStatus
     private function getVersion(string $driver): ?string
     {
         $result = match ($driver) {
-            'caddy' => Process::run('caddy version'),
-            'nginx' => Process::run('nginx -v 2>&1'),
-            'artisan' => Process::run('php artisan --version'),
+            'artisan' => Process::env($this->env->all())->run('php artisan --version'),
             default => null,
         };
 

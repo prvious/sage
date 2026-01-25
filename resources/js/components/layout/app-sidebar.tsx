@@ -57,11 +57,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   href: `/projects/${selectedProject.id}/specs`,
               },
               {
-                  label: 'Environment',
-                  icon: Settings,
-                  href: `/projects/${selectedProject.id}/environment`,
-              },
-              {
                   label: 'Terminal',
                   icon: Terminal,
                   href: '#',

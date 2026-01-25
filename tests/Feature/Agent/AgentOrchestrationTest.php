@@ -198,13 +198,3 @@ it('claude driver returns correct supported models', function () {
     expect($models)->toContain('claude-opus-4-20250514');
     expect($models)->toContain('claude-3-5-sonnet-20241022');
 });
-
-it('opencode driver returns empty supported models', function () {
-    $agentManager = app(AgentManager::class);
-    $driver = $agentManager->driver('opencode');
-
-    $models = $driver->getSupportedModels();
-
-    expect($models)->toBeArray();
-    expect($models)->toBeEmpty();
-});

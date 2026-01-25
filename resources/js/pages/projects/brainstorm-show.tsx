@@ -6,6 +6,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, CheckCircle2, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import { index } from '@/actions/App/Http/Controllers/BrainstormController';
 import { IdeasList } from '@/components/brainstorm/ideas-list';
+import { BrainstormIdea } from '@/types';
 
 interface Project {
     id: number;
@@ -17,12 +18,7 @@ interface Brainstorm {
     id: number;
     project_id: number;
     user_context: string | null;
-    ideas: Array<{
-        title: string;
-        description: string;
-        priority?: string;
-        category?: string;
-    }> | null;
+    ideas: BrainstormIdea[] | null;
     status: 'pending' | 'processing' | 'completed' | 'failed';
     error_message: string | null;
     created_at: string;
@@ -117,7 +113,7 @@ export default function BrainstormShow({ project, brainstorm }: BrainstormShowPr
                     </Card>
 
                     {brainstorm.status === 'completed' && brainstorm.ideas && brainstorm.ideas.length > 0 && (
-                        <IdeasList ideas={brainstorm.ideas as any} projectId={project.id} brainstormId={brainstorm.id} />
+                        <IdeasList ideas={brainstorm.ideas} projectId={project.id} brainstormId={brainstorm.id} />
                     )}
 
                     {brainstorm.status === 'pending' && (
